@@ -1,26 +1,204 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================
+   RESET BASE
+========================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FAF8F2;
+  color: #2f2e2e;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-caslon), Georgia, serif;
+}
+
+/* ==========================================
+   LINKS
+========================================== */
+
+a {
+  text-decoration: none;
+}
+
+/* ==========================================
+   IMAGENS
+========================================== */
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ==========================================
+   TIPOGRAFIA EDITORIAL
+   Classes utilitárias para tamanhos exatos do DS.
+   Use junto com font-serif ou font-sans do Tailwind.
+========================================== */
+
+.title-xl {
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 60px;
+  line-height: 84px;
+  font-weight: 700;
+}
+
+.page-title {
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 50px;
+  line-height: 70px;
+  font-weight: 700;
+}
+
+.heading-3 {
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 40px;
+  line-height: 56px;
+  font-weight: 700;
+}
+
+.heading-4 {
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 40px;
+  line-height: 56px;
+  font-weight: 400;
+}
+
+.heading-5 {
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 30px;
+  line-height: 42px;
+  font-weight: 400;
+}
+
+.heading-6 {
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 22px;
+  line-height: 30.8px;
+  font-weight: 400;
+}
+
+.body-l {
+  font-size: 17px;
+  line-height: 23.8px;
+}
+
+.body-m {
+  font-size: 15px;
+  line-height: 21px;
+}
+
+.body-s {
+  font-size: 14px;
+  line-height: 19.6px;
+}
+
+.body-xs {
+  font-size: 12px;
+  line-height: 16.8px;
+}
+
+/* ==========================================
+   ESPAÇAMENTO RESPONSIVO (ds.md §4)
+========================================== */
+
+.section-spacing {
+  padding-top: 48px;
+  padding-bottom: 48px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.cta-spacing {
+  padding-top: 56px;
+  padding-bottom: 56px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+@media (min-width: 768px) {
+  .section-spacing {
+    padding: 72px 64px;
+  }
+
+  .cta-spacing {
+    padding: 96px 64px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-spacing {
+    padding: 80px 96px;
+  }
+
+  .cta-spacing {
+    padding: 120px 96px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .section-spacing {
+    padding: 96px 120px;
+  }
+
+  .cta-spacing {
+    padding: 140px 120px;
+  }
+}
+
+/* ==========================================
+   RESPONSIVIDADE TIPOGRÁFICA
+========================================== */
+
+@media (max-width: 768px) {
+  .title-xl {
+    font-size: 42px;
+    line-height: 54px;
+  }
+
+  .page-title {
+    font-size: 36px;
+    line-height: 48px;
+  }
+
+  .heading-3 {
+    font-size: 32px;
+    line-height: 42px;
+  }
+
+  .heading-4 {
+    font-size: 28px;
+    line-height: 38px;
+  }
+
+  .heading-5 {
+    font-size: 24px;
+    line-height: 34px;
+  }
+}
+
+/* ==========================================
+   UTILIDADES
+========================================== */
+
+@layer utilities {
+  .ligatures {
+    font-variant-ligatures: common-ligatures discretionary-ligatures;
+    font-feature-settings: "liga" 1, "clig" 1, "dlig" 1;
+  }
 }
