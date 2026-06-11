@@ -14,6 +14,7 @@ export default function EditorPicks() {
             src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=1000"
             alt="Chef preparando prato"
             fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
           />
           {/* Badge */}
@@ -46,13 +47,13 @@ export default function EditorPicks() {
           {/* Action & Author */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mt-auto">
             <a href="/blog/raphael-zanon">
-              <button className="bg-[#2f2e2e] hover:bg-black text-white text-[10px] font-bold tracking-widest uppercase px-8 py-4 rounded-xl transition-colors">
+              <button className="bg-[#2f2e2e] hover:bg-black text-white text-[10px] font-bold tracking-widest uppercase px-8 py-4 rounded-2xl transition-colors">
                 Ler a Matéria
               </button>
             </a>
             
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#FAF8F2] text-primary flex items-center justify-center font-bold text-xs">
+              <div className="w-10 h-10 rounded-full bg-secondary/50 text-primary flex items-center justify-center font-bold text-xs">
                 MA
               </div>
               <div className="flex flex-col">

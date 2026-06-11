@@ -202,3 +202,10 @@ img {
     font-feature-settings: "liga" 1, "clig" 1, "dlig" 1;
   }
 }
+
+/* Oculta o aviso flutuante do Next.js (Toast) conforme solicitado */
+[class*="nextjs-toast"],
+.nextjs-toast {
+  display: none !important;
+}
+

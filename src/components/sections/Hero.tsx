@@ -45,14 +45,14 @@ export default function Hero() {
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-4 items-center flex-wrap">
-            <a href="/restaurantes">
-              <Button size="lg" variant="default" className="rounded-lg px-7">
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <a href="/restaurantes" className="w-full sm:w-auto">
+              <Button size="lg" variant="default" className="w-full px-7">
                 Explorar Restaurantes
               </Button>
             </a>
-            <a href="#">
-              <Button size="lg" variant="secondary" className="rounded-lg px-7">
+            <a href="#" className="w-full sm:w-auto">
+              <Button size="lg" variant="secondary" className="w-full px-7">
                 Anuncie seu negócio
               </Button>
             </a>

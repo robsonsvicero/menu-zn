@@ -11,7 +11,7 @@ export default function CtaAdvertise() {
   ]
 
   return (
-    <section className="w-full px-6 md:px-16 lg:px-[120px] py-16">
+    <section className="w-full px-6 md:px-16 lg:px-[120px] py-16 bg-on-surface/5">
       <div className="bg-[#222222] rounded-[32px] p-10 lg:p-14 flex flex-col lg:flex-row items-center justify-between gap-12 w-full">
         
         {/* Left Icon (Decorative Chart) */}
