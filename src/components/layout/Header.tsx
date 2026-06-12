@@ -9,6 +9,7 @@ import { Button } from '../ui/button'
 
 const navLinks = [
   { href: '/', label: 'Home' },
+  { href: '/zona-norte', label: 'Zona Norte' },
   { href: '/restaurantes', label: 'Restaurantes' },
   { href: '/bares', label: 'Bares' },
   { href: '/pizzarias', label: 'Pizzarias' },

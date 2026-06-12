@@ -50,10 +50,12 @@ export default function Footer() {
           <div className="flex flex-col">
             <h3 className="font-serif text-xl font-bold mb-6">Navegação</h3>
             <div className="flex flex-col gap-4">
-              <a href="/" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Início</a>
+              <a href="/" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Home</a>
+              <a href="/zona-norte" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Zona Norte</a>
               <a href="/restaurantes" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Restaurantes</a>
               <a href="/bares" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Bares</a>
               <a href="/pizzarias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Pizzarias</a>
+              <a href="/padarias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Padarias</a>
               <a href="/blog" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Blog</a>
             </div>
           </div>

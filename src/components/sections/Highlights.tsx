@@ -17,13 +17,13 @@ interface HighlightItem {
 const items: HighlightItem[] = [
   {
     id: '1',
-    title: 'Manioca JK',
-    location: 'São Paulo, Santana',
+    title: 'Seu Manuel Restaurante',
+    location: 'São Paulo, Água Fria',
     price: '$$$',
-    rating: 4.9,
+    rating: 4.8,
     category: 'RESTAURANTE',
     promoted: true,
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=600&h=800'
+    image: '/images/seu-manuel-restaurante.webp'
   },
   {
     id: '2',
