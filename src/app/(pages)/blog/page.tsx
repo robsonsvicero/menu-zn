@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ArrowRight, BookOpen } from 'lucide-react'
+import Link from 'next/link'
 import BlogFilterBar from '@/components/sections/BlogFilterBar'
 
 type CategoryOption = 'TODOS' | 'RECEITAS' | 'VINHOS' | 'DICAS' | 'DRINKS'
@@ -155,9 +156,11 @@ export default function BlogPage() {
           </p>
           
           {/* Button */}
-          <button className="bg-[#A25F4B] text-white hover:bg-[#8F503D] text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-2 transition-all shadow-md hover:shadow-lg">
-            Ler Matéria Completa <ArrowRight size={14} />
-          </button>
+          <Link href="/blog/raphael-zanon">
+            <button className="bg-[#A25F4B] text-white hover:bg-[#8F503D] text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-2 transition-all shadow-md hover:shadow-lg">
+              Ler Matéria Completa <ArrowRight size={14} />
+            </button>
+          </Link>
         </div>
       </section>
 

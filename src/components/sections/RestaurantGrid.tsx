@@ -40,6 +40,7 @@ const restaurants: Restaurant[] = [
     phone: '(11) 2951-3056',
     imageUrl: '/images/seu-manuel-restaurante.webp',
     hasIfood: false,
+    distance: 4.6,
   },
   {
     id: '3',
@@ -65,6 +66,7 @@ const restaurants: Restaurant[] = [
     phone: '(11) 2976-5522',
     imageUrl: '/images/seu-manuel-restaurante.webp',
     hasIfood: false,
+    distance: 2.1,
   },
 ]
 
