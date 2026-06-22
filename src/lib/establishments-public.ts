@@ -22,9 +22,9 @@ export type EstablishmentListItem = {
   phone: string | null;
   whatsapp: string | null;
   website_url: string | null;
-  instagram_url: string | null;
   image_cover_url: string | null;
   has_ifood: boolean;
+  is_indicated: boolean;
   price_range: string | null;
   rating: number | null;
   categories: { name: string; slug: string }[] | null;
@@ -108,9 +108,9 @@ async function resolveNeighborhoodId(neighborhoodSlug?: string) {
 export async function fetchPublishedEstablishments(options?: {
   categorySlug?: string;
   search?: string;
-  neighborhoodSlug?: string;
   ifoodOnly?: boolean;
   featuredOnly?: boolean;
+  indicatedOnly?: boolean;
   sort?: "featured" | "rating" | "name";
   limit?: number;
 }) {
@@ -122,7 +122,7 @@ export async function fetchPublishedEstablishments(options?: {
   let query = supabase
     .from("establishments")
     .select(
-      "id, name, slug, short_description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, price_range, rating, categories(name, slug), neighborhoods(name, slug)"
+      "id, name, slug, short_description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, is_indicated, price_range, rating, categories(name, slug), neighborhoods(name, slug)"
     )
     .eq("status", "published")
     .limit(limit);
@@ -141,6 +141,10 @@ export async function fetchPublishedEstablishments(options?: {
 
   if (options?.featuredOnly) {
     query = query.eq("is_featured", true);
+  }
+
+  if (options?.indicatedOnly) {
+    query = query.eq("is_indicated", true);
   }
 
   const search = options?.search?.trim();
@@ -178,7 +182,7 @@ export async function fetchPublishedEstablishmentBySlug(slug: string) {
   const { data, error } = await supabase
     .from("establishments")
     .select(
-      "id, name, slug, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, price_range, average_ticket, rating, latitude, longitude, categories(name, slug), neighborhoods(name, slug)"
+      "id, name, slug, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, is_indicated, price_range, average_ticket, rating, latitude, longitude, categories(name, slug), neighborhoods(name, slug)"
     )
     .eq("status", "published")
     .eq("slug", slug)

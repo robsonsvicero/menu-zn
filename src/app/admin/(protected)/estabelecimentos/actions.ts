@@ -102,6 +102,7 @@ export async function createEstablishmentAction(formData: FormData) {
   const imageFile = formData.get("image_file");
   const hasIfood = formData.get("has_ifood") === "on";
   const isFeatured = formData.get("is_featured") === "on";
+  const isIndicated = formData.get("is_indicated") === "on";
   const status = String(formData.get("status") ?? "draft").trim();
 
   if (!name || !categoryId) {
@@ -133,6 +134,7 @@ export async function createEstablishmentAction(formData: FormData) {
     image_cover_url: finalImageCoverUrl,
     has_ifood: hasIfood,
     is_featured: isFeatured,
+    is_indicated: isIndicated,
     status: status === "published" || status === "archived" ? status : "draft",
     published_at: status === "published" ? new Date().toISOString() : null,
     created_by: user.id,
@@ -193,6 +195,7 @@ export async function updateEstablishmentAction(formData: FormData) {
   const currentImageCoverUrl = String(formData.get("current_image_cover_url") ?? "").trim();
   const hasIfood = formData.get("has_ifood") === "on";
   const isFeatured = formData.get("is_featured") === "on";
+  const isIndicated = formData.get("is_indicated") === "on";
   const status = String(formData.get("status") ?? "draft").trim();
 
   if (!id || !name || !categoryId) {
@@ -226,6 +229,7 @@ export async function updateEstablishmentAction(formData: FormData) {
       image_cover_url: finalImageCoverUrl,
       has_ifood: hasIfood,
       is_featured: isFeatured,
+      is_indicated: isIndicated,
       status: status === "published" || status === "archived" ? status : "draft",
       published_at: status === "published" ? new Date().toISOString() : null,
       updated_by: user.id,
