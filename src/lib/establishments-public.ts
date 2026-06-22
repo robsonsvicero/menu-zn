@@ -22,6 +22,7 @@ export type EstablishmentListItem = {
   phone: string | null;
   whatsapp: string | null;
   website_url: string | null;
+  instagram_url: string | null;
   image_cover_url: string | null;
   has_ifood: boolean;
   is_indicated: boolean;
@@ -108,6 +109,7 @@ async function resolveNeighborhoodId(neighborhoodSlug?: string) {
 export async function fetchPublishedEstablishments(options?: {
   categorySlug?: string;
   search?: string;
+  neighborhoodSlug?: string;
   ifoodOnly?: boolean;
   featuredOnly?: boolean;
   indicatedOnly?: boolean;

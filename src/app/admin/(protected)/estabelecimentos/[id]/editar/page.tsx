@@ -21,6 +21,7 @@ type Establishment = {
   website_url: string | null;
   instagram_url: string | null;
   image_cover_url: string | null;
+  has_ifood: boolean;
   is_featured: boolean;
   is_indicated: boolean;
   status: "draft" | "published" | "archived";
