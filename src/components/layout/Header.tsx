@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { X } from 'lucide-react'
+import { X, Settings } from 'lucide-react'
 import Image from 'next/image'
 import Container from './Container'
 import { Button } from '../ui/button'
@@ -89,10 +89,19 @@ export default function Header() {
               ))}
             </nav>
 
-            {/* Desktop CTA */}
-            <Button variant="default" size="lg" className="hidden lg:inline-flex w-[180px] px-6 tracking-[0.9px]">
-              Anuncie
-            </Button>
+            {/* Desktop CTA & Admin */}
+            <div className="hidden lg:flex items-center gap-4">
+              <Button variant="default" size="lg" className="w-[180px] px-6 tracking-[0.9px]">
+                Anuncie
+              </Button>
+              <a
+                href="/admin/login"
+                className="text-white/80 hover:text-white transition-colors"
+                aria-label="Admin"
+              >
+                <Settings size={20} />
+              </a>
+            </div>
 
             {/* Mobile: Hotdog button */}
             <button
@@ -134,13 +143,22 @@ export default function Header() {
                 className="object-contain h-9 w-auto"
               />
             </a>
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="w-10 h-10 flex items-center justify-center text-on-surface hover:text-primary transition-colors"
-              aria-label="Fechar menu"
-            >
-              <X size={22} />
-            </button>
+            <div className="flex items-center gap-2">
+              <a
+                href="/admin/login"
+                className="w-10 h-10 flex items-center justify-center text-on-surface hover:text-primary transition-colors"
+                aria-label="Admin"
+              >
+                <Settings size={22} />
+              </a>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="w-10 h-10 flex items-center justify-center text-on-surface hover:text-primary transition-colors"
+                aria-label="Fechar menu"
+              >
+                <X size={22} />
+              </button>
+            </div>
           </div>
 
           {/* Drawer Nav Links */}
