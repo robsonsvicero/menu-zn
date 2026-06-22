@@ -11,14 +11,15 @@ type EstablishmentRow = {
   status: "draft" | "published" | "archived";
   is_featured: boolean;
   is_indicated: boolean;
-  categories: { name: string }[] | null;
-  neighborhoods: { name: string }[] | null;
+  categories: { name: string }[] | { name: string } | null;
+  neighborhoods: { name: string }[] | { name: string } | null;
 };
 
 type SearchParams = {
   q?: string;
   status?: string;
   category?: string;
+  indicated?: string;
 };
 
 type CategoryFilterRow = {
@@ -37,6 +38,17 @@ export default async function AdminEstabelecimentosPage({
   const searchTerm = (params.q ?? "").trim();
   const statusFilter = (params.status ?? "").trim();
   const categoryFilter = (params.category ?? "").trim();
+  const indicatedFilter = (params.indicated ?? "").trim();
+
+  const getRelationName = (
+    relation: { name: string }[] | { name: string } | null | undefined
+  ) => {
+    if (!relation) return "-";
+    if (Array.isArray(relation)) {
+      return relation[0]?.name ?? "-";
+    }
+    return relation.name ?? "-";
+  };
 
   let query = supabase
     .from("establishments")
@@ -50,6 +62,14 @@ export default async function AdminEstabelecimentosPage({
 
   if (categoryFilter) {
     query = query.eq("category_id", categoryFilter);
+  }
+
+  if (indicatedFilter === "true") {
+    query = query.eq("is_indicated", true);
+  }
+
+  if (indicatedFilter === "false") {
+    query = query.eq("is_indicated", false);
   }
 
   if (searchTerm) {
@@ -88,7 +108,7 @@ export default async function AdminEstabelecimentosPage({
         </div>
       ) : null}
 
-      <form method="get" className="mb-5 grid gap-3 rounded-2xl border border-outline bg-white p-4 md:grid-cols-[1fr_180px_220px_auto_auto]">
+      <form method="get" className="mb-5 grid gap-3 rounded-2xl border border-outline bg-white p-4 md:grid-cols-[1fr_180px_220px_180px_auto_auto]">
         <input
           type="text"
           name="q"
@@ -121,6 +141,16 @@ export default async function AdminEstabelecimentosPage({
           ))}
         </select>
 
+        <select
+          name="indicated"
+          defaultValue={indicatedFilter}
+          className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white"
+        >
+          <option value="">Todas indicações</option>
+          <option value="true">Indicados</option>
+          <option value="false">Não indicados</option>
+        </select>
+
         <button type="submit" className="rounded-xl border border-outline px-4 py-2 text-sm hover:bg-background">
           Filtrar
         </button>
@@ -148,8 +178,8 @@ export default async function AdminEstabelecimentosPage({
             {establishments.map((item) => (
               <tr key={item.id} className="border-t border-outline/60">
                 <td className="px-4 py-3">{item.name}</td>
-                <td className="px-4 py-3">{item.categories?.[0]?.name ?? "-"}</td>
-                <td className="px-4 py-3">{item.neighborhoods?.[0]?.name ?? "-"}</td>
+                <td className="px-4 py-3">{getRelationName(item.categories)}</td>
+                <td className="px-4 py-3">{getRelationName(item.neighborhoods)}</td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-background px-2.5 py-1 text-xs uppercase tracking-wide">
                     {item.status}
