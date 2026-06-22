@@ -1,0 +1,165 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+const allowedAdminRoles = new Set(["super_admin", "admin", "editor"]);
+
+function slugify(input: string) {
+  return input
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+async function ensureAdminAccess() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Usuário não autenticado.");
+  }
+
+  const { data: roleRows, error: rolesError } = await supabase
+    .from("user_roles")
+    .select("roles(code)")
+    .eq("user_id", user.id);
+
+  if (rolesError) {
+    throw new Error(rolesError.message);
+  }
+
+  const roleCodes = (roleRows ?? [])
+    .map((row) => (row as { roles?: { code?: string } | null }).roles?.code)
+    .filter((code): code is string => Boolean(code));
+
+  const hasAccess = roleCodes.some((code) => allowedAdminRoles.has(code));
+
+  if (!hasAccess) {
+    throw new Error("Acesso negado.");
+  }
+
+  return { supabase, user };
+}
+
+export async function createBlogPostAction(formData: FormData) {
+  const { supabase, user } = await ensureAdminAccess();
+
+  const title = String(formData.get("title") ?? "").trim();
+  const slugInput = String(formData.get("slug") ?? "").trim();
+  const excerpt = String(formData.get("excerpt") ?? "").trim();
+  const contentMd = String(formData.get("content_md") ?? "").trim();
+  const coverImageUrl = String(formData.get("cover_image_url") ?? "").trim();
+  const categoryId = String(formData.get("category_id") ?? "").trim();
+  const seoTitle = String(formData.get("seo_title") ?? "").trim();
+  const seoDescription = String(formData.get("seo_description") ?? "").trim();
+  const status = String(formData.get("status") ?? "draft").trim();
+
+  if (!title) {
+    throw new Error("Título é obrigatório.");
+  }
+
+  const slug = slugify(slugInput || title);
+
+  const { error } = await supabase.from("blog_posts").insert({
+    title,
+    slug,
+    excerpt: excerpt || null,
+    content_md: contentMd || null,
+    cover_image_url: coverImageUrl || null,
+    category_id: categoryId || null,
+    status: status === "published" || status === "archived" ? status : "draft",
+    published_at: status === "published" ? new Date().toISOString() : null,
+    seo_title: seoTitle || null,
+    seo_description: seoDescription || null,
+    created_by: user.id,
+    updated_by: user.id,
+    author_id: user.id,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/admin/blog");
+  redirect("/admin/blog");
+}
+
+export async function updateBlogPostStatusAction(formData: FormData) {
+  const { supabase, user } = await ensureAdminAccess();
+
+  const id = String(formData.get("id") ?? "").trim();
+  const nextStatus = String(formData.get("next_status") ?? "").trim();
+
+  if (!id || !["draft", "published", "archived"].includes(nextStatus)) {
+    throw new Error("Dados inválidos para atualização de status.");
+  }
+
+  const { error } = await supabase
+    .from("blog_posts")
+    .update({
+      status: nextStatus,
+      updated_by: user.id,
+      published_at: nextStatus === "published" ? new Date().toISOString() : null,
+    })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/admin/blog");
+}
+
+export async function updateBlogPostAction(formData: FormData) {
+  const { supabase, user } = await ensureAdminAccess();
+
+  const id = String(formData.get("id") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const slugInput = String(formData.get("slug") ?? "").trim();
+  const excerpt = String(formData.get("excerpt") ?? "").trim();
+  const contentMd = String(formData.get("content_md") ?? "").trim();
+  const coverImageUrl = String(formData.get("cover_image_url") ?? "").trim();
+  const categoryId = String(formData.get("category_id") ?? "").trim();
+  const seoTitle = String(formData.get("seo_title") ?? "").trim();
+  const seoDescription = String(formData.get("seo_description") ?? "").trim();
+  const status = String(formData.get("status") ?? "draft").trim();
+
+  if (!id || !title) {
+    throw new Error("ID e título são obrigatórios.");
+  }
+
+  const slug = slugify(slugInput || title);
+
+  const { error } = await supabase
+    .from("blog_posts")
+    .update({
+      title,
+      slug,
+      excerpt: excerpt || null,
+      content_md: contentMd || null,
+      cover_image_url: coverImageUrl || null,
+      category_id: categoryId || null,
+      status: status === "published" || status === "archived" ? status : "draft",
+      published_at: status === "published" ? new Date().toISOString() : null,
+      seo_title: seoTitle || null,
+      seo_description: seoDescription || null,
+      updated_by: user.id,
+    })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/admin/blog");
+  redirect("/admin/blog");
+}

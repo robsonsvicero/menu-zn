@@ -1,315 +1,244 @@
-'use client'
+import Image from "next/image";
+import Link from "next/link";
+import { CalendarDays, ArrowRight, Search } from "lucide-react";
+import { fetchBlogCategoryOptions, fetchPublishedBlogPosts } from "@/lib/blog-public";
 
-import { useState } from 'react'
-import Image from 'next/image'
-import { ArrowRight, BookOpen } from 'lucide-react'
-import Link from 'next/link'
-import BlogFilterBar from '@/components/sections/BlogFilterBar'
+export const dynamic = "force-dynamic";
 
-type CategoryOption = 'TODOS' | 'RECEITAS' | 'VINHOS' | 'DICAS' | 'DRINKS'
-type SortOption = 'recent' | 'popular'
+type SearchParams = {
+  q?: string;
+  category?: string;
+  sort?: string;
+};
 
-interface ArticleItem {
-  id: string
-  tag: string
-  category: Exclude<CategoryOption, 'TODOS'>
-  title: string
-  excerpt: string
-  image: string
-  views: number
-  date: string
-  dateLabel: string
-  linkText: string
+function formatDate(value: string | null) {
+  if (!value) {
+    return "Data indisponível";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
 }
 
-const articles: ArticleItem[] = [
-  {
-    id: '1',
-    tag: 'RECEITAS',
-    category: 'RECEITAS',
-    title: 'Aprenda a Costurar Massa de Pão',
-    excerpt: 'O Humberto Lisboa realmente põe a mão na massa. Sócio proprietário da Osteria da Onça, mostra como se...',
-    image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&q=80&w=800',
-    views: 1540,
-    date: '2024-07-14',
-    dateLabel: '14 Jul, 2024',
-    linkText: 'LER MAIS'
-  },
-  {
-    id: '2',
-    tag: 'VINHOS',
-    category: 'VINHOS',
-    title: 'Rótulos Italianos: Uma Viagem Sensorial',
-    excerpt: 'Descubra os vinhos que marcaram a história da Toscana e como...',
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800',
-    views: 2890,
-    date: '2024-07-10',
-    dateLabel: '10 Jul, 2024',
-    linkText: 'LER MAIS'
-  },
-  {
-    id: '3',
-    tag: 'DICAS',
-    category: 'DICAS',
-    title: 'O Verdadeiro Pão de Queijo',
-    excerpt: 'Esqueça as misturas prontas. Revelamos os segredos da receita',
-    image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=800',
-    views: 3120,
-    date: '2024-07-05',
-    dateLabel: '05 Jul, 2024',
-    linkText: 'LER MAIS'
-  },
-  {
-    id: '4',
-    tag: 'DRINKS & MIXOLOGIA',
-    category: 'DRINKS',
-    title: 'Drink Sem Glúten: A Nova Fronteira do Bar',
-    excerpt: 'A intolerância e a sensibilidade ao glúten atingem cerca de 5% da população mundial. Descubra como os bares mais conceituados de São Paulo estão adaptando suas cartas com criatividade.',
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800',
-    views: 4500,
-    date: '2024-07-02',
-    dateLabel: '02 Jul, 2024',
-    linkText: 'ABRIR GUIA DE MIXOLOGIA'
-  },
-  {
-    id: '5',
-    tag: 'RESTAURANTES',
-    category: 'DICAS',
-    title: 'Pizzaria Pizzatto: Tradição e Modernidade',
-    excerpt: 'Inaugurada em 2014 no coração da zona norte, esta casa tradicional traz no nome o sobrenome da família fundadora e nas receitas o segredo de gerações.',
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800',
-    views: 1420,
-    date: '2024-06-28',
-    dateLabel: '28 Jun, 2024',
-    linkText: 'LER CRÍTICA'
-  },
-  {
-    id: '6',
-    tag: 'DRINKS',
-    category: 'DRINKS',
-    title: 'Aperol: O Sol no Copo',
-    excerpt: 'Nascido em 1919, o Aperol tornou-se o drink símbolo do verão paulistano. Exploramos as variações autorais encontradas nos terraços da ZN.',
-    image: 'https://images.unsplash.com/photo-1574085733277-851d9d856a3a?auto=format&fit=crop&q=80&w=800',
-    views: 2150,
-    date: '2024-06-20',
-    dateLabel: '20 Jun, 2024',
-    linkText: 'VER RECEITA'
-  }
-]
+function buildQueryString(params: Record<string, string | undefined>) {
+  const searchParams = new URLSearchParams();
 
-export default function BlogPage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeCategory, setActiveCategory] = useState<CategoryOption>('TODOS')
-  const [activeSort, setActiveSort] = useState<SortOption>('recent')
-
-  const filteredArticles = articles.filter(article => {
-    const matchesCategory = activeCategory === 'TODOS' ? true : article.category === activeCategory
-    const matchesSearch = searchQuery
-      ? article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.tag.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
-      : true
-    return matchesCategory && matchesSearch
-  })
-
-  const sortedArticles = [...filteredArticles].sort((a, b) => {
-    if (activeSort === 'recent') {
-      return new Date(b.date).getTime() - new Date(a.date).getTime()
-    } else if (activeSort === 'popular') {
-      return b.views - a.views
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      searchParams.set(key, value);
     }
-    return 0
-  })
+  });
+
+  const query = searchParams.toString();
+  return query ? `?${query}` : "/blog";
+}
+
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const params = await searchParams;
+  const query = (params.q ?? "").trim();
+  const category = (params.category ?? "").trim();
+  const sort = params.sort === "oldest" ? "oldest" : "recent";
+
+  const [posts, categories] = await Promise.all([
+    fetchPublishedBlogPosts({ search: query, category, limit: 40 }),
+    fetchBlogCategoryOptions(),
+  ]);
+
+  const orderedPosts = sort === "oldest" ? [...posts].reverse() : posts;
+  const featuredPost = orderedPosts[0] ?? null;
+  const listPosts = featuredPost ? orderedPosts.slice(1) : orderedPosts;
+  const fallbackImage = "/images/hero-blog-destaque.png";
 
   return (
-    <main className="min-h-screen bg-[#faf8f5]">
-      {/* Hero Section */}
-      <section className="relative w-full h-[650px] md:h-[750px] flex items-center justify-center text-center">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <Image 
-            src="/images/hero-blog-destaque.png" 
-            alt="A Reinvenção da Cozinha Regional por Raphael Zanon" 
+    <main className="min-h-screen bg-[#faf8f5] text-on-surface">
+      <section className="relative overflow-hidden border-b border-outline/30">
+        <div className="absolute inset-0">
+          <Image
+            src={featuredPost?.cover_image_url ?? fallbackImage}
+            alt={featuredPost?.title ?? "Blog Menu ZN"}
             fill
             className="object-cover object-center"
             priority
           />
-          {/* Overlay to match image styling */}
-          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/30" />
         </div>
 
-        {/* Content Container */}
-        <div className="container relative z-10 mx-auto px-4 md:px-8 mt-16 max-w-4xl flex flex-col items-center">
-          {/* Badge */}
-          <span className="bg-[#A25F4B] text-[10px] md:text-xs font-bold text-white tracking-[0.2em] px-4 py-2 rounded-full uppercase mb-6 shadow-sm">
-            Destaque do Mês
-          </span>
+        <div className="relative mx-auto flex min-h-160 max-w-300 items-end px-6 py-20 md:px-10 lg:px-12">
+          <div className="max-w-3xl pb-4 text-white">
+            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] backdrop-blur-sm">
+              Blog Menu ZN
+            </span>
+            <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl">
+              {featuredPost?.title ?? "Histórias, guias e descobertas da Zona Norte"}
+            </h1>
+            <p className="mt-6 max-w-2xl text-sm leading-7 text-white/85 md:text-base">
+              {featuredPost?.excerpt ?? "Acompanhe nossas matérias, guias e bastidores da gastronomia da Zona Norte com conteúdo publicado direto do painel administrativo."}
+            </p>
 
-          {/* Title */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white leading-tight mb-6 max-w-3xl drop-shadow-md">
-            A Reinvenção da Cozinha Regional por Raphael Zanon
-          </h1>
+            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-white/85">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                <CalendarDays size={16} />
+                {formatDate(featuredPost?.published_at ?? null)}
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                Por Equipe Menu ZN
+              </span>
+              {featuredPost?.blog_categories?.[0]?.name ? (
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                  {featuredPost.blog_categories[0].name}
+                </span>
+              ) : null}
+            </div>
 
-          {/* Subtitle / Description */}
-          <p className="text-sm md:text-base text-white/90 font-sans mb-10 max-w-2xl leading-relaxed text-center font-light drop-shadow-sm">
-            Visitamos o novo espaço que está mudando o panorama gastronômico de Santana. Uma experiência que une técnica francesa e ingredientes locais com uma maestria raramente vista fora dos grandes eixos mundiais.
-          </p>
-          
-          {/* Button */}
-          <Link href="/blog/raphael-zanon">
-            <button className="bg-[#A25F4B] text-white hover:bg-[#8F503D] text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-2 transition-all shadow-md hover:shadow-lg">
-              Ler Matéria Completa <ArrowRight size={14} />
-            </button>
-          </Link>
+            {featuredPost ? (
+              <div className="mt-10">
+                <Link
+                  href={`/blog/${featuredPost.slug}`}
+                  className="inline-flex items-center gap-2 rounded-full bg-[rgb(148_53_21)] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:opacity-90"
+                >
+                  Ler matéria completa
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            ) : null}
+          </div>
         </div>
       </section>
 
-      {/* Filter Bar */}
-      <BlogFilterBar 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
-        activeSort={activeSort}
-        setActiveSort={setActiveSort}
-      />
+      <section className="sticky top-0 z-30 border-b border-outline/20 bg-[#faf8f5]/90 backdrop-blur-md">
+        <div className="mx-auto max-w-300 px-6 py-5 md:px-10 lg:px-12">
+          <form method="get" className="grid gap-3 rounded-3xl border border-outline/40 bg-white p-4 shadow-sm md:grid-cols-[1fr_220px_180px_auto]">
+            <label className="relative block">
+              <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-on-surface/45" />
+              <input
+                type="text"
+                name="q"
+                defaultValue={query}
+                placeholder="Buscar por título, resumo ou slug"
+                className="w-full rounded-2xl border border-outline/40 bg-[#faf8f5] py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[rgb(148_53_21)]"
+              />
+            </label>
 
-      {/* Articles Grid Section */}
-      <section className="py-20 px-6 md:px-16 lg:px-[120px]">
-        <div className="container mx-auto">
-          {sortedArticles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
-              {sortedArticles.map((article, index) => {
-                // Determine styling based on index (0 to 5 pattern)
-                const position = index % 6
-                
-                // Card 1: Horizontal wide (col-span-4)
-                if (position === 0) {
-                  return (
-                    <a 
-                      key={article.id} 
-                      href={`/blog/${article.id}`} 
-                      className="group md:col-span-4 flex flex-col md:flex-row cursor-pointer bg-white rounded-[24px] overflow-hidden border border-outline/15 shadow-sm hover:shadow-md transition-all duration-300"
-                    >
-                      <div className="relative w-full md:w-1/2 aspect-[4/3] md:aspect-auto">
-                        <Image 
-                          src={article.image} 
-                          alt={article.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-103"
-                        />
-                      </div>
-                      <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-between">
-                        <div>
-                          <div className="flex justify-between items-center mb-6">
-                            <span className="text-[#A25F4B] text-[10px] font-bold tracking-[0.15em] uppercase">
-                              {article.tag}
-                            </span>
-                            <span className="text-on-surface-variant/70 text-xs font-medium">
-                              {article.dateLabel}
-                            </span>
-                          </div>
-                          <h3 className="font-serif text-2xl md:text-3xl lg:text-[32px] leading-tight text-on-surface mb-4 group-hover:text-[#A25F4B] transition-colors">
-                            {article.title}
-                          </h3>
-                          <p className="text-on-surface-variant text-sm leading-relaxed font-sans mb-6 line-clamp-3">
-                            {article.excerpt}
-                          </p>
-                        </div>
-                        <span className="text-[#A25F4B] hover:text-[#8F503D] text-[10px] font-bold tracking-[0.15em] uppercase flex items-center gap-1.5 mt-auto">
-                          {article.linkText} <ArrowRight size={12} />
-                        </span>
-                      </div>
-                    </a>
-                  )
-                }
+            <select
+              name="category"
+              defaultValue={category}
+              className="w-full rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm outline-none transition focus:border-[rgb(148_53_21)]"
+            >
+              <option value="">Todas as categorias</option>
+              {categories.map((item) => (
+                <option key={item.slug} value={item.slug}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
 
-                // Card 4: Horizontal wide dark theme (col-span-4)
-                if (position === 3) {
-                  return (
-                    <a 
-                      key={article.id} 
-                      href={`/blog/${article.id}`} 
-                      className="group md:col-span-4 flex flex-col md:flex-row cursor-pointer bg-[#252525] rounded-[24px] overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
-                    >
-                      <div className="w-full md:w-[60%] p-8 md:p-12 flex flex-col justify-between text-white">
-                        <div>
-                          <span className="text-[#A25F4B] text-[10px] font-bold tracking-[0.15em] uppercase block mb-6">
-                            {article.tag}
-                          </span>
-                          <h3 className="font-serif text-3xl lg:text-[38px] leading-tight text-white mb-6 group-hover:text-white/90 transition-colors">
-                            {article.title}
-                          </h3>
-                          <p className="text-white/75 text-sm leading-relaxed font-sans mb-8">
-                            {article.excerpt}
-                          </p>
-                        </div>
-                        <span className="text-white/90 hover:text-white text-[10px] font-bold tracking-[0.15em] uppercase flex items-center gap-1.5 mt-auto">
-                          {article.linkText} <BookOpen size={13} className="ml-1" />
-                        </span>
-                      </div>
-                      <div className="relative w-full md:w-[40%] aspect-[4/3] md:aspect-auto">
-                        <Image 
-                          src={article.image} 
-                          alt={article.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-103"
-                        />
-                      </div>
-                    </a>
-                  )
-                }
+            <select
+              name="sort"
+              defaultValue={sort}
+              className="w-full rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm outline-none transition focus:border-[rgb(148_53_21)]"
+            >
+              <option value="recent">Mais recentes</option>
+              <option value="oldest">Mais antigos</option>
+            </select>
 
-                // Cards 2 & 3: Vertical regular (col-span-2)
-                // Cards 5 & 6: Vertical medium (col-span-3)
-                const spanClass = (position === 1 || position === 2) ? 'md:col-span-2' : 'md:col-span-3'
-                
-                return (
-                  <a 
-                    key={article.id} 
-                    href={`/blog/${article.id}`} 
-                    className={`group ${spanClass} flex flex-col cursor-pointer bg-white rounded-[24px] overflow-hidden border border-outline/15 shadow-sm hover:shadow-md transition-all duration-300`}
-                  >
-                    <div className="relative w-full aspect-[3/2] overflow-hidden">
-                      <Image 
-                        src={article.image} 
-                        alt={article.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-103"
-                      />
-                    </div>
-                    <div className="p-8 flex flex-col grow justify-between">
-                      <div>
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="text-[#A25F4B] text-[10px] font-bold tracking-[0.15em] uppercase">
-                            {article.tag}
-                          </span>
-                          <span className="text-on-surface-variant/70 text-xs font-medium">
-                            {article.dateLabel}
-                          </span>
-                        </div>
-                        <h3 className="font-serif text-xl md:text-2xl leading-snug text-on-surface mb-3 group-hover:text-[#A25F4B] transition-colors">
-                          {article.title}
-                        </h3>
-                        <p className="text-on-surface-variant text-sm leading-relaxed font-sans mb-6 line-clamp-3">
-                          {article.excerpt}
-                        </p>
-                      </div>
-                      <span className="text-[#A25F4B] hover:text-[#8F503D] text-[10px] font-bold tracking-[0.15em] uppercase flex items-center gap-1.5 mt-auto">
-                        {article.linkText} <ArrowRight size={12} />
-                      </span>
-                    </div>
-                  </a>
-                )
-              })}
+            <div className="flex gap-2">
+              <button type="submit" className="rounded-2xl bg-[rgb(148_53_21)] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:opacity-90">
+                Filtrar
+              </button>
+              <Link href="/blog" className="rounded-2xl border border-outline/40 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-on-surface transition hover:bg-[#f3efe8]">
+                Limpar
+              </Link>
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-on-surface-variant text-lg">Nenhuma matéria encontrada com os termos informados.</p>
-            </div>
-          )}
+          </form>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-300 px-6 py-14 md:px-10 lg:px-12 lg:py-18">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl">Últimas publicações</h2>
+            <p className="mt-1 text-sm text-on-surface/65">
+              {orderedPosts.length} artigo{orderedPosts.length === 1 ? "" : "s"} publicado{orderedPosts.length === 1 ? "" : "s"}.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categories.slice(0, 5).map((item) => (
+              <Link
+                key={item.slug}
+                href={buildQueryString({ q: query || undefined, category: item.slug, sort })}
+                className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition ${category === item.slug ? "border-[rgb(148_53_21)] bg-[rgb(148_53_21)] text-white" : "border-outline/50 bg-white text-on-surface hover:bg-[#f3efe8]"}`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {orderedPosts.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {listPosts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group overflow-hidden rounded-[28px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <div className="relative aspect-4/3 overflow-hidden">
+                  <Image
+                    src={post.cover_image_url ?? fallbackImage}
+                    alt={post.title}
+                    fill
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/0 to-transparent" />
+                  {post.blog_categories?.[0]?.name ? (
+                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
+                      {post.blog_categories[0].name}
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="space-y-4 p-6">
+                  <div className="flex items-center justify-between gap-4 text-xs uppercase tracking-[0.16em] text-on-surface/55">
+                    <span>{formatDate(post.published_at)}</span>
+                    <span>Equipe Menu ZN</span>
+                  </div>
+
+                  <h3 className="font-serif text-2xl leading-tight text-on-surface transition group-hover:text-[rgb(148_53_21)]">
+                    {post.title}
+                  </h3>
+                  <p className="line-clamp-3 text-sm leading-7 text-on-surface/70">
+                    {post.excerpt ?? "Conteúdo publicado pelo time editorial do Menu ZN."}
+                  </p>
+
+                  <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[rgb(148_53_21)]">
+                    Ler matéria
+                    <ArrowRight size={14} />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[28px] border border-outline/30 bg-white p-10 text-center shadow-sm">
+            <h3 className="font-serif text-2xl text-on-surface">Nenhuma publicação encontrada</h3>
+            <p className="mt-3 text-sm leading-7 text-on-surface/65">
+              Ajuste a busca ou selecione outra categoria para encontrar matérias publicadas.
+            </p>
+            <div className="mt-6">
+              <Link href="/blog" className="rounded-full bg-[rgb(148_53_21)] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:opacity-90">
+                Ver tudo
+              </Link>
+            </div>
+          </div>
+        )}
       </section>
     </main>
-  )
+  );
 }

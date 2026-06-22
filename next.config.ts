@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    webpackBuildWorker: true,
+  },
+  reactStrictMode: true,
 };
 
 export default nextConfig;
