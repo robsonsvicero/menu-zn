@@ -99,6 +99,7 @@ export async function createEstablishmentAction(formData: FormData) {
   const websiteUrl = String(formData.get("website_url") ?? "").trim();
   const instagramUrl = String(formData.get("instagram_url") ?? "").trim();
   const imageCoverUrl = String(formData.get("image_cover_url") ?? "").trim();
+  const priceRange = String(formData.get("price_range") ?? "").trim();
   const imageFile = formData.get("image_file");
   const hasIfood = formData.get("has_ifood") === "on";
   const isFeatured = formData.get("is_featured") === "on";
@@ -132,6 +133,7 @@ export async function createEstablishmentAction(formData: FormData) {
     website_url: websiteUrl || null,
     instagram_url: instagramUrl || null,
     image_cover_url: finalImageCoverUrl,
+    price_range: priceRange || null,
     has_ifood: hasIfood,
     is_featured: isFeatured,
     is_indicated: isIndicated,
@@ -191,6 +193,7 @@ export async function updateEstablishmentAction(formData: FormData) {
   const websiteUrl = String(formData.get("website_url") ?? "").trim();
   const instagramUrl = String(formData.get("instagram_url") ?? "").trim();
   const imageCoverUrl = String(formData.get("image_cover_url") ?? "").trim();
+  const priceRange = String(formData.get("price_range") ?? "").trim();
   const imageFile = formData.get("image_file");
   const currentImageCoverUrl = String(formData.get("current_image_cover_url") ?? "").trim();
   const hasIfood = formData.get("has_ifood") === "on";
@@ -227,6 +230,7 @@ export async function updateEstablishmentAction(formData: FormData) {
       website_url: websiteUrl || null,
       instagram_url: instagramUrl || null,
       image_cover_url: finalImageCoverUrl,
+      price_range: priceRange || null,
       has_ifood: hasIfood,
       is_featured: isFeatured,
       is_indicated: isIndicated,

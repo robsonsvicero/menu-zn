@@ -95,6 +95,17 @@ export default async function NovoEstabelecimentoPage() {
         </div>
 
         <div>
+          <label className="block text-sm mb-1">Faixa de Preço</label>
+          <select name="price_range" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
+            <option value="">Sob consulta</option>
+            <option value="$">$ - Econômico</option>
+            <option value="$$">$$ - Moderado</option>
+            <option value="$$$">$$$ - Caro</option>
+            <option value="$$$$">$$$$ - Muito caro</option>
+          </select>
+        </div>
+
+        <div>
           <label className="block text-sm mb-1">URL da imagem de capa</label>
           <input name="image_cover_url" className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
         </div>

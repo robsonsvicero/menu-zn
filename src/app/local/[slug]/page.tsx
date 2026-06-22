@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CalendarDays, MapPin, Phone, Star, Globe, MessageCircle } from "lucide-react";
+import { ArrowLeft, DollarSign, MapPin, Phone, Star, Globe, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { fetchPublishedEstablishmentBySlug, fetchPublishedEstablishments } from "@/lib/establishments-public";
 
@@ -17,10 +17,6 @@ function formatRating(value: number | null) {
   }
 
   return value.toFixed(1);
-}
-
-function formatPriceRange(value: string | null) {
-  return value || "Sob consulta";
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -90,7 +86,17 @@ export default async function LocalDetailPage({ params }: PageProps) {
                 {formatRating(establishment.rating)}
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                {formatPriceRange(establishment.price_range)}
+                {establishment.price_range ? (
+                  <>
+                    <DollarSign size={16} />
+                    {establishment.price_range}
+                  </>
+                ) : (
+                  <>
+                    <DollarSign size={16} />
+                    Sob consulta
+                  </>
+                )}
               </span>
             </div>
           </div>
@@ -122,10 +128,12 @@ export default async function LocalDetailPage({ params }: PageProps) {
                     <Phone size={16} />
                     <span>{establishment.phone ?? "Telefone não informado"}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-on-surface/75">
-                    <CalendarDays size={16} />
-                    <span>{formatPriceRange(establishment.price_range)}</span>
-                  </div>
+                  {establishment.price_range && (
+                    <div className="flex items-center gap-3 text-sm text-on-surface/75">
+                      <DollarSign size={16} />
+                      <span>Faixa de preço: {establishment.price_range}</span>
+                    </div>
+                  )}
 
                   <div className="flex flex-wrap gap-3 pt-2">
                     {establishment.website_url ? (
