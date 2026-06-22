@@ -4,7 +4,17 @@ import Link from 'next/link'
 import { fetchPublishedEstablishments } from '@/lib/establishments-public'
 
 export default async function Highlights() {
-  const items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'featured', limit: 4 })
+  let items = [] as Awaited<ReturnType<typeof fetchPublishedEstablishments>>
+
+  try {
+    items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'featured', limit: 4 })
+  } catch (error) {
+    if (typeof error === 'object' && error && 'digest' in error && (error as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE') {
+      throw error
+    }
+    console.error('Highlights: falha ao carregar dados', error)
+    return null
+  }
 
   if (items.length === 0) return null
 

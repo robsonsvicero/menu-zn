@@ -4,7 +4,17 @@ import Link from 'next/link'
 import { fetchPublishedBlogPosts } from '@/lib/blog-public'
 
 export default async function Chronicles() {
-  const articles = await fetchPublishedBlogPosts({ limit: 3 })
+  let articles = [] as Awaited<ReturnType<typeof fetchPublishedBlogPosts>>
+
+  try {
+    articles = await fetchPublishedBlogPosts({ limit: 3 })
+  } catch (error) {
+    if (typeof error === 'object' && error && 'digest' in error && (error as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE') {
+      throw error
+    }
+    console.error('Chronicles: falha ao carregar dados', error)
+    return null
+  }
 
   if (articles.length === 0) return null
   return (

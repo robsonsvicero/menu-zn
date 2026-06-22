@@ -9,6 +9,8 @@ import Chronicles from '@/components/sections/Chronicles'
 import Testimonials from '@/components/sections/Testimonials'
 import Newsletter from '@/components/sections/Newsletter'
 
+export const dynamic = 'force-dynamic'
+
 export default function Home() {
   return (
     <main>

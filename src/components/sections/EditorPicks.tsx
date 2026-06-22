@@ -4,7 +4,18 @@ import Link from 'next/link'
 import { fetchPublishedBlogPosts } from '@/lib/blog-public'
 
 export default async function EditorPicks() {
-  const posts = await fetchPublishedBlogPosts({ limit: 1 })
+  let posts = [] as Awaited<ReturnType<typeof fetchPublishedBlogPosts>>
+
+  try {
+    posts = await fetchPublishedBlogPosts({ limit: 1 })
+  } catch (error) {
+    if (typeof error === 'object' && error && 'digest' in error && (error as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE') {
+      throw error
+    }
+    console.error('EditorPicks: falha ao carregar dados', error)
+    return null
+  }
+
   const post = posts[0]
 
   if (!post) return null
