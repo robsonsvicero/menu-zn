@@ -10,6 +10,7 @@ type EstablishmentRow = {
   slug: string;
   status: "draft" | "published" | "archived";
   is_featured: boolean;
+  is_indicated: boolean;
   categories: { name: string }[] | null;
   neighborhoods: { name: string }[] | null;
 };
@@ -39,7 +40,7 @@ export default async function AdminEstabelecimentosPage({
 
   let query = supabase
     .from("establishments")
-    .select("id, name, slug, status, is_featured, category_id, categories(name), neighborhoods(name)")
+    .select("id, name, slug, status, is_featured, is_indicated, category_id, categories(name), neighborhoods(name)")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -138,6 +139,7 @@ export default async function AdminEstabelecimentosPage({
               <th className="px-4 py-3 text-left font-medium">Bairro</th>
               <th className="px-4 py-3 text-left font-medium">Status</th>
               <th className="px-4 py-3 text-left font-medium">Destaque</th>
+              <th className="px-4 py-3 text-left font-medium">Indicado</th>
               <th className="px-4 py-3 text-left font-medium">Slug</th>
               <th className="px-4 py-3 text-left font-medium">Ações</th>
             </tr>
@@ -154,6 +156,7 @@ export default async function AdminEstabelecimentosPage({
                   </span>
                 </td>
                 <td className="px-4 py-3">{item.is_featured ? "Sim" : "Não"}</td>
+                <td className="px-4 py-3">{item.is_indicated ? "Sim" : "Não"}</td>
                 <td className="px-4 py-3 text-on-surface/70">{item.slug}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
@@ -208,7 +211,7 @@ export default async function AdminEstabelecimentosPage({
             ))}
             {establishments.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-on-surface/70">
+                <td colSpan={8} className="px-4 py-8 text-center text-on-surface/70">
                   Nenhum estabelecimento cadastrado ainda.
                 </td>
               </tr>
