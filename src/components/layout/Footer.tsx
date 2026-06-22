@@ -23,7 +23,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-[#a8a8a8] text-sm leading-relaxed mb-8 max-w-xs">
-              O guia gastronômico mais completo da Zona Norte de São Paulo. Conectando você aos melhores sabores da região desde 2020.
+              O guia de alta gastronomia mais completo da Zona Norte de São Paulo. Conectando você aos melhores sabores da região desde 2020.
             </p>
             {/* Social Icons */}
             <div className="flex items-center gap-4">
