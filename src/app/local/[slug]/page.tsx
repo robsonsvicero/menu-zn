@@ -177,10 +177,6 @@ export default async function LocalDetailPage({ params }: PageProps) {
                   <dd className="font-medium">{formatRating(establishment.rating)}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <dt className="text-on-surface/55">Ticket médio</dt>
-                  <dd className="font-medium">{establishment.average_ticket ? `R$ ${Number(establishment.average_ticket).toFixed(2)}` : "-"}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-4">
                   <dt className="text-on-surface/55">iFood</dt>
                   <dd className="font-medium">{establishment.has_ifood ? "Sim" : "Não"}</dd>
                 </div>
