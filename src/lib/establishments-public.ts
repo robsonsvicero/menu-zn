@@ -110,6 +110,7 @@ export async function fetchPublishedEstablishments(options?: {
   search?: string;
   neighborhoodSlug?: string;
   ifoodOnly?: boolean;
+  featuredOnly?: boolean;
   sort?: "featured" | "rating" | "name";
   limit?: number;
 }) {
@@ -136,6 +137,10 @@ export async function fetchPublishedEstablishments(options?: {
 
   if (options?.ifoodOnly) {
     query = query.eq("has_ifood", true);
+  }
+
+  if (options?.featuredOnly) {
+    query = query.eq("is_featured", true);
   }
 
   const search = options?.search?.trim();

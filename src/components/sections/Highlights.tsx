@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { fetchPublishedEstablishments } from '@/lib/establishments-public'
 
 export default async function Highlights() {
-  const items = await fetchPublishedEstablishments({ sort: 'featured', limit: 4 })
+  const items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'featured', limit: 4 })
 
   if (items.length === 0) return null
 
