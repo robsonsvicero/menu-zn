@@ -23,6 +23,7 @@ type Establishment = {
   image_cover_url: string | null;
   has_ifood: boolean;
   is_featured: boolean;
+  is_indicated: boolean;
   status: "draft" | "published" | "archived";
 };
 
@@ -38,7 +39,7 @@ export default async function EditarEstabelecimentoPage({
     supabase
       .from("establishments")
       .select(
-        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, is_featured, status"
+        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, is_featured, is_indicated, status"
       )
       .eq("id", id)
       .single(),
@@ -151,7 +152,7 @@ export default async function EditarEstabelecimentoPage({
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3 items-end">
+        <div className="grid gap-4 md:grid-cols-4 items-end">
           <div>
             <label className="block text-sm mb-1">Status</label>
             <select name="status" defaultValue={establishment.status} className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
@@ -169,6 +170,11 @@ export default async function EditarEstabelecimentoPage({
           <label className="inline-flex items-center gap-2 text-sm">
             <input type="checkbox" name="is_featured" defaultChecked={establishment.is_featured} className="rounded border-outline" />
             Destaque na home
+          </label>
+
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input type="checkbox" name="is_indicated" defaultChecked={establishment.is_indicated} className="rounded border-outline" />
+            Indicações
           </label>
         </div>
 

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { fetchPublishedEstablishments } from '@/lib/establishments-public'
 
 export default async function Showcase() {
-  const items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'featured', limit: 6 })
+  const items = await fetchPublishedEstablishments({ indicatedOnly: true, sort: 'featured', limit: 6 })
 
   if (items.length === 0) return null
 
