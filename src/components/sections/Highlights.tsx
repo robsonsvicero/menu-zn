@@ -1,65 +1,15 @@
-'use client'
-
 import { Star, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { fetchPublishedEstablishments } from '@/lib/establishments-public'
 
-interface HighlightItem {
-  id: string
-  title: string
-  location: string
-  price: string
-  rating: number
-  category: string
-  promoted?: boolean
-  image: string
-}
+export default async function Highlights() {
+  const items = await fetchPublishedEstablishments({ sort: 'featured', limit: 4 })
 
-const items: HighlightItem[] = [
-  {
-    id: '1',
-    title: 'Seu Manuel Restaurante',
-    location: 'São Paulo, Água Fria',
-    price: '$$$',
-    rating: 4.8,
-    category: 'RESTAURANTE',
-    promoted: true,
-    image: '/images/seu-manuel-restaurante.webp'
-  },
-  {
-    id: '2',
-    title: "Leleco's",
-    location: 'São Paulo, Tucuruvi',
-    price: '$$',
-    rating: 4.7,
-    category: 'BAR',
-    promoted: false,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=600&h=800'
-  },
-  {
-    id: '3',
-    title: 'Leggera',
-    location: 'São Paulo, Parada Inglesa',
-    price: '$$$',
-    rating: 4.9,
-    category: 'PIZZARIA',
-    promoted: false,
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=600&h=800'
-  },
-  {
-    id: '4',
-    title: 'Bella Vitória',
-    location: 'São Paulo, Jardim São Paulo',
-    price: '$$',
-    rating: 4.8,
-    category: 'PADARIA',
-    promoted: true,
-    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=600&h=800'
-  }
-]
+  if (items.length === 0) return null
 
-export default function Highlights() {
   return (
-    <section className="w-full bg-background py-16 px-6 md:px-16 lg:px-[120px]">
+    <section className="w-full bg-background py-16 px-6 md:px-16 lg:px-30">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 md:gap-0">
         <div>
@@ -70,40 +20,43 @@ export default function Highlights() {
             Destaques da Semana
           </h2>
         </div>
-        <a 
-          href="/destaques" 
+        <Link
+          href="/restaurantes"
           className="flex items-center gap-2 text-muted hover:text-on-surface transition-colors text-xs font-semibold tracking-wider uppercase"
         >
           Ver Todos <ArrowRight size={14} />
-        </a>
+        </Link>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {items.map((item) => (
-          <div 
-            key={item.id} 
-            className="group flex flex-col bg-surface rounded-2xl overflow-hidden border border-transparent hover:border-outline/50 transition-all shadow-sm hover:shadow-md cursor-pointer"
+          <Link
+            key={item.id}
+            href={`/local/${item.slug}`}
+            className="group flex flex-col bg-surface rounded-2xl overflow-hidden border border-transparent hover:border-outline/50 transition-all shadow-sm hover:shadow-md"
           >
             {/* Image Container */}
-            <div className="relative w-full aspect-[4/5] bg-gray-100 overflow-hidden">
-              <Image 
-                src={item.image} 
-                alt={item.title}
+            <div className="relative w-full aspect-4/5 bg-gray-100 overflow-hidden">
+              <Image
+                src={item.image_cover_url || '/images/hero-restaurantes.png'}
+                alt={item.name}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              
-              {/* Category Badge */}
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-md">
-                <span className="text-[10px] font-bold text-on-surface tracking-wider">
-                  {item.category}
-                </span>
-              </div>
 
-              {/* Promoted Star Badge */}
-              {item.promoted && (
+              {/* Category Badge */}
+              {item.categories?.[0]?.name && (
+                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-md">
+                  <span className="text-[10px] font-bold text-on-surface tracking-wider uppercase">
+                    {item.categories[0].name}
+                  </span>
+                </div>
+              )}
+
+              {/* iFood Badge */}
+              {item.has_ifood && (
                 <div className="absolute top-4 right-4 bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg">
                   <Star size={12} className="fill-current" />
                 </div>
@@ -111,28 +64,34 @@ export default function Highlights() {
             </div>
 
             {/* Content Container */}
-            <div className="p-5 flex flex-col flex-grow">
+            <div className="p-5 flex flex-col grow">
               {/* Rating */}
-              <div className="flex items-center gap-1.5 mb-2">
-                <Star size={14} className="text-[#F5A623] fill-current" />
-                <span className="text-primary font-bold text-sm">{item.rating}</span>
-              </div>
+              {item.rating !== null && (
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Star size={14} className="text-[#F5A623] fill-current" />
+                  <span className="text-primary font-bold text-sm">{item.rating.toFixed(1)}</span>
+                </div>
+              )}
 
               {/* Title */}
               <h3 className="font-serif text-3xl text-on-surface font-normal mb-8">
-                {item.title}
+                {item.name}
               </h3>
 
               {/* Spacer to push footer down */}
-              <div className="flex-grow" />
+              <div className="grow" />
 
               {/* Footer */}
               <div className="flex items-center justify-between">
-                <span className="text-muted text-xs font-medium">{item.location}</span>
-                <span className="text-[#A25F4B] font-bold text-sm tracking-widest">{item.price}</span>
+                <span className="text-muted text-xs font-medium">
+                  {item.neighborhoods?.[0]?.name ?? 'Zona Norte'}
+                </span>
+                {item.price_range && (
+                  <span className="text-[#A25F4B] font-bold text-sm tracking-widest">{item.price_range}</span>
+                )}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
