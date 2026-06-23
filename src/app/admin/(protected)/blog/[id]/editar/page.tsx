@@ -53,6 +53,7 @@ export default async function EditarBlogPostPage({
 
       <form action={updateBlogPostAction} className="rounded-2xl border border-outline bg-white p-6 md:p-8 space-y-5">
         <input type="hidden" name="id" value={blogPost.id} />
+        <input type="hidden" name="current_cover_image_url" value={blogPost.cover_image_url ?? ""} />
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
@@ -93,6 +94,19 @@ export default async function EditarBlogPostPage({
         <div>
           <label className="block text-sm mb-1">Conteúdo em Markdown</label>
           <textarea name="content_md" rows={10} defaultValue={blogPost.content_md ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm font-mono" />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Upload da imagem de capa</label>
+          <input
+            type="file"
+            name="image_file"
+            accept="image/*"
+            className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5"
+          />
+          <p className="mt-1 text-xs text-on-surface/60">
+            Se enviar um novo arquivo, ele substitui a imagem atual.
+          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">

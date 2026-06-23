@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const allowedAdminRoles = new Set(["super_admin", "admin", "editor"]);
 
@@ -15,6 +16,39 @@ function slugify(input: string) {
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
+}
+
+function sanitizeFileName(input: string) {
+  return slugify(input.replace(/\.[^/.]+$/, "")) || "arquivo";
+}
+
+async function uploadCoverImage(file: File, slug: string) {
+  const adminClient = createAdminClient();
+  const bucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
+  const extension = file.name.includes(".") ? file.name.split(".").pop()?.toLowerCase() : "jpg";
+  const safeExt = extension && /^[a-z0-9]+$/.test(extension) ? extension : "jpg";
+  const safeBaseName = sanitizeFileName(file.name);
+  const path = `blog-posts/${slug}-${Date.now()}-${safeBaseName}.${safeExt}`;
+
+  const { error: uploadError } = await adminClient.storage
+    .from(bucket)
+    .upload(path, file, {
+      upsert: false,
+      contentType: file.type || "application/octet-stream",
+    });
+
+  if (uploadError) {
+    if (uploadError.message.toLowerCase().includes("bucket not found")) {
+      throw new Error(
+        `Bucket '${bucket}' não encontrado no Supabase Storage. Crie o bucket e habilite acesso público para as imagens.`
+      );
+    }
+
+    throw new Error(`Falha no upload da imagem: ${uploadError.message}`);
+  }
+
+  const { data } = adminClient.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
 }
 
 async function ensureAdminAccess() {
@@ -57,6 +91,7 @@ export async function createBlogPostAction(formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const contentMd = String(formData.get("content_md") ?? "").trim();
+  const imageFile = formData.get("image_file");
   const categoryId = String(formData.get("category_id") ?? "").trim();
   const seoTitle = String(formData.get("seo_title") ?? "").trim();
   const seoDescription = String(formData.get("seo_description") ?? "").trim();
@@ -67,12 +102,18 @@ export async function createBlogPostAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || title);
+  let coverImageUrl: string | null = null;
+
+  if (imageFile instanceof File && imageFile.size > 0) {
+    coverImageUrl = await uploadCoverImage(imageFile, slug);
+  }
 
   const { error } = await supabase.from("blog_posts").insert({
     title,
     slug,
     excerpt: excerpt || null,
     content_md: contentMd || null,
+    cover_image_url: coverImageUrl,
     category_id: categoryId || null,
     status: status === "published" || status === "archived" ? status : "draft",
     published_at: status === "published" ? new Date().toISOString() : null,
@@ -125,6 +166,8 @@ export async function updateBlogPostAction(formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const contentMd = String(formData.get("content_md") ?? "").trim();
+  const imageFile = formData.get("image_file");
+  const currentCoverImageUrl = String(formData.get("current_cover_image_url") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "").trim();
   const seoTitle = String(formData.get("seo_title") ?? "").trim();
   const seoDescription = String(formData.get("seo_description") ?? "").trim();
@@ -135,6 +178,11 @@ export async function updateBlogPostAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || title);
+  let coverImageUrl: string | null = currentCoverImageUrl || null;
+
+  if (imageFile instanceof File && imageFile.size > 0) {
+    coverImageUrl = await uploadCoverImage(imageFile, slug);
+  }
 
   const { error } = await supabase
     .from("blog_posts")
@@ -143,6 +191,7 @@ export async function updateBlogPostAction(formData: FormData) {
       slug,
       excerpt: excerpt || null,
       content_md: contentMd || null,
+      cover_image_url: coverImageUrl,
       category_id: categoryId || null,
       status: status === "published" || status === "archived" ? status : "draft",
       published_at: status === "published" ? new Date().toISOString() : null,

@@ -60,6 +60,17 @@ export default async function NovoBlogPostPage() {
           <textarea name="content_md" rows={10} className="w-full rounded-xl border border-outline px-3 py-2 text-sm font-mono" />
         </div>
 
+        <div>
+          <label className="block text-sm mb-1">Upload da imagem de capa</label>
+          <input
+            type="file"
+            name="image_file"
+            accept="image/*"
+            className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5"
+          />
+          <p className="mt-1 text-xs text-on-surface/60">Se enviar arquivo, ele será usado como imagem principal do post.</p>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="block text-sm mb-1">SEO Title</label>
