@@ -19,6 +19,28 @@ function formatRating(value: number | null) {
   return value.toFixed(1);
 }
 
+function formatPhoneBR(value: string | null) {
+  if (!value) {
+    return "Telefone não informado";
+  }
+
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+
+  if (!digits) {
+    return "Telefone não informado";
+  }
+
+  if (digits.length <= 2) {
+    return `(${digits}`;
+  }
+
+  if (digits.length <= 7) {
+    return `(${digits.slice(0, 2)})${digits.slice(2)}`;
+  }
+
+  return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const establishment = await fetchPublishedEstablishmentBySlug(slug);
@@ -126,7 +148,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-on-surface/75">
                     <Phone size={16} />
-                    <span>{establishment.phone ?? "Telefone não informado"}</span>
+                    <span>{formatPhoneBR(establishment.phone)}</span>
                   </div>
                   {establishment.price_range && (
                     <div className="flex items-center gap-3 text-sm text-on-surface/75">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createEstablishmentAction } from "../actions";
 import { NeighborhoodDialog } from "../neighborhood-dialog";
+import { PhoneMaskedInput } from "../phone-masked-input";
 import { SlugGenerator } from "../slug-generator";
 
 export const dynamic = "force-dynamic";
@@ -80,14 +81,22 @@ export default async function NovoEstabelecimentoPage() {
           </div>
           <div>
             <label className="block text-sm mb-1">Telefone</label>
-            <input name="phone" className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
+            <PhoneMaskedInput
+              name="phone"
+              className="w-full rounded-xl border border-outline px-3 py-2 text-sm"
+              placeholder="(11)99999-9999"
+            />
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <div>
             <label className="block text-sm mb-1">WhatsApp</label>
-            <input name="whatsapp" className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
+            <PhoneMaskedInput
+              name="whatsapp"
+              className="w-full rounded-xl border border-outline px-3 py-2 text-sm"
+              placeholder="(11)99999-9999"
+            />
           </div>
           <div>
             <label className="block text-sm mb-1">Website</label>
@@ -99,15 +108,21 @@ export default async function NovoEstabelecimentoPage() {
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm mb-1">Faixa de Preço</label>
-          <select name="price_range" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
-            <option value="">Sob consulta</option>
-            <option value="$">$ - Econômico</option>
-            <option value="$$">$$ - Moderado</option>
-            <option value="$$$">$$$ - Caro</option>
-            <option value="$$$$">$$$$ - Muito caro</option>
-          </select>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="block text-sm mb-1">Faixa de Preço</label>
+            <select name="price_range" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
+              <option value="">Sob consulta</option>
+              <option value="$">$ - Econômico</option>
+              <option value="$$">$$ - Moderado</option>
+              <option value="$$$">$$$ - Caro</option>
+              <option value="$$$$">$$$$ - Muito caro</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Avaliação (0 a 5)</label>
+            <input type="number" step="0.1" min="0" max="5" name="rating" className="w-full rounded-xl border border-outline px-3 py-2 text-sm" placeholder="Ex: 4.5" />
+          </div>
         </div>
 
         <div>

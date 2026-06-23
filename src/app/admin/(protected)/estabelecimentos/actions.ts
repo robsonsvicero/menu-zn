@@ -22,6 +22,24 @@ function sanitizeFileName(input: string) {
   return slugify(input.replace(/\.[^/.]+$/, "")) || "arquivo";
 }
 
+function formatPhoneBR(input: string) {
+  const digits = input.replace(/\D/g, "").slice(0, 11);
+
+  if (!digits) {
+    return "";
+  }
+
+  if (digits.length <= 2) {
+    return `(${digits}`;
+  }
+
+  if (digits.length <= 7) {
+    return `(${digits.slice(0, 2)})${digits.slice(2)}`;
+  }
+
+  return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
 async function uploadCoverImage(file: File, slug: string) {
   const adminClient = createAdminClient();
   const bucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
@@ -99,6 +117,9 @@ export async function createEstablishmentAction(formData: FormData) {
   const instagramUrl = String(formData.get("instagram_url") ?? "").trim();
   const imageCoverUrl = String(formData.get("image_cover_url") ?? "").trim();
   const priceRange = String(formData.get("price_range") ?? "").trim();
+  const ratingInput = String(formData.get("rating") ?? "").replace(",", ".");
+  const parsedRating = ratingInput ? parseFloat(ratingInput) : null;
+  const rating = parsedRating !== null && !isNaN(parsedRating) ? parsedRating : null;
   const imageFile = formData.get("image_file");
   const hasIfood = formData.get("has_ifood") === "on";
   const isFeatured = formData.get("is_featured") === "on";
@@ -110,6 +131,8 @@ export async function createEstablishmentAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || name);
+  const formattedPhone = formatPhoneBR(phone);
+  const formattedWhatsapp = formatPhoneBR(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || null;
 
   if (imageFile instanceof File && imageFile.size > 0) {
@@ -127,12 +150,13 @@ export async function createEstablishmentAction(formData: FormData) {
     short_description: shortDescription || null,
     description: description || null,
     address: address || null,
-    phone: phone || null,
-    whatsapp: whatsapp || null,
+    phone: formattedPhone || null,
+    whatsapp: formattedWhatsapp || null,
     website_url: websiteUrl || null,
     instagram_url: instagramUrl || null,
     image_cover_url: finalImageCoverUrl,
     price_range: priceRange || null,
+    rating,
     has_ifood: hasIfood,
     is_featured: isFeatured,
     is_indicated: isIndicated,
@@ -193,6 +217,9 @@ export async function updateEstablishmentAction(formData: FormData) {
   const instagramUrl = String(formData.get("instagram_url") ?? "").trim();
   const imageCoverUrl = String(formData.get("image_cover_url") ?? "").trim();
   const priceRange = String(formData.get("price_range") ?? "").trim();
+  const ratingInput = String(formData.get("rating") ?? "").replace(",", ".");
+  const parsedRating = ratingInput ? parseFloat(ratingInput) : null;
+  const rating = parsedRating !== null && !isNaN(parsedRating) ? parsedRating : null;
   const imageFile = formData.get("image_file");
   const currentImageCoverUrl = String(formData.get("current_image_cover_url") ?? "").trim();
   const hasIfood = formData.get("has_ifood") === "on";
@@ -205,6 +232,8 @@ export async function updateEstablishmentAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || name);
+  const formattedPhone = formatPhoneBR(phone);
+  const formattedWhatsapp = formatPhoneBR(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || currentImageCoverUrl || null;
 
   if (imageFile instanceof File && imageFile.size > 0) {
@@ -224,12 +253,13 @@ export async function updateEstablishmentAction(formData: FormData) {
       short_description: shortDescription || null,
       description: description || null,
       address: address || null,
-      phone: phone || null,
-      whatsapp: whatsapp || null,
+      phone: formattedPhone || null,
+      whatsapp: formattedWhatsapp || null,
       website_url: websiteUrl || null,
       instagram_url: instagramUrl || null,
       image_cover_url: finalImageCoverUrl,
       price_range: priceRange || null,
+      rating,
       has_ifood: hasIfood,
       is_featured: isFeatured,
       is_indicated: isIndicated,

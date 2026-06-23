@@ -11,6 +11,7 @@ type EstablishmentRow = {
   status: "draft" | "published" | "archived";
   is_featured: boolean;
   is_indicated: boolean;
+  rating: number | null;
   categories: { name: string }[] | { name: string } | null;
   neighborhoods: { name: string }[] | { name: string } | null;
 };
@@ -20,6 +21,7 @@ type SearchParams = {
   status?: string;
   category?: string;
   indicated?: string;
+  rating?: string;
 };
 
 type CategoryFilterRow = {
@@ -52,7 +54,7 @@ export default async function AdminEstabelecimentosPage({
 
   let query = supabase
     .from("establishments")
-    .select("id, name, slug, status, is_featured, is_indicated, category_id, categories(name), neighborhoods(name)")
+    .select("id, name, slug, status, is_featured, is_indicated, rating, category_id, categories(name), neighborhoods(name)")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -171,7 +173,9 @@ export default async function AdminEstabelecimentosPage({
               <th className="px-4 py-3 text-left font-medium">Destaque</th>
               <th className="px-4 py-3 text-left font-medium">Indicado</th>
               <th className="px-4 py-3 text-left font-medium">Slug</th>
+              <th className="px-4 py-3 text-left font-medium">Avaliação</th>
               <th className="px-4 py-3 text-left font-medium">Ações</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -188,6 +192,7 @@ export default async function AdminEstabelecimentosPage({
                 <td className="px-4 py-3">{item.is_featured ? "Sim" : "Não"}</td>
                 <td className="px-4 py-3">{item.is_indicated ? "Sim" : "Não"}</td>
                 <td className="px-4 py-3 text-on-surface/70">{item.slug}</td>
+                <td className="px-4 py-3">{item.rating !== null ? item.rating.toFixed(1) : "-"}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
                     <Link

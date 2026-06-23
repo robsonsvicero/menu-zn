@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateEstablishmentAction } from "../../actions";
 import { NeighborhoodDialog } from "../../neighborhood-dialog";
+import { PhoneMaskedInput } from "../../phone-masked-input";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ type Establishment = {
   is_featured: boolean;
   is_indicated: boolean;
   status: "draft" | "published" | "archived";
+  rating: number | null;
 };
 
 export default async function EditarEstabelecimentoPage({
@@ -41,7 +43,7 @@ export default async function EditarEstabelecimentoPage({
     supabase
       .from("establishments")
       .select(
-        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, is_featured, is_indicated, status"
+        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, is_featured, is_indicated, status, rating"
       )
       .eq("id", id)
       .single(),
@@ -120,14 +122,24 @@ export default async function EditarEstabelecimentoPage({
           </div>
           <div>
             <label className="block text-sm mb-1">Telefone</label>
-            <input name="phone" defaultValue={establishment.phone ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
+            <PhoneMaskedInput
+              name="phone"
+              defaultValue={establishment.phone ?? ""}
+              className="w-full rounded-xl border border-outline px-3 py-2 text-sm"
+              placeholder="(11)99999-9999"
+            />
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <div>
             <label className="block text-sm mb-1">WhatsApp</label>
-            <input name="whatsapp" defaultValue={establishment.whatsapp ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
+            <PhoneMaskedInput
+              name="whatsapp"
+              defaultValue={establishment.whatsapp ?? ""}
+              className="w-full rounded-xl border border-outline px-3 py-2 text-sm"
+              placeholder="(11)99999-9999"
+            />
           </div>
           <div>
             <label className="block text-sm mb-1">Website</label>
@@ -139,15 +151,21 @@ export default async function EditarEstabelecimentoPage({
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm mb-1">Faixa de Preço</label>
-          <select name="price_range" defaultValue={establishment.price_range ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
-            <option value="">Sob consulta</option>
-            <option value="$">$ - Econômico</option>
-            <option value="$$">$$ - Moderado</option>
-            <option value="$$$">$$$ - Caro</option>
-            <option value="$$$$">$$$$ - Muito caro</option>
-          </select>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="block text-sm mb-1">Faixa de Preço</label>
+            <select name="price_range" defaultValue={establishment.price_range ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
+              <option value="">Sob consulta</option>
+              <option value="$">$ - Econômico</option>
+              <option value="$$">$$ - Moderado</option>
+              <option value="$$$">$$$ - Caro</option>
+              <option value="$$$$">$$$$ - Muito caro</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Avaliação (0 a 5)</label>
+            <input type="number" step="0.1" min="0" max="5" name="rating" defaultValue={establishment.rating ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm" placeholder="Ex: 4.5" />
+          </div>
         </div>
 
         <div>
