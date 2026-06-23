@@ -106,10 +106,10 @@ export default function Footer() {
             </a>
             <div className="flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
               <span className="text-[#a8a8a8] text-[9px] tracking-wider uppercase">Desenvolvido por</span>
-              <a href="https://svicerostudio.com.br" target="_blank" rel="noopener noreferrer">
+              <a href="https://robsonsvicero.com.br" target="_blank" rel="noopener noreferrer">
                 <Image
-                  src="/images/logo-svicerostudio.png"
-                  alt="Svicero Studio"
+                  src="/images/logo_robson.png"
+                  alt="Robson Svicero"
                   width={80}
                   height={20}
                   className="object-contain opacity-70 hover:opacity-100 transition-opacity"
