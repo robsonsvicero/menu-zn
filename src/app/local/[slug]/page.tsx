@@ -90,7 +90,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
         </div>
 
         <div className="relative mx-auto flex min-h-160 max-w-300 flex-col justify-between px-6 py-20 md:px-10 lg:px-12">
-          <div className="max-w-4xl text-white">
+          <div className="mt-16 max-w-4xl text-white">
             <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white">
               {category?.name ?? "Estabelecimento"}
             </span>
