@@ -41,6 +41,12 @@ function formatPhoneBR(value: string | null) {
   return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
+function getRelation<T>(relation: T | T[] | null | undefined): T | null {
+  if (!relation) return null;
+  if (Array.isArray(relation)) return relation[0] ?? null;
+  return relation as T;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const establishment = await fetchPublishedEstablishmentBySlug(slug);
@@ -63,7 +69,10 @@ export default async function LocalDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const categorySlug = establishment.categories?.[0]?.slug ?? "restaurantes";
+  const category = getRelation(establishment.categories);
+  const neighborhood = getRelation(establishment.neighborhoods);
+
+  const categorySlug = category?.slug ?? "restaurantes";
   const related = (await fetchPublishedEstablishments({
     categorySlug,
     limit: 4,
@@ -81,14 +90,9 @@ export default async function LocalDetailPage({ params }: PageProps) {
         </div>
 
         <div className="relative mx-auto flex min-h-160 max-w-300 flex-col justify-between px-6 py-20 md:px-10 lg:px-12">
-          <Link href={`/${categorySlug}`} className="mt-12 inline-flex w-fit items-center gap-2 rounded-full text-white border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] backdrop-blur-sm transition hover:bg-white/20">
-            <ArrowLeft size={14} />
-            Voltar para a categoria
-          </Link>
-
           <div className="max-w-4xl text-white">
             <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white">
-              {establishment.categories?.[0]?.name ?? "Estabelecimento"}
+              {category?.name ?? "Estabelecimento"}
             </span>
 
             <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl">
@@ -101,7 +105,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
             <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-white/85">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
                 <MapPin size={16} />
-                {establishment.neighborhoods?.[0]?.name ?? "Bairro não informado"}
+                {neighborhood?.name ?? "Bairro não informado"}
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
                 <Star size={16} />
@@ -136,7 +140,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
             </article>
 
             <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
-              <h2 className="font-serif text-2xl">Galeria e contato</h2>
+              <h2 className="font-serif text-2xl">Contato</h2>
               <div className="mt-5 grid gap-6 md:grid-cols-2">
                 <div className="relative aspect-4/3 overflow-hidden rounded-3xl">
                   <Image src={imageSrc} alt={establishment.name} fill className="object-cover" />
@@ -188,11 +192,11 @@ export default async function LocalDetailPage({ params }: PageProps) {
               <dl className="mt-5 space-y-4 text-sm text-on-surface/75">
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-on-surface/55">Categoria</dt>
-                  <dd className="font-medium">{establishment.categories?.[0]?.name ?? "-"}</dd>
+                  <dd className="font-medium">{category?.name ?? "-"}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-on-surface/55">Bairro</dt>
-                  <dd className="font-medium">{establishment.neighborhoods?.[0]?.name ?? "-"}</dd>
+                  <dd className="font-medium">{neighborhood?.name ?? "-"}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-on-surface/55">Avaliação</dt>
@@ -226,7 +230,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                   </div>
                   <div className="space-y-3 p-6">
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
-                      {item.categories?.[0]?.name ?? "Estabelecimento"}
+                      {getRelation(item.categories)?.name ?? "Estabelecimento"}
                     </p>
                     <h3 className="font-serif text-xl leading-snug text-on-surface transition group-hover:text-[rgb(148_53_21)]">
                       {item.name}
