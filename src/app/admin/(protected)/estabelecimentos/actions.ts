@@ -248,7 +248,7 @@ export async function updateEstablishmentAction(formData: FormData) {
 }
 
 export async function addNeighborhoodAction(name: string) {
-  const { supabase, user } = await ensureAdminAccess();
+  const { supabase } = await ensureAdminAccess();
 
   const trimmedName = String(name ?? "").trim();
 
@@ -267,9 +267,11 @@ export async function addNeighborhoodAction(name: string) {
     throw new Error("Este bairro já existe.");
   }
 
+  const slug = slugify(trimmedName);
+
   const { error } = await supabase.from("neighborhoods").insert({
     name: trimmedName,
-    created_by: user.id,
+    slug,
   });
 
   if (error) {

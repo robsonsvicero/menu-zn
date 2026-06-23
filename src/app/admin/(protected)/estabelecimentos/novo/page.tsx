@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createEstablishmentAction } from "../actions";
 import { NeighborhoodDialog } from "../neighborhood-dialog";
+import { SlugGenerator } from "../slug-generator";
 
 export const dynamic = "force-dynamic";
 
@@ -157,6 +158,7 @@ export default async function NovoEstabelecimentoPage() {
           </Link>
         </div>
       </form>
+      <SlugGenerator />
     </section>
   );
 }
