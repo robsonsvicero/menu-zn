@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createEstablishmentAction } from "../actions";
+import { NeighborhoodDialog } from "../neighborhood-dialog";
 
 export const dynamic = "force-dynamic";
 
@@ -49,12 +50,15 @@ export default async function NovoEstabelecimentoPage() {
 
           <div>
             <label className="block text-sm mb-1">Bairro</label>
-            <select name="neighborhood_id" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
-              <option value="">Selecione...</option>
-              {neighborhoodOptions.map((item) => (
-                <option key={item.id} value={item.id}>{item.name}</option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select name="neighborhood_id" className="flex-1 rounded-xl border border-outline px-3 py-2 text-sm bg-white">
+                <option value="">Selecione...</option>
+                {neighborhoodOptions.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
+              <NeighborhoodDialog />
+            </div>
           </div>
         </div>
 

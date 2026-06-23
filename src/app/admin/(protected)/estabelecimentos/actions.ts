@@ -246,3 +246,35 @@ export async function updateEstablishmentAction(formData: FormData) {
   revalidatePath("/admin/estabelecimentos");
   redirect("/admin/estabelecimentos");
 }
+
+export async function addNeighborhoodAction(name: string) {
+  const { supabase, user } = await ensureAdminAccess();
+
+  const trimmedName = String(name ?? "").trim();
+
+  if (!trimmedName) {
+    throw new Error("Nome do bairro é obrigatório.");
+  }
+
+  // Verifica se o bairro já existe
+  const { data: existingNeighborhood } = await supabase
+    .from("neighborhoods")
+    .select("id")
+    .ilike("name", trimmedName)
+    .single();
+
+  if (existingNeighborhood) {
+    throw new Error("Este bairro já existe.");
+  }
+
+  const { error } = await supabase.from("neighborhoods").insert({
+    name: trimmedName,
+    created_by: user.id,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/admin/estabelecimentos/novo");
+}

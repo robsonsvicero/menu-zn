@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateEstablishmentAction } from "../../actions";
+import { NeighborhoodDialog } from "../../neighborhood-dialog";
 
 export const dynamic = "force-dynamic";
 
@@ -90,12 +91,15 @@ export default async function EditarEstabelecimentoPage({
 
           <div>
             <label className="block text-sm mb-1">Bairro</label>
-            <select name="neighborhood_id" defaultValue={establishment.neighborhood_id ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
-              <option value="">Selecione...</option>
-              {neighborhoodOptions.map((option) => (
-                <option key={option.id} value={option.id}>{option.name}</option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select name="neighborhood_id" defaultValue={establishment.neighborhood_id ?? ""} className="flex-1 rounded-xl border border-outline px-3 py-2 text-sm bg-white">
+                <option value="">Selecione...</option>
+                {neighborhoodOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.name}</option>
+                ))}
+              </select>
+              <NeighborhoodDialog />
+            </div>
           </div>
         </div>
 
