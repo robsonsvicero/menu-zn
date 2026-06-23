@@ -43,6 +43,12 @@ function formatPhone(value: string | null) {
   return value || "Sem telefone";
 }
 
+function getRelation<T>(relation: T | T[] | null | undefined): T | null {
+  if (!relation) return null;
+  if (Array.isArray(relation)) return relation[0] ?? null;
+  return relation as T;
+}
+
 export default async function EstablishmentDirectory({
   categorySlug,
   heroTitle,
@@ -70,7 +76,7 @@ export default async function EstablishmentDirectory({
     fetchPublicNeighborhoods(),
   ]);
 
-  const categoryName = items[0]?.categories?.[0]?.name ?? heroTitle;
+  const categoryName = getRelation(items[0]?.categories)?.name ?? heroTitle;
   const hasResults = items.length > 0;
   const clearHref = buttonHref ?? `/${categorySlug}`;
 
@@ -174,7 +180,7 @@ export default async function EstablishmentDirectory({
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
-                        {item.categories?.[0]?.name ?? categoryName}
+                        {getRelation(item.categories)?.name ?? categoryName}
                       </p>
                       <h3 className="mt-2 font-serif text-2xl leading-tight text-on-surface transition group-hover:text-[rgb(148_53_21)]">
                         {item.name}
@@ -193,7 +199,7 @@ export default async function EstablishmentDirectory({
                   <div className="space-y-2 text-xs text-on-surface/65">
                     <div className="flex items-center gap-2">
                       <MapPin size={14} className="shrink-0" />
-                      <span>{item.neighborhoods?.[0]?.name ?? "Bairro não informado"}</span>
+                      <span>{getRelation(item.neighborhoods)?.name ?? "Bairro não informado"}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone size={14} className="shrink-0" />
