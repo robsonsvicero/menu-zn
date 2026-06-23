@@ -3,6 +3,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { fetchPublishedEstablishments } from '@/lib/establishments-public'
 
+function getRelation<T>(relation: T | T[] | null | undefined): T | null {
+  if (!relation) return null;
+  if (Array.isArray(relation)) return relation[0] ?? null;
+  return relation as T;
+}
+
 export default async function Highlights() {
   let items = [] as Awaited<ReturnType<typeof fetchPublishedEstablishments>>
 
@@ -57,10 +63,10 @@ export default async function Highlights() {
               />
 
               {/* Category Badge */}
-              {item.categories?.[0]?.name && (
+              {getRelation(item.categories)?.name && (
                 <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-md">
                   <span className="text-[10px] font-bold text-on-surface tracking-wider uppercase">
-                    {item.categories[0].name}
+                    {getRelation(item.categories)?.name}
                   </span>
                 </div>
               )}
@@ -94,7 +100,7 @@ export default async function Highlights() {
               {/* Footer */}
               <div className="flex items-center justify-between">
                 <span className="text-muted text-xs font-medium">
-                  {item.neighborhoods?.[0]?.name ?? 'Zona Norte'}
+                  {getRelation(item.neighborhoods)?.name ?? 'Zona Norte'}
                 </span>
                 {item.price_range && (
                   <span className="text-[#A25F4B] font-bold text-sm tracking-widest">{item.price_range}</span>
