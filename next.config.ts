@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
     webpackBuildWorker: true,
   },
   reactStrictMode: true,
