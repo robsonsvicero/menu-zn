@@ -1,96 +1,214 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { createBlogPostAction } from "../actions";
+import { createBlogPostAction, updateBlogPostStatusAction } from "../actions";
+import { BlogSlugGenerator } from "../blog-slug-generator";
+import { Image as ImageIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 type OptionRow = { id: string; name: string };
+type BlogPostRow = {
+  id: string;
+  title: string;
+  slug: string;
+  status: "draft" | "published" | "archived";
+  published_at: string | null;
+  cover_image_url: string | null;
+  blog_categories: { name: string }[] | null;
+};
 
 export default async function NovoBlogPostPage() {
   const supabase = await createClient();
-  const { data: categories } = await supabase.from("blog_categories").select("id, name").order("name");
+  
+  // Buscar categorias, autores e posts cadastrados para a listagem na mesma página
+  const [{ data: categories }, { data: authorsData }, { data: postsData }] = await Promise.all([
+    supabase.from("blog_categories").select("id, name").order("name"),
+    supabase.from("authors").select("id, name").order("name"),
+    supabase.from("blog_posts").select("id, title, slug, status, published_at, cover_image_url, blog_categories(name)").order("created_at", { ascending: false }).limit(20)
+  ]);
+
   const categoryOptions = (categories ?? []) as OptionRow[];
+  const authorOptions = (authorsData ?? []) as OptionRow[];
+  const posts = (postsData ?? []) as BlogPostRow[];
 
   return (
-    <section className="max-w-4xl">
-      <div className="mb-6">
-        <h2 className="text-3xl font-serif">Novo post</h2>
-        <p className="text-sm text-on-surface/70 mt-1">Crie artigos, guias e matérias editoriais do Menu ZN.</p>
+    <section className="max-w-[900px] mx-auto bg-white p-6 md:p-10 rounded-3xl mb-10">
+      <div className="flex items-center justify-between mb-10">
+        <h2 className="text-2xl font-serif text-on-surface font-bold">Blog</h2>
+        <Link href="/admin/blog" className="rounded-full border border-outline/30 px-6 py-2 text-xs font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition">
+          Limpar
+        </Link>
       </div>
 
-      <form action={createBlogPostAction} className="rounded-2xl border border-outline bg-white p-6 md:p-8 space-y-5">
-        <div className="grid gap-4 md:grid-cols-2">
+      <form action={createBlogPostAction} className="space-y-10">
+        {/* INFORMAÇÕES */}
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm mb-1">Título *</label>
-            <input name="title" required className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
+            <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">Informações</p>
+            <h3 className="font-serif text-lg font-bold text-on-surface">Novo Artigo</h3>
           </div>
-          <div>
-            <label className="block text-sm mb-1">Slug (opcional)</label>
-            <input name="slug" className="w-full rounded-xl border border-outline px-3 py-2 text-sm" placeholder="gerado-automaticamente" />
+
+          <div className="grid gap-4">
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Título do post *</label>
+              <input name="title" placeholder="Como criar uma marca memorável" required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+            </div>
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Slug *</label>
+              <input name="slug" placeholder="como-criar-marca-memoravel" required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+            </div>
           </div>
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm mb-1">Categoria</label>
-            <select name="category_id" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
-              <option value="">Sem categoria</option>
-              {categoryOptions.map((item) => (
-                <option key={item.id} value={item.id}>{item.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Status</label>
-            <select name="status" defaultValue="draft" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
-              <option value="draft">Rascunho</option>
-              <option value="published">Publicado</option>
-              <option value="archived">Arquivado</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm mb-1">Resumo</label>
-          <textarea name="excerpt" rows={3} className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
-        </div>
-
-        <div>
-          <label className="block text-sm mb-1">Conteúdo em Markdown</label>
-          <textarea name="content_md" rows={10} className="w-full rounded-xl border border-outline px-3 py-2 text-sm font-mono" />
-        </div>
-
-        <div>
-          <label className="block text-sm mb-1">Upload da imagem de capa</label>
-          <input
-            type="file"
-            name="image_file"
-            accept="image/*"
-            className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5"
-          />
-          <p className="mt-1 text-xs text-on-surface/60">Se enviar arquivo, ele será usado como imagem principal do post.</p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm mb-1">SEO Title</label>
-            <input name="seo_title" className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">SEO Description</label>
-            <input name="seo_description" className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Autor *</label>
+              <select name="author_id" required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition">
+                <option value="">Selecione um autor</option>
+                {authorOptions.map((author) => (
+                  <option key={author.id} value={author.id}>{author.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Categoria *</label>
+              <select name="category_id" required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition">
+                <option value="">Selecione uma categoria</option>
+                {categoryOptions.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Data de publicação *</label>
+              <input type="date" required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+            </div>
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Tags</label>
+              <input placeholder="percepção, posicionamento, confiança" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 pt-2">
-          <button type="submit" className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-white hover:opacity-90">
-            Salvar post
-          </button>
-          <Link href="/admin/blog" className="rounded-xl border border-outline px-5 py-2.5 text-sm hover:bg-background">
-            Cancelar
-          </Link>
+        {/* CONTEÚDO */}
+        <div className="space-y-6 pt-2">
+          <div>
+            <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">Conteúdo</p>
+            <h3 className="font-serif text-lg font-bold text-on-surface">Corpo do Artigo</h3>
+          </div>
+
+          <div>
+            <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Resumo</label>
+            <textarea name="excerpt" placeholder="Uma síntese para SEO e chamadas." rows={2} className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition resize-none" />
+          </div>
+
+          <div>
+            <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Conteúdo (Markdown)</label>
+            <textarea name="content_md" placeholder="Escreva o artigo aqui..." rows={12} className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition resize-none font-mono" />
+          </div>
+        </div>
+
+        {/* MÍDIA */}
+        <div className="space-y-6 pt-2">
+          <div>
+            <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">Mídia</p>
+            <h3 className="font-serif text-lg font-bold text-on-surface">Imagem de Destaque</h3>
+          </div>
+
+          <label className="flex flex-col items-center justify-center w-full h-40 rounded-3xl border border-dashed border-[#d2e2ff] bg-[#faf8f5] hover:bg-[#f3f8ff] transition cursor-pointer relative overflow-hidden group">
+            <input type="file" name="image_file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#e8f1ff] flex items-center justify-center text-[#4F95FF]">
+                <ImageIcon size={18} />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-[#4F95FF]">Imagem de capa do post</p>
+                <p className="text-[11px] text-[#4F95FF]/70 mt-1">Arraste ou clique para enviar</p>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        {/* PUBLICAÇÃO */}
+        <div className="space-y-6 pt-2">
+          <div>
+            <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">Publicação</p>
+            <h3 className="font-serif text-lg font-bold text-on-surface">Opções de Publicação</h3>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <label className="flex flex-1 items-center justify-between md:justify-start gap-4 rounded-2xl bg-[#faf8f5] px-6 py-4 cursor-pointer">
+              <span className="text-sm text-on-surface font-medium">Publicar artigo imediatamente</span>
+              <div className="relative inline-block w-10 h-6">
+                <input type="checkbox" name="status" value="published" defaultChecked className="peer sr-only" />
+                <div className="w-10 h-6 bg-outline/30 rounded-full peer peer-checked:bg-primary transition-colors"></div>
+                <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-4 shadow-sm"></div>
+              </div>
+            </label>
+
+            <button type="submit" className="rounded-full bg-primary px-8 py-4 text-xs font-bold uppercase tracking-wider text-white hover:opacity-90 transition">
+              Publicar Artigo
+            </button>
+          </div>
         </div>
       </form>
+      <BlogSlugGenerator />
+
+      {/* LISTA DE ARTIGOS CADASTRADOS */}
+      <div className="mt-16 pt-10 border-t border-outline/10">
+        <h3 className="text-sm font-bold text-on-surface mb-6">Artigos Cadastrados ({posts.length})</h3>
+        
+        <div className="space-y-4">
+          {posts.map((post) => (
+            <div key={post.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-outline/5 last:border-0">
+              <div className="flex items-center gap-4">
+                {post.cover_image_url ? (
+                  <div className="w-16 h-12 rounded-lg bg-outline/10 overflow-hidden relative shrink-0">
+                    <img src={post.cover_image_url} alt={post.title} className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-16 h-12 rounded-lg bg-[#faf8f5] flex items-center justify-center shrink-0">
+                    <ImageIcon size={16} className="text-outline" />
+                  </div>
+                )}
+                
+                <div>
+                  <h4 className="text-sm font-medium text-on-surface">{post.title}</h4>
+                  <p className="text-[10px] text-on-surface/50 mt-1">Robson Svicero • {post.published_at ? new Date(post.published_at).toLocaleDateString("pt-BR") : "Rascunho"}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                {post.status === "published" && (
+                  <span className="px-3 py-1 bg-[#e8f8ec] text-[#2c9f45] rounded-full text-[10px] font-bold uppercase tracking-wider mr-2">
+                    Publicado
+                  </span>
+                )}
+                {post.status === "draft" && (
+                  <span className="px-3 py-1 bg-[#f8f0e8] text-[#9f6a2c] rounded-full text-[10px] font-bold uppercase tracking-wider mr-2">
+                    Rascunho
+                  </span>
+                )}
+                
+                <Link href={`/admin/blog/${post.id}/editar`} className="rounded-full border border-outline/30 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition">
+                  Editar
+                </Link>
+                
+                <form action={updateBlogPostStatusAction}>
+                  <input type="hidden" name="id" value={post.id} />
+                  <input type="hidden" name="next_status" value="archived" />
+                  <button type="submit" className="rounded-full bg-primary px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-white hover:opacity-90 transition">
+                    Excluir
+                  </button>
+                </form>
+              </div>
+            </div>
+          ))}
+          
+          {posts.length === 0 && (
+            <p className="text-sm text-on-surface/50 italic py-4">Nenhum artigo cadastrado.</p>
+          )}
+        </div>
+      </div>
     </section>
   );
 }

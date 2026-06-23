@@ -93,12 +93,13 @@ export async function createBlogPostAction(formData: FormData) {
   const contentMd = String(formData.get("content_md") ?? "").trim();
   const imageFile = formData.get("image_file");
   const categoryId = String(formData.get("category_id") ?? "").trim();
+  const authorId = String(formData.get("author_id") ?? "").trim();
   const seoTitle = String(formData.get("seo_title") ?? "").trim();
   const seoDescription = String(formData.get("seo_description") ?? "").trim();
   const status = String(formData.get("status") ?? "draft").trim();
 
-  if (!title) {
-    throw new Error("Título é obrigatório.");
+  if (!title || !authorId) {
+    throw new Error("Título e autor são obrigatórios.");
   }
 
   const slug = slugify(slugInput || title);
@@ -121,7 +122,7 @@ export async function createBlogPostAction(formData: FormData) {
     seo_description: seoDescription || null,
     created_by: user.id,
     updated_by: user.id,
-    author_id: user.id,
+    author_id: authorId,
   });
 
   if (error) {
@@ -169,12 +170,13 @@ export async function updateBlogPostAction(formData: FormData) {
   const imageFile = formData.get("image_file");
   const currentCoverImageUrl = String(formData.get("current_cover_image_url") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "").trim();
+  const authorId = String(formData.get("author_id") ?? "").trim();
   const seoTitle = String(formData.get("seo_title") ?? "").trim();
   const seoDescription = String(formData.get("seo_description") ?? "").trim();
   const status = String(formData.get("status") ?? "draft").trim();
 
-  if (!id || !title) {
-    throw new Error("ID e título são obrigatórios.");
+  if (!id || !title || !authorId) {
+    throw new Error("ID, título e autor são obrigatórios.");
   }
 
   const slug = slugify(slugInput || title);
@@ -198,6 +200,7 @@ export async function updateBlogPostAction(formData: FormData) {
       seo_title: seoTitle || null,
       seo_description: seoDescription || null,
       updated_by: user.id,
+      author_id: authorId,
     })
     .eq("id", id);
 

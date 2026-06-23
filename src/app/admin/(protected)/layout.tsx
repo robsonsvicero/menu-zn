@@ -67,6 +67,9 @@ export default async function AdminProtectedLayout({
             <Link href="/admin/blog" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
               Blog
             </Link>
+            <Link href="/admin/autores" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
+              Autores
+            </Link>
             <Link href="/admin/depoimentos" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
               Depoimentos
             </Link>
