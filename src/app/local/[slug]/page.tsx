@@ -59,7 +59,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
         </div>
 
         <div className="relative mx-auto flex min-h-160 max-w-300 flex-col justify-between px-6 py-20 md:px-10 lg:px-12">
-          <Link href={`/${categorySlug}`} className="inline-flex w-fit items-center gap-2 rounded-full text-white border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] backdrop-blur-sm transition hover:bg-white/20">
+          <Link href={`/${categorySlug}`} className="mt-12 inline-flex w-fit items-center gap-2 rounded-full text-white border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] backdrop-blur-sm transition hover:bg-white/20">
             <ArrowLeft size={14} />
             Voltar para a categoria
           </Link>

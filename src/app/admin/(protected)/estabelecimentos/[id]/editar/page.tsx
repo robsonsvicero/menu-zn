@@ -147,11 +147,6 @@ export default async function EditarEstabelecimentoPage({
         </div>
 
         <div>
-          <label className="block text-sm mb-1">URL da imagem de capa</label>
-          <input name="image_cover_url" defaultValue={establishment.image_cover_url ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
-        </div>
-
-        <div>
           <label className="block text-sm mb-1">Upload da imagem de capa</label>
           <input
             type="file"

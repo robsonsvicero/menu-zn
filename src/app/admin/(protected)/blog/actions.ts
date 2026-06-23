@@ -57,7 +57,6 @@ export async function createBlogPostAction(formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const contentMd = String(formData.get("content_md") ?? "").trim();
-  const coverImageUrl = String(formData.get("cover_image_url") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "").trim();
   const seoTitle = String(formData.get("seo_title") ?? "").trim();
   const seoDescription = String(formData.get("seo_description") ?? "").trim();
@@ -74,7 +73,6 @@ export async function createBlogPostAction(formData: FormData) {
     slug,
     excerpt: excerpt || null,
     content_md: contentMd || null,
-    cover_image_url: coverImageUrl || null,
     category_id: categoryId || null,
     status: status === "published" || status === "archived" ? status : "draft",
     published_at: status === "published" ? new Date().toISOString() : null,
@@ -127,7 +125,6 @@ export async function updateBlogPostAction(formData: FormData) {
   const slugInput = String(formData.get("slug") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const contentMd = String(formData.get("content_md") ?? "").trim();
-  const coverImageUrl = String(formData.get("cover_image_url") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "").trim();
   const seoTitle = String(formData.get("seo_title") ?? "").trim();
   const seoDescription = String(formData.get("seo_description") ?? "").trim();
@@ -146,7 +143,6 @@ export async function updateBlogPostAction(formData: FormData) {
       slug,
       excerpt: excerpt || null,
       content_md: contentMd || null,
-      cover_image_url: coverImageUrl || null,
       category_id: categoryId || null,
       status: status === "published" || status === "archived" ? status : "draft",
       published_at: status === "published" ? new Date().toISOString() : null,

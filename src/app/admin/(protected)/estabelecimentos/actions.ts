@@ -39,10 +39,9 @@ async function uploadCoverImage(file: File, slug: string) {
 
   if (uploadError) {
     if (uploadError.message.toLowerCase().includes("bucket not found")) {
-      console.warn(
-        `Bucket '${bucket}' não encontrado no Supabase Storage. Prosseguindo sem upload de imagem.`
+      throw new Error(
+        `Bucket '${bucket}' não encontrado no Supabase Storage. Crie o bucket e habilite acesso público para as imagens.`
       );
-      return null;
     }
     throw new Error(`Falha no upload da imagem: ${uploadError.message}`);
   }

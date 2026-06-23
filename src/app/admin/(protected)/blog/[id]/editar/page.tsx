@@ -95,11 +95,6 @@ export default async function EditarBlogPostPage({
           <textarea name="content_md" rows={10} defaultValue={blogPost.content_md ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm font-mono" />
         </div>
 
-        <div>
-          <label className="block text-sm mb-1">URL da imagem de capa</label>
-          <input name="cover_image_url" defaultValue={blogPost.cover_image_url ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm" />
-        </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="block text-sm mb-1">SEO Title</label>
