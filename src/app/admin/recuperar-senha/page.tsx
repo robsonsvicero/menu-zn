@@ -40,7 +40,7 @@ export default function RecuperarSenhaPage() {
       <div className="w-full max-w-md rounded-2xl border border-outline bg-white p-8 shadow-sm">
         <Link
           href="/admin/login"
-          className="inline-flex items-center gap-1.5 text-sm text-on-surface/60 hover:text-on-surface mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-on-surface/60 hover:text-on-surface mb-6 transition-colors"
         >
           <ArrowLeft size={14} />
           Voltar para o login
