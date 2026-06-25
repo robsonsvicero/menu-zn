@@ -111,10 +111,10 @@ export async function updateUserProfileAction(formData: FormData) {
 
   const userId = String(formData.get("user_id") ?? "").trim();
   const fullName = String(formData.get("full_name") ?? "").trim();
-  const avatarUrl = String(formData.get("avatar_url") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const roleCode = String(formData.get("role_code") ?? "").trim();
   const isActive = formData.get("is_active") === "on";
+  const avatarFile = formData.get("avatar_file") as File | null;
 
   if (!userId) {
     throw new Error("Usuário inválido.");
@@ -139,10 +139,44 @@ export async function updateUserProfileAction(formData: FormData) {
     }
   }
 
+  // Upload do avatar para o Supabase Storage se um arquivo foi enviado
+  let avatarUrl: string | null = null;
+
+  if (avatarFile && avatarFile.size > 0) {
+    const ext = avatarFile.name.split(".").pop() ?? "jpg";
+    const path = `${userId}/avatar.${ext}`;
+    const buffer = Buffer.from(await avatarFile.arrayBuffer());
+
+    const { error: uploadError } = await adminClient.storage
+      .from("avatars")
+      .upload(path, buffer, {
+        contentType: avatarFile.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      throw new Error(`Erro ao enviar avatar: ${uploadError.message}`);
+    }
+
+    const { data: publicUrlData } = adminClient.storage
+      .from("avatars")
+      .getPublicUrl(path);
+
+    avatarUrl = publicUrlData.publicUrl;
+  } else {
+    // Mantém o avatar já salvo
+    const { data: existing } = await adminClient
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", userId)
+      .maybeSingle();
+    avatarUrl = existing?.avatar_url ?? null;
+  }
+
   const { error: profileError } = await adminClient.from("profiles").upsert({
     id: userId,
     full_name: fullName || null,
-    avatar_url: avatarUrl || null,
+    avatar_url: avatarUrl,
     phone: phone || null,
     is_active: isActive,
   });
@@ -161,7 +195,10 @@ export async function updateUserProfileAction(formData: FormData) {
     throw new Error(roleError?.message ?? "Role não encontrada.");
   }
 
-  const { error: deleteError } = await adminClient.from("user_roles").delete().eq("user_id", userId);
+  const { error: deleteError } = await adminClient
+    .from("user_roles")
+    .delete()
+    .eq("user_id", userId);
 
   if (deleteError) {
     throw new Error(deleteError.message);
@@ -179,3 +216,4 @@ export async function updateUserProfileAction(formData: FormData) {
   revalidatePath("/admin/usuarios");
   revalidatePath(`/admin/usuarios/${userId}/editar`);
 }
+
