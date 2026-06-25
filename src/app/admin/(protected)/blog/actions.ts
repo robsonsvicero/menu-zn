@@ -115,18 +115,22 @@ export async function createBlogPostAction(formData: FormData) {
       .from("blog_categories")
       .select("id")
       .ilike("name", categoryName)
-      .single();
+      .maybeSingle();
 
     if (existingCategory) {
       categoryId = existingCategory.id;
     } else {
+      const catSlug = slugify(categoryName);
       const { data: newCategory, error: catError } = await supabase
         .from("blog_categories")
-        .insert({ name: categoryName })
+        .insert({ name: categoryName, slug: catSlug })
         .select("id")
         .single();
       
-      if (!catError && newCategory) {
+      if (catError) {
+        throw new Error("Erro ao criar categoria: " + catError.message);
+      }
+      if (newCategory) {
         categoryId = newCategory.id;
       }
     }
@@ -215,18 +219,22 @@ export async function updateBlogPostAction(formData: FormData) {
       .from("blog_categories")
       .select("id")
       .ilike("name", categoryName)
-      .single();
+      .maybeSingle();
 
     if (existingCategory) {
       categoryId = existingCategory.id;
     } else {
+      const catSlug = slugify(categoryName);
       const { data: newCategory, error: catError } = await supabase
         .from("blog_categories")
-        .insert({ name: categoryName })
+        .insert({ name: categoryName, slug: catSlug })
         .select("id")
         .single();
       
-      if (!catError && newCategory) {
+      if (catError) {
+        throw new Error("Erro ao criar categoria: " + catError.message);
+      }
+      if (newCategory) {
         categoryId = newCategory.id;
       }
     }
