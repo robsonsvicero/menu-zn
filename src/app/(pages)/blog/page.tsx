@@ -157,6 +157,9 @@ export default async function BlogPage({
               const isBigLeft = index % 6 === 0;
               const isBigRight = index % 6 === 3;
               const isBig = isBigLeft || isBigRight;
+              const categoryName = Array.isArray(post.blog_categories) 
+                ? post.blog_categories[0]?.name 
+                : (post.blog_categories as any)?.name;
 
               return (
                 <Link
@@ -178,7 +181,7 @@ export default async function BlogPage({
 
                   <div className={`flex flex-col justify-center p-8 lg:p-10 ${isBig ? "md:w-[45%]" : "flex-1"} ${isBigRight ? "md:order-1" : ""}`}>
                     <div className={`flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-[0.18em] ${isBigRight ? "text-[rgb(219_107_66)]" : "text-[rgb(148_53_21)]"}`}>
-                      <span>{post.blog_categories?.[0]?.name ?? "Dicas"}</span>
+                      <span>{categoryName ?? "Artigo"}</span>
                       <span className="text-on-surface/50 font-medium">{formatDate(post.published_at)}</span>
                     </div>
 

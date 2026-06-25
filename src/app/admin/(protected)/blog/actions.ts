@@ -93,7 +93,7 @@ export async function createBlogPostAction(formData: FormData) {
     const excerpt = String(formData.get("excerpt") ?? "").trim();
     const contentMd = String(formData.get("content_md") ?? "").trim();
     const imageFile = formData.get("image_file");
-    const categoryName = String(formData.get("category_name") ?? "").trim();
+    const categoryId = String(formData.get("category_id") ?? "").trim() || null;
     const authorId = String(formData.get("author_id") ?? "").trim();
     const seoTitle = String(formData.get("seo_title") ?? "").trim();
     const seoDescription = String(formData.get("seo_description") ?? "").trim();
@@ -108,33 +108,6 @@ export async function createBlogPostAction(formData: FormData) {
 
     if (imageFile instanceof File && imageFile.size > 0) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
-    }
-
-    let categoryId: string | null = null;
-    if (categoryName) {
-      const { data: existingCategory } = await supabase
-        .from("blog_categories")
-        .select("id")
-        .ilike("name", categoryName)
-        .maybeSingle();
-
-      if (existingCategory) {
-        categoryId = existingCategory.id;
-      } else {
-        const catSlug = slugify(categoryName);
-        const { data: newCategory, error: catError } = await supabase
-          .from("blog_categories")
-          .insert({ name: categoryName, slug: catSlug })
-          .select("id")
-          .single();
-        
-        if (catError) {
-          throw new Error("Erro ao criar categoria: " + catError.message);
-        }
-        if (newCategory) {
-          categoryId = newCategory.id;
-        }
-      }
     }
 
     const { error } = await supabase.from("blog_posts").insert({
@@ -205,7 +178,7 @@ export async function updateBlogPostAction(formData: FormData) {
     const contentMd = String(formData.get("content_md") ?? "").trim();
     const imageFile = formData.get("image_file");
     const currentCoverImageUrl = String(formData.get("current_cover_image_url") ?? "").trim();
-    const categoryName = String(formData.get("category_name") ?? "").trim();
+    const categoryId = String(formData.get("category_id") ?? "").trim() || null;
     const authorId = String(formData.get("author_id") ?? "").trim();
     const seoTitle = String(formData.get("seo_title") ?? "").trim();
     const seoDescription = String(formData.get("seo_description") ?? "").trim();
@@ -220,33 +193,6 @@ export async function updateBlogPostAction(formData: FormData) {
 
     if (imageFile instanceof File && imageFile.size > 0) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
-    }
-
-    let categoryId: string | null = null;
-    if (categoryName) {
-      const { data: existingCategory } = await supabase
-        .from("blog_categories")
-        .select("id")
-        .ilike("name", categoryName)
-        .maybeSingle();
-
-      if (existingCategory) {
-        categoryId = existingCategory.id;
-      } else {
-        const catSlug = slugify(categoryName);
-        const { data: newCategory, error: catError } = await supabase
-          .from("blog_categories")
-          .insert({ name: categoryName, slug: catSlug })
-          .select("id")
-          .single();
-        
-        if (catError) {
-          throw new Error("Erro ao criar categoria: " + catError.message);
-        }
-        if (newCategory) {
-          categoryId = newCategory.id;
-        }
-      }
     }
 
     const { error } = await supabase

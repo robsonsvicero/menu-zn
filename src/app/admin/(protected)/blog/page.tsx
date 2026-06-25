@@ -10,7 +10,7 @@ type BlogPostRow = {
   slug: string;
   status: "draft" | "published" | "archived";
   published_at: string | null;
-  blog_categories: { name: string }[] | null;
+  blog_categories: any;
 };
 
 export default async function AdminBlogPage() {
@@ -59,7 +59,11 @@ export default async function AdminBlogPage() {
             {posts.map((post) => (
               <tr key={post.id} className="border-t border-outline/60">
                 <td className="px-4 py-3">{post.title}</td>
-                <td className="px-4 py-3">{post.blog_categories?.[0]?.name ?? "-"}</td>
+                <td className="px-4 py-3">
+                  {Array.isArray(post.blog_categories)
+                    ? post.blog_categories[0]?.name ?? "-"
+                    : post.blog_categories?.name ?? "-"}
+                </td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-background px-2.5 py-1 text-xs uppercase tracking-wide">
                     {post.status}

@@ -83,12 +83,12 @@ export default async function NovoBlogPostPage({
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Categoria *</label>
-              <input name="category_name" placeholder="Ex: Dicas, Notícias..." required list="category-options" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
-              <datalist id="category-options">
+              <select name="category_id" required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition">
+                <option value="">Selecione uma categoria</option>
                 {categoryOptions.map((item) => (
-                  <option key={item.id} value={item.name} />
+                  <option key={item.id} value={item.id}>{item.name}</option>
                 ))}
-              </datalist>
+              </select>
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Data de publicação *</label>

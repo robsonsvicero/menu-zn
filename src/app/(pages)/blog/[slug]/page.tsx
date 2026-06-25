@@ -119,6 +119,10 @@ export default async function BlogPostDetail({ params }: PageProps) {
     .filter((item) => item.slug !== post.slug)
     .slice(0, 3);
 
+  const categoryName = Array.isArray(post.blog_categories)
+    ? post.blog_categories[0]?.name
+    : (post.blog_categories as any)?.name;
+
   return (
     <main className="min-h-screen bg-white text-on-surface">
       <section className="relative overflow-hidden">
@@ -135,45 +139,41 @@ export default async function BlogPostDetail({ params }: PageProps) {
 
         <div className="relative mx-auto flex min-h-155 max-w-300 items-end px-6 py-16 md:px-10 lg:px-12">
           <div className="max-w-4xl pb-4 text-white">
-            <Link href="/blog" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] backdrop-blur-sm transition hover:bg-white/20">
-              <ArrowLeft size={14} />
-              Voltar para o blog
-            </Link>
-
-            {post.blog_categories?.[0]?.name ? (
-              <span className="mt-6 inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white">
-                {post.blog_categories[0].name}
+            {categoryName ? (
+              <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-white shadow-sm mb-4">
+                {categoryName}
               </span>
             ) : null}
 
-            <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl">
+            <h1 className="font-serif text-4xl leading-tight md:text-5xl lg:text-6xl mb-6">
               {post.title}
             </h1>
-            <p className="mt-6 max-w-3xl text-sm leading-7 text-white/85 md:text-base">
-              {post.excerpt ?? "Matéria publicada direto do painel administrativo do Menu ZN."}
-            </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-white/85">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                <CalendarDays size={16} />
-                {formatDate(post.published_at)}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                <Clock size={16} />
-                {estimateReadTime(post.content_md)}
-              </span>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-white/90">
               {post.authors ? (
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                  {post.authors.avatar_url && (
-                    <img src={post.authors.avatar_url} alt={post.authors.name} className="w-5 h-5 rounded-full object-cover" />
+                <div className="flex items-center gap-2">
+                  {post.authors.avatar_url ? (
+                    <img src={post.authors.avatar_url} alt={post.authors.name} className="w-6 h-6 rounded-full object-cover border border-white/20" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">
+                      {post.authors.name.charAt(0).toUpperCase()}
+                    </div>
                   )}
-                  Por {post.authors.name}
-                </span>
+                  <span>Por {post.authors.name}</span>
+                </div>
               ) : (
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                  Por Equipe Menu ZN
-                </span>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">
+                    M
+                  </div>
+                  <span>Por Equipe Menu ZN</span>
+                </div>
               )}
+              
+              <span className="opacity-50">•</span>
+              <span>{formatDate(post.published_at)}</span>
+              <span className="opacity-50">•</span>
+              <span>{estimateReadTime(post.content_md)}</span>
             </div>
           </div>
         </div>
@@ -239,29 +239,35 @@ export default async function BlogPostDetail({ params }: PageProps) {
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-              {relatedPosts.map((item) => (
-                <Link key={item.id} href={`/blog/${item.slug}`} className="group overflow-hidden rounded-[26px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                  <div className="relative aspect-4/3 overflow-hidden">
-                    <Image
-                      src={item.cover_image_url ?? "/images/hero-blog-destaque.png"}
-                      alt={item.title}
-                      fill
-                      className="object-cover transition duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="space-y-3 p-6">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
-                      {item.blog_categories?.[0]?.name ?? "Blog"}
-                    </p>
-                    <h3 className="font-serif text-xl leading-snug text-on-surface transition group-hover:text-[rgb(148_53_21)]">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm leading-7 text-on-surface/70 line-clamp-3">
-                      {item.excerpt ?? "Conteúdo editorial do Menu ZN."}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              {relatedPosts.map((item) => {
+                const itemCategory = Array.isArray(item.blog_categories)
+                  ? item.blog_categories[0]?.name
+                  : (item.blog_categories as any)?.name;
+
+                return (
+                  <Link key={item.id} href={`/blog/${item.slug}`} className="group overflow-hidden rounded-[26px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                    <div className="relative aspect-4/3 overflow-hidden">
+                      <Image
+                        src={item.cover_image_url ?? "/images/hero-blog-destaque.png"}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="space-y-3 p-6">
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
+                        {itemCategory ?? "Artigo"}
+                      </p>
+                      <h3 className="font-serif text-xl leading-snug text-on-surface transition group-hover:text-[rgb(148_53_21)]">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm leading-7 text-on-surface/70 line-clamp-3">
+                        {item.excerpt ?? "Conteúdo editorial do Menu ZN."}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>

@@ -103,12 +103,12 @@ export default async function EditarBlogPostPage({
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Categoria</label>
-              <input name="category_name" defaultValue={Array.isArray(blogPost.blog_categories) ? blogPost.blog_categories[0]?.name ?? "" : blogPost.blog_categories?.name ?? ""} placeholder="Ex: Dicas, Notícias..." list="category-options" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
-              <datalist id="category-options">
+              <select name="category_id" defaultValue={blogPost.category_id ?? ""} required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition">
+                <option value="">Selecione uma categoria</option>
                 {categoryOptions.map((item) => (
-                  <option key={item.id} value={item.name} />
+                  <option key={item.id} value={item.id}>{item.name}</option>
                 ))}
-              </datalist>
+              </select>
             </div>
           </div>
         </div>
