@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CalendarDays, Clock, Share2, Bookmark, Heart, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import { fetchPublishedBlogPostBySlug, fetchPublishedBlogPosts } from "@/lib/blog-public";
 
@@ -180,7 +180,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
       </section>
 
       <section className="mx-auto max-w-245 px-6 py-14 md:px-10 lg:px-12 lg:py-20">
-        <div className="grid gap-12 md:grid-cols-[72px_1fr] lg:grid-cols-[88px_1fr]">
+        <div className="mx-auto max-w-4xl">
           {/* <aside className="hidden md:flex flex-col gap-3 sticky top-28 h-fit pt-2">
             <button className="w-11 h-11 rounded-full border border-outline flex items-center justify-center text-on-surface transition hover:border-[rgb(148_53_21)] hover:text-[rgb(148_53_21)]" title="Compartilhar">
               <Share2 size={16} strokeWidth={1.5} />
