@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createBlogPostAction, updateBlogPostStatusAction } from "../actions";
 import { BlogSlugGenerator } from "../blog-slug-generator";
+import { ImagePreviewInput } from "../image-preview-input";
 import { Image as ImageIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -114,18 +115,7 @@ export default async function NovoBlogPostPage() {
             <h3 className="font-serif text-lg font-bold text-on-surface">Imagem de Destaque</h3>
           </div>
 
-          <label className="flex flex-col items-center justify-center w-full h-40 rounded-3xl border border-dashed border-[#d2e2ff] bg-[#faf8f5] hover:bg-[#f3f8ff] transition cursor-pointer relative overflow-hidden group">
-            <input type="file" name="image_file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#e8f1ff] flex items-center justify-center text-[#4F95FF]">
-                <ImageIcon size={18} />
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-bold text-[#4F95FF]">Imagem de capa do post</p>
-                <p className="text-[11px] text-[#4F95FF]/70 mt-1">Arraste ou clique para enviar</p>
-              </div>
-            </div>
-          </label>
+          <ImagePreviewInput name="image_file" />
         </div>
 
         {/* PUBLICAÇÃO */}

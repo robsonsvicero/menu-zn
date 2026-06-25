@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateBlogPostAction } from "../../actions";
 import { BlogSlugGenerator } from "../../blog-slug-generator";
+import { ImagePreviewInput } from "../../image-preview-input";
 import { Image as ImageIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -128,21 +129,7 @@ export default async function EditarBlogPostPage({
             <h3 className="font-serif text-lg font-bold text-on-surface">Imagem de Destaque</h3>
           </div>
 
-          <label className="flex flex-col items-center justify-center w-full h-40 rounded-3xl border border-dashed border-[#d2e2ff] bg-[#faf8f5] hover:bg-[#f3f8ff] transition cursor-pointer relative overflow-hidden group">
-            <input type="file" name="image_file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
-            <div className="flex flex-col items-center gap-3 z-10 relative">
-              <div className="w-10 h-10 rounded-full bg-[#e8f1ff] flex items-center justify-center text-[#4F95FF] shadow-sm">
-                <ImageIcon size={18} />
-              </div>
-              <div className="text-center bg-white/80 px-4 py-1 rounded-full backdrop-blur-sm">
-                <p className="text-sm font-bold text-[#4F95FF]">Nova imagem de capa</p>
-                <p className="text-[11px] text-[#4F95FF]/80 mt-0.5">Substituir a imagem atual</p>
-              </div>
-            </div>
-            {blogPost.cover_image_url && (
-              <img src={blogPost.cover_image_url} alt="Capa" className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-20 transition" />
-            )}
-          </label>
+          <ImagePreviewInput name="image_file" defaultImageUrl={blogPost.cover_image_url ?? ""} />
         </div>
 
         {/* SEO */}
