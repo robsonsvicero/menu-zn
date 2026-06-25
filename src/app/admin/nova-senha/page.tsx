@@ -12,22 +12,34 @@ export default function NovaSenhaPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
+  // "waiting" → aguardando evento | "ready" → sessão recovery ativa | "invalid" → link inválido/expirado
+  const [status, setStatus] = useState<"waiting" | "ready" | "invalid">("waiting");
 
-  // Supabase injeta o token de recuperação via hash na URL.
-  // O SDK detecta isso automaticamente ao instanciar o client.
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setReady(true);
-      } else {
-        // Sem sessão válida, link pode ter expirado
-        setError(
-          "Link inválido ou expirado. Solicite um novo link de recuperação."
-        );
+
+    // O Supabase troca o token de recuperação da URL (hash ou PKCE) por uma
+    // sessão e dispara o evento PASSWORD_RECOVERY. Esse é o único sinal
+    // confiável de que a sessão tem permissão para chamar updateUser.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event) => {
+        if (event === "PASSWORD_RECOVERY") {
+          setStatus("ready");
+        }
       }
-    });
+    );
+
+    // Fallback: se o usuário chegar aqui sem um token válido (link expirado
+    // ou navegação direta), marcamos como inválido após um breve delay para
+    // deixar o SDK processar o hash antes de decidir.
+    const timer = setTimeout(() => {
+      setStatus((prev) => (prev === "waiting" ? "invalid" : prev));
+    }, 3000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -54,6 +66,8 @@ export default function NovaSenhaPage() {
       return;
     }
 
+    // Encerra a sessão de recovery para forçar login limpo
+    await supabase.auth.signOut();
     router.push("/admin/login?senha_atualizada=1");
   }
 
@@ -65,11 +79,15 @@ export default function NovaSenhaPage() {
           Escolha uma nova senha para sua conta.
         </p>
 
-        {!ready && !error ? (
+        {status === "waiting" && (
           <p className="text-sm text-on-surface/60">Verificando link...</p>
-        ) : error && !ready ? (
+        )}
+
+        {status === "invalid" && (
           <div className="space-y-4">
-            <p className="text-sm text-error">{error}</p>
+            <p className="text-sm text-error">
+              Link inválido ou expirado. Solicite um novo link de recuperação.
+            </p>
             <a
               href="/admin/recuperar-senha"
               className="inline-block text-sm text-primary hover:underline"
@@ -77,7 +95,9 @@ export default function NovaSenhaPage() {
               Solicitar novo link
             </a>
           </div>
-        ) : (
+        )}
+
+        {status === "ready" && (
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label className="block text-sm mb-1">Nova senha</label>
