@@ -4,6 +4,7 @@ import Image from "next/image";
 import StatsBar from "@/components/sections/StatsBar";  
 import Categories from "@/components/sections/Categories";
 import EstablishmentShowcase from "@/components/sections/EstablishmentShowcase";
+import AboutZonaNorte from "@/components/sections/AboutZonaNorte";
 import Newsletter from "@/components/sections/Newsletter";
 
 export const metadata: Metadata = {
@@ -85,6 +86,7 @@ export default async function ZonaNortePage({ searchParams }: Props) {
       <StatsBar />
       <Categories />
       <EstablishmentShowcase searchParams={params} />
+      <AboutZonaNorte />
       <Newsletter />
     </main>
   );
