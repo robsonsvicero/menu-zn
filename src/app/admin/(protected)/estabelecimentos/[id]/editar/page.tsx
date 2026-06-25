@@ -26,6 +26,7 @@ type Establishment = {
   price_range: string | null;
   has_ifood: boolean;
   is_featured: boolean;
+  is_category_featured: boolean;
   is_indicated: boolean;
   status: "draft" | "published" | "archived";
   rating: number | null;
@@ -43,7 +44,7 @@ export default async function EditarEstabelecimentoPage({
     supabase
       .from("establishments")
       .select(
-        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, is_featured, is_indicated, status, rating"
+        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, is_featured, is_category_featured, is_indicated, status, rating"
       )
       .eq("id", id)
       .single(),
@@ -198,7 +199,12 @@ export default async function EditarEstabelecimentoPage({
 
           <label className="inline-flex items-center gap-2 text-sm">
             <input type="checkbox" name="is_featured" defaultChecked={establishment.is_featured} className="rounded border-outline" />
-            Destaque na home
+            Destaque Principal
+          </label>
+
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input type="checkbox" name="is_category_featured" defaultChecked={establishment.is_category_featured} className="rounded border-outline" />
+            Destaque Categoria
           </label>
 
           <label className="inline-flex items-center gap-2 text-sm">

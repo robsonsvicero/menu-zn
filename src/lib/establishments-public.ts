@@ -196,3 +196,30 @@ export async function fetchPublishedEstablishmentBySlug(slug: string) {
 
   return (data ?? null) as EstablishmentDetailItem | null;
 }
+
+export async function fetchCategoryFeaturedEstablishments(categorySlug: string) {
+  const supabase = await createClient();
+  const categoryId = await resolveCategoryId(categorySlug);
+
+  if (!categoryId) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("establishments")
+    .select(
+      "id, name, slug, short_description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, is_indicated, price_range, rating, categories(name, slug), neighborhoods(name, slug)"
+    )
+    .eq("status", "published")
+    .eq("is_category_featured", true)
+    .eq("category_id", categoryId)
+    .order("rating", { ascending: false, nullsFirst: false })
+    .order("name")
+    .limit(4);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as EstablishmentListItem[];
+}

@@ -11,6 +11,7 @@ type EstablishmentRow = {
   slug: string;
   status: "draft" | "published" | "archived";
   is_featured: boolean;
+  is_category_featured: boolean;
   is_indicated: boolean;
   rating: number | null;
   categories: { name: string }[] | { name: string } | null;
@@ -59,7 +60,7 @@ export default async function AdminEstabelecimentosPage({
 
   let query = supabase
     .from("establishments")
-    .select("id, name, slug, status, is_featured, is_indicated, rating, category_id, categories(name), neighborhoods(name)")
+    .select("id, name, slug, status, is_featured, is_category_featured, is_indicated, rating, category_id, categories(name), neighborhoods(name)")
     .limit(100);
 
   // Apply sorting
@@ -203,7 +204,8 @@ export default async function AdminEstabelecimentosPage({
             <div className="grid grid-cols-2 gap-2 text-xs text-on-surface/65 mb-4">
               <div><span className="font-medium text-on-surface/40 block">Categoria</span>{getRelationName(item.categories)}</div>
               <div><span className="font-medium text-on-surface/40 block">Bairro</span>{getRelationName(item.neighborhoods)}</div>
-              <div><span className="font-medium text-on-surface/40 block">Destaque</span>{item.is_featured ? "✓ Sim" : "Não"}</div>
+              <div><span className="font-medium text-on-surface/40 block">Dest. Princ.</span>{item.is_featured ? "✓ Sim" : "Não"}</div>
+              <div><span className="font-medium text-on-surface/40 block">Dest. Categ.</span>{item.is_category_featured ? "✓ Sim" : "Não"}</div>
               <div><span className="font-medium text-on-surface/40 block">Avaliação</span>{item.rating !== null ? item.rating.toFixed(1) : "—"}</div>
             </div>
 
@@ -273,8 +275,16 @@ export default async function AdminEstabelecimentosPage({
                 extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
               />
               <SortableHeader
-                label="Destaque"
+                label="Dest. Principal"
                 column="is_featured"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
+              <SortableHeader
+                label="Dest. Categoria"
+                column="is_category_featured"
                 currentSort={currentSort}
                 currentDir={currentDir}
                 baseUrl="/admin/estabelecimentos"
@@ -319,6 +329,7 @@ export default async function AdminEstabelecimentosPage({
                   </span>
                 </td>
                 <td className="px-4 py-3">{item.is_featured ? "Sim" : "Não"}</td>
+                <td className="px-4 py-3">{item.is_category_featured ? "Sim" : "Não"}</td>
                 <td className="px-4 py-3">{item.is_indicated ? "Sim" : "Não"}</td>
                 <td className="px-4 py-3 text-on-surface/70">{item.slug}</td>
                 <td className="px-4 py-3">{item.rating !== null ? item.rating.toFixed(1) : "-"}</td>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Phone, Search, Star } from "lucide-react";
-import { fetchPublicNeighborhoods, fetchPublishedEstablishments } from "@/lib/establishments-public";
+import { fetchCategoryFeaturedEstablishments, fetchPublicNeighborhoods, fetchPublishedEstablishments } from "@/lib/establishments-public";
 
 const sortLabels = {
   featured: "Destaques",
@@ -76,7 +76,7 @@ export default async function EstablishmentDirectory({
   const sortFilter = (searchParams?.sort ?? "featured") as keyof typeof sortLabels;
   const ifoodOnly = searchParams?.ifood === "1" || searchParams?.ifood === "true";
 
-  const [items, neighborhoods] = await Promise.all([
+  const [items, neighborhoods, featuredItems] = await Promise.all([
     fetchPublishedEstablishments({
       categorySlug,
       search: searchTerm,
@@ -86,6 +86,7 @@ export default async function EstablishmentDirectory({
       limit: 24,
     }),
     fetchPublicNeighborhoods(),
+    fetchCategoryFeaturedEstablishments(categorySlug),
   ]);
 
   const categoryName = getRelation(items[0]?.categories)?.name ?? heroTitle;
@@ -160,6 +161,65 @@ export default async function EstablishmentDirectory({
           </form>
         </div>
       </section>
+
+      {/* ── Category Featured Section ── */}
+      {featuredItems.length > 0 && (
+        <section className="bg-[rgb(148_53_21)]/5 border-y border-[rgb(148_53_21)]/10">
+          <div className="mx-auto max-w-300 px-6 py-14 md:px-10 lg:px-12 lg:py-18">
+            <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <span className="inline-block rounded-full border border-[rgb(148_53_21)]/30 bg-[rgb(148_53_21)]/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[rgb(148_53_21)]">Curadoria</span>
+                <h2 className="mt-4 font-serif text-2xl md:text-3xl text-on-surface">Destaque da Categoria</h2>
+                <p className="mt-1.5 text-sm text-on-surface/60">Selecionados pelo guia editorial Menu ZN.</p>
+              </div>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+              {featuredItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/local/${item.slug}`}
+                  className="group relative overflow-hidden rounded-[28px] shadow-md transition hover:-translate-y-1 hover:shadow-xl"
+                >
+                  {/* Image */}
+                  <div className="relative aspect-3/4 overflow-hidden">
+                    <Image
+                      src={item.image_cover_url ?? heroImage}
+                      alt={item.name}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+                  </div>
+
+                  {/* Overlay content */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
+                    <span className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white/70">
+                      {getRelation(item.categories)?.name ?? categoryName}
+                    </span>
+                    <h3 className="font-serif text-xl leading-tight transition group-hover:text-[rgb(255_180_120)]">
+                      {item.name}
+                    </h3>
+                    {item.rating !== null && (
+                      <div className="mt-2 flex items-center gap-1.5">
+                        <Star size={12} className="fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-semibold">{item.rating.toFixed(1)}</span>
+                      </div>
+                    )}
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-white/70">
+                      <MapPin size={12} className="shrink-0" />
+                      <span>{getRelation(item.neighborhoods)?.name ?? ""}</span>
+                    </div>
+                    <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.15em] text-white/80 group-hover:text-white transition">
+                      Ver detalhes <ArrowRight size={12} />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-300 px-6 py-14 md:px-10 lg:px-12 lg:py-18">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">

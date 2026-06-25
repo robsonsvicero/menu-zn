@@ -153,10 +153,15 @@ export default async function NovoEstabelecimentoPage() {
             Possui iFood
           </label>
 
-          <label className="inline-flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
             <input type="checkbox" name="is_featured" className="rounded border-outline" />
-            Destaque na home
-          </label>
+            <label className="text-sm font-medium">Destaque Principal</label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input type="checkbox" name="is_category_featured" className="rounded border-outline" />
+            <label className="text-sm font-medium">Destaque Categoria</label>
+          </div>
 
           <label className="inline-flex items-center gap-2 text-sm">
             <input type="checkbox" name="is_indicated" className="rounded border-outline" />

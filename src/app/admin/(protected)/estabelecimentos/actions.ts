@@ -126,6 +126,7 @@ export async function createEstablishmentAction(formData: FormData) {
   const imageFile = formData.get("image_file");
   const hasIfood = formData.get("has_ifood") === "on";
   const isFeatured = formData.get("is_featured") === "on";
+  const isCategoryFeatured = formData.get("is_category_featured") === "on";
   const isIndicated = formData.get("is_indicated") === "on";
   const status = String(formData.get("status") ?? "draft").trim();
 
@@ -162,6 +163,7 @@ export async function createEstablishmentAction(formData: FormData) {
     rating,
     has_ifood: hasIfood,
     is_featured: isFeatured,
+    is_category_featured: isCategoryFeatured,
     is_indicated: isIndicated,
     status: status === "published" || status === "archived" ? status : "draft",
     published_at: status === "published" ? new Date().toISOString() : null,
@@ -227,6 +229,7 @@ export async function updateEstablishmentAction(formData: FormData) {
   const currentImageCoverUrl = String(formData.get("current_image_cover_url") ?? "").trim();
   const hasIfood = formData.get("has_ifood") === "on";
   const isFeatured = formData.get("is_featured") === "on";
+  const isCategoryFeatured = formData.get("is_category_featured") === "on";
   const isIndicated = formData.get("is_indicated") === "on";
   const status = String(formData.get("status") ?? "draft").trim();
 
@@ -265,6 +268,7 @@ export async function updateEstablishmentAction(formData: FormData) {
       rating,
       has_ifood: hasIfood,
       is_featured: isFeatured,
+      is_category_featured: isCategoryFeatured,
       is_indicated: isIndicated,
       status: status === "published" || status === "archived" ? status : "draft",
       published_at: status === "published" ? new Date().toISOString() : null,
