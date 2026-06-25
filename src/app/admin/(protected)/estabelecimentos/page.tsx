@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { updateEstablishmentStatusAction } from "./actions";
+import { SortableHeader } from "@/components/admin/SortableHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,8 @@ type SearchParams = {
   category?: string;
   indicated?: string;
   rating?: string;
+  sort?: string;
+  dir?: string;
 };
 
 type CategoryFilterRow = {
@@ -41,6 +44,8 @@ export default async function AdminEstabelecimentosPage({
   const statusFilter = (params.status ?? "").trim();
   const categoryFilter = (params.category ?? "").trim();
   const indicatedFilter = (params.indicated ?? "").trim();
+  const currentSort = params.sort ?? "created_at";
+  const currentDir = params.dir ?? "desc";
 
   const getRelationName = (
     relation: { name: string }[] | { name: string } | null | undefined
@@ -55,8 +60,16 @@ export default async function AdminEstabelecimentosPage({
   let query = supabase
     .from("establishments")
     .select("id, name, slug, status, is_featured, is_indicated, rating, category_id, categories(name), neighborhoods(name)")
-    .order("created_at", { ascending: false })
     .limit(100);
+
+  // Apply sorting
+  if (currentSort === "category") {
+     // Sorting by relation might be tricky or unsupported out of the box depending on Supabase version,
+     // we'll fallback to name or let the API handle it if possible. For foreign tables, we might just not sort.
+     // To keep it simple, we sort on root table columns only.
+  } else {
+     query = query.order(currentSort as any, { ascending: currentDir === "asc", nullsFirst: false });
+  }
 
   if (statusFilter && ["draft", "published", "archived"].includes(statusFilter)) {
     query = query.eq("status", statusFilter);
@@ -241,16 +254,57 @@ export default async function AdminEstabelecimentosPage({
         <table className="min-w-full text-sm">
           <thead className="bg-background text-on-surface/70">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">Nome</th>
+              <SortableHeader
+                label="Nome"
+                column="name"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
               <th className="px-4 py-3 text-left font-medium">Categoria</th>
               <th className="px-4 py-3 text-left font-medium">Bairro</th>
-              <th className="px-4 py-3 text-left font-medium">Status</th>
-              <th className="px-4 py-3 text-left font-medium">Destaque</th>
-              <th className="px-4 py-3 text-left font-medium">Indicado</th>
-              <th className="px-4 py-3 text-left font-medium">Slug</th>
-              <th className="px-4 py-3 text-left font-medium">Avaliação</th>
+              <SortableHeader
+                label="Status"
+                column="status"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
+              <SortableHeader
+                label="Destaque"
+                column="is_featured"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
+              <SortableHeader
+                label="Indicado"
+                column="is_indicated"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
+              <SortableHeader
+                label="Slug"
+                column="slug"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
+              <SortableHeader
+                label="Avaliação"
+                column="rating"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
               <th className="px-4 py-3 text-left font-medium">Ações</th>
-              
             </tr>
           </thead>
           <tbody>

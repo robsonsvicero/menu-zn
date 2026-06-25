@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { updateTestimonialStatusAction } from "./actions";
+import { SortableHeader } from "@/components/admin/SortableHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -15,14 +16,30 @@ type TestimonialRow = {
   is_featured: boolean;
 };
 
-export default async function AdminDepoimentosPage() {
+type SearchParams = {
+  sort?: string;
+  dir?: string;
+};
+
+export default async function AdminDepoimentosPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const params = await searchParams;
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const currentSort = params.sort ?? "created_at";
+  const currentDir = params.dir ?? "desc";
+
+  let query = supabase
     .from("testimonials")
     .select("id, author_name, author_role, content, rating, source, status, is_featured")
-    .order("created_at", { ascending: false })
     .limit(100);
+
+  query = query.order(currentSort as any, { ascending: currentDir === "asc", nullsFirst: false });
+
+  const { data, error } = await query;
 
   const testimonials = (data ?? []) as TestimonialRow[];
 
@@ -49,11 +66,41 @@ export default async function AdminDepoimentosPage() {
         <table className="min-w-full text-sm">
           <thead className="bg-background text-on-surface/70">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">Autor</th>
-              <th className="px-4 py-3 text-left font-medium">Nota</th>
-              <th className="px-4 py-3 text-left font-medium">Status</th>
-              <th className="px-4 py-3 text-left font-medium">Destaque</th>
-              <th className="px-4 py-3 text-left font-medium">Fonte</th>
+              <SortableHeader
+                label="Autor"
+                column="author_name"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/depoimentos"
+              />
+              <SortableHeader
+                label="Nota"
+                column="rating"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/depoimentos"
+              />
+              <SortableHeader
+                label="Status"
+                column="status"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/depoimentos"
+              />
+              <SortableHeader
+                label="Destaque"
+                column="is_featured"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/depoimentos"
+              />
+              <SortableHeader
+                label="Fonte"
+                column="source"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/depoimentos"
+              />
               <th className="px-4 py-3 text-left font-medium">Ações</th>
             </tr>
           </thead>

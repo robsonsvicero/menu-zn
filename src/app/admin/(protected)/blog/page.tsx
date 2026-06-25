@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { updateBlogPostStatusAction } from "./actions";
+import { SortableHeader } from "@/components/admin/SortableHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -13,14 +14,34 @@ type BlogPostRow = {
   blog_categories: any;
 };
 
-export default async function AdminBlogPage() {
+type SearchParams = {
+  sort?: string;
+  dir?: string;
+};
+
+export default async function AdminBlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const params = await searchParams;
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const currentSort = params.sort ?? "created_at";
+  const currentDir = params.dir ?? "desc";
+
+  let query = supabase
     .from("blog_posts")
     .select("id, title, slug, status, published_at, blog_categories(name)")
-    .order("created_at", { ascending: false })
     .limit(100);
+
+  if (currentSort === "blog_categories") {
+     // fallback
+  } else {
+     query = query.order(currentSort as any, { ascending: currentDir === "asc", nullsFirst: false });
+  }
+
+  const { data, error } = await query;
 
   const posts = (data ?? []) as BlogPostRow[];
 
@@ -47,11 +68,35 @@ export default async function AdminBlogPage() {
         <table className="min-w-full text-sm">
           <thead className="bg-background text-on-surface/70">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">Título</th>
+              <SortableHeader
+                label="Título"
+                column="title"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/blog"
+              />
               <th className="px-4 py-3 text-left font-medium">Categoria</th>
-              <th className="px-4 py-3 text-left font-medium">Status</th>
-              <th className="px-4 py-3 text-left font-medium">Publicação</th>
-              <th className="px-4 py-3 text-left font-medium">Slug</th>
+              <SortableHeader
+                label="Status"
+                column="status"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/blog"
+              />
+              <SortableHeader
+                label="Publicação"
+                column="published_at"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/blog"
+              />
+              <SortableHeader
+                label="Slug"
+                column="slug"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/blog"
+              />
               <th className="px-4 py-3 text-left font-medium">Ações</th>
             </tr>
           </thead>
