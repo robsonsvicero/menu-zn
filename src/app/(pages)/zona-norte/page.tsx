@@ -84,8 +84,8 @@ export default async function ZonaNortePage({ searchParams }: Props) {
         </div>
       </section>
       <StatsBar />
-      <AboutZonaNorte />
       <Categories />
+      <AboutZonaNorte />
       <EstablishmentShowcase searchParams={params} />
       <Newsletter />
     </main>

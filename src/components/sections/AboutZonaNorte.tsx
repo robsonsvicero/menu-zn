@@ -3,11 +3,22 @@ import Image from "next/image";
 export default function AboutZonaNorte() {
   return (
     <section className="bg-white py-16 md:py-24">
-      <div className="container mx-auto px-4 md:px-8 max-w-5xl">
-        <div className="grid md:grid-cols-[1fr_minmax(300px,400px)] gap-12 items-start">
+      <div className="container mx-auto px-4 md:px-8 max-w-4xl">
+        <div className="flex flex-col gap-10">
+          {/* Decorative Image */}
+          <div className="relative aspect-[21/9] w-full rounded-[32px] overflow-hidden shadow-xl">
+            <Image
+              src="/images/hero-zonanorte.png"
+              alt="Alta Gastronomia na Zona Norte de São Paulo"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-[rgb(148_53_21)]/10 mix-blend-multiply" />
+          </div>
+
           {/* Text Content */}
           <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-serif text-[rgb(148_53_21)] leading-tight">
+            <h2 className="text-3xl md:text-4xl font-serif text-[rgb(148_53_21)] leading-tight text-center md:text-left">
               ALTA GASTRONOMIA ZONA NORTE - SP
             </h2>
             
@@ -36,17 +47,6 @@ export default function AboutZonaNorte() {
                 O Menu ZN acompanha a transformação da Zona Norte em um dos destinos gastronômicos mais interessantes de São Paulo, conectando pessoas a experiências que vão muito além da refeição. Comer bem aqui é também uma forma de explorar a cidade com mais profundidade.
               </p>
             </div>
-          </div>
-
-          {/* Decorative Image */}
-          <div className="relative aspect-[4/5] w-full rounded-[32px] overflow-hidden shadow-xl hidden md:block">
-            <Image
-              src="/images/hero-zonanorte.png"
-              alt="Alta Gastronomia na Zona Norte de São Paulo"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-[rgb(148_53_21)]/10 mix-blend-multiply" />
           </div>
         </div>
       </div>
