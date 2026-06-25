@@ -1,12 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CheckCircle } from "lucide-react";
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const senhaAtualizada = searchParams.get("senha_atualizada") === "1";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,6 +48,15 @@ export default function AdminLoginPage() {
           Entre com seu usuario para gerenciar o MENU ZN.
         </p>
 
+        {senhaAtualizada && (
+          <div className="flex items-center gap-2 rounded-xl border border-outline bg-surface px-4 py-3 mb-4">
+            <CheckCircle size={16} className="text-primary shrink-0" />
+            <p className="text-sm text-on-surface">
+              Senha atualizada com sucesso! Faça login.
+            </p>
+          </div>
+        )}
+
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="block text-sm mb-1">Email</label>
@@ -59,7 +71,15 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Senha</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm">Senha</label>
+              <Link
+                href="/admin/recuperar-senha"
+                className="text-xs text-primary hover:underline"
+              >
+                Esqueceu a senha?
+              </Link>
+            </div>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -91,5 +111,13 @@ export default function AdminLoginPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
