@@ -57,16 +57,29 @@ export default async function BlogPage({
 
   return (
     <main className="min-h-screen bg-[#faf8f5] text-on-surface">
-      <section className="pt-32 pb-10 px-6 md:px-10 lg:px-12 text-center max-w-300 mx-auto">
-        <span className="inline-flex rounded-full border border-outline/20 bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[rgb(148_53_21)]">
-          Blog Menu ZN
-        </span>
-        <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl text-on-surface">
-          Histórias, guias e descobertas da Zona Norte
-        </h1>
-        <p className="mt-6 max-w-2xl text-sm leading-7 text-on-surface/70 md:text-base mx-auto">
-          Acompanhe nossas matérias, guias e bastidores da gastronomia da Zona Norte com conteúdo publicado direto do painel administrativo.
-        </p>
+      <section className="relative overflow-hidden border-b border-outline/30 min-h-[70vh] flex flex-col justify-center">
+        <div className="absolute inset-0">
+          <Image
+            src={fallbackImage}
+            alt="Blog Menu ZN"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+
+        <div className="relative z-10 pt-32 pb-10 px-6 md:px-10 lg:px-12 text-center max-w-4xl mx-auto flex flex-col items-center justify-center">
+          <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white shadow-sm mb-6">
+            Blog Menu ZN
+          </span>
+          <h1 className="font-serif text-5xl leading-tight md:text-6xl lg:text-7xl text-white">
+            Histórias, guias e descobertas da Zona Norte
+          </h1>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-white/90 md:text-lg mx-auto">
+            Acompanhe nossas matérias, guias e bastidores da gastronomia da Zona Norte com conteúdo publicado direto do painel administrativo.
+          </p>
+        </div>
       </section>
 
       <section className="sticky top-0 z-30 border-b border-outline/20 bg-[#faf8f5]/90 backdrop-blur-md">
