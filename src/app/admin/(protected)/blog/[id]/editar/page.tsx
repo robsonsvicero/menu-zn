@@ -17,6 +17,7 @@ type BlogPost = {
   content_md: string | null;
   cover_image_url: string | null;
   category_id: string | null;
+  blog_categories: any;
   author_id: string | null;
   seo_title: string | null;
   seo_description: string | null;
@@ -34,7 +35,7 @@ export default async function EditarBlogPostPage({
   const [{ data: post }, { data: categories }, { data: authorsData }] = await Promise.all([
     supabase
       .from("blog_posts")
-      .select("id, title, slug, excerpt, content_md, cover_image_url, category_id, author_id, seo_title, seo_description, status")
+      .select("id, title, slug, excerpt, content_md, cover_image_url, category_id, blog_categories(name), author_id, seo_title, seo_description, status")
       .eq("id", id)
       .single(),
     supabase.from("blog_categories").select("id, name").order("name"),
@@ -92,12 +93,12 @@ export default async function EditarBlogPostPage({
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Categoria</label>
-              <select name="category_id" defaultValue={blogPost.category_id ?? ""} className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition">
-                <option value="">Selecione uma categoria</option>
+              <input name="category_name" defaultValue={Array.isArray(blogPost.blog_categories) ? blogPost.blog_categories[0]?.name ?? "" : blogPost.blog_categories?.name ?? ""} placeholder="Ex: Dicas, Notícias..." list="category-options" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+              <datalist id="category-options">
                 {categoryOptions.map((item) => (
-                  <option key={item.id} value={item.id}>{item.name}</option>
+                  <option key={item.id} value={item.name} />
                 ))}
-              </select>
+              </datalist>
             </div>
           </div>
         </div>
