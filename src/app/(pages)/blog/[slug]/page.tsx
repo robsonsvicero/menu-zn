@@ -86,15 +86,52 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!post) {
     return {
-      title: "Matéria não encontrada | Menu ZN",
+      title: "Matéria não encontrada | Menu Zona Norte",
     };
   }
 
+  const title = post.seo_title ?? post.title;
+  const description = post.seo_description ?? post.excerpt ?? undefined;
+  const imageUrl = post.cover_image_url ?? "/images/hero-blog-destaque.jpeg";
+  const canonical = `https://www.menuzonanorte.com.br/blog/${post.slug}`;
+  const authorName =
+    typeof post.authors === "object" && post.authors !== null && "name" in post.authors
+      ? (post.authors as { name: string }).name
+      : "Equipe Menu Zona Norte";
+
   return {
-    title: `${post.seo_title ?? post.title} | Menu ZN`,
-    description: post.seo_description ?? post.excerpt ?? undefined,
+    title: `${title} | Menu Zona Norte`,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      type: "article",
+      title: `${title} | Menu Zona Norte`,
+      description,
+      url: canonical,
+      siteName: "Menu Zona Norte",
+      locale: "pt_BR",
+      publishedTime: post.published_at ?? undefined,
+      authors: [authorName],
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | Menu Zona Norte`,
+      description,
+      images: [imageUrl],
+    },
   };
 }
+
 
 export default async function BlogPostDetail({ params }: PageProps) {
   const { slug } = await params;
@@ -112,8 +149,41 @@ export default async function BlogPostDetail({ params }: PageProps) {
     ? post.blog_categories[0]?.name
     : (post.blog_categories as any)?.name;
 
+  const postAuthorName =
+    typeof post.authors === "object" && post.authors !== null && "name" in post.authors
+      ? (post.authors as { name: string }).name
+      : "Equipe Menu Zona Norte";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.seo_title ?? post.title,
+    description: post.seo_description ?? post.excerpt ?? undefined,
+    image: post.cover_image_url ?? "https://www.menuzonanorte.com.br/images/hero-blog-destaque.jpeg",
+    datePublished: post.published_at ?? undefined,
+    author: {
+      "@type": "Person",
+      name: postAuthorName,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Menu Zona Norte",
+      url: "https://www.menuzonanorte.com.br",
+    },
+    url: `https://www.menuzonanorte.com.br/blog/${post.slug}`,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://www.menuzonanorte.com.br/blog/${post.slug}`,
+    },
+  };
+
   return (
-    <main className="min-h-screen bg-white text-on-surface">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className="min-h-screen bg-white text-on-surface">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
@@ -262,5 +332,6 @@ export default async function BlogPostDetail({ params }: PageProps) {
         </section>
       ) : null}
     </main>
+    </>
   );
 }

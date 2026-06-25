@@ -84,7 +84,8 @@ export default async function NovoEstabelecimentoPage() {
             <PhoneMaskedInput
               name="phone"
               className="w-full rounded-xl border border-outline px-3 py-2 text-sm"
-              placeholder="(11)99999-9999"
+              placeholder="(11) 9999-8888"
+              isLandline
             />
           </div>
         </div>

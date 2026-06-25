@@ -21,7 +21,7 @@ const stats: StatItem[] = [
   },
   {
     icon: <TrendingUp size={18} strokeWidth={1.5} />,
-    value: '7,8',
+    value: '8,1',
     label: 'Posição média\nno Google',
   },
   {

@@ -1,7 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, ArrowRight, Search } from "lucide-react";
+import type { Metadata } from "next";
 import { fetchBlogCategoryOptions, fetchPublishedBlogPosts } from "@/lib/blog-public";
+
+export const metadata: Metadata = {
+  title: "Blog | Menu Zona Norte — Gastronomia e Guias da Zona Norte SP",
+  description:
+    "Histórias, guias e descobertas da gastronomia da Zona Norte de São Paulo. Matérias editoriais, dicas de restaurantes e bastidores publicados pelo time do Menu ZN.",
+  openGraph: {
+    title: "Blog | Menu Zona Norte — Gastronomia e Guias da Zona Norte SP",
+    description:
+      "Histórias, guias e descobertas da gastronomia da Zona Norte de São Paulo. Matérias editoriais e dicas de restaurantes.",
+    images: [
+      {
+        url: "/images/hero-blog-destaque.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Blog Menu Zona Norte — Gastronomia e Guias da Zona Norte SP",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | Menu Zona Norte — Gastronomia e Guias da Zona Norte SP",
+    description:
+      "Histórias, guias e descobertas da gastronomia da Zona Norte de São Paulo.",
+    images: ["/images/hero-blog-destaque.jpeg"],
+  },
+};
 
 export const dynamic = "force-dynamic";
 
@@ -91,7 +118,7 @@ export default async function BlogPage({
                 type="text"
                 name="q"
                 defaultValue={query}
-                placeholder="Buscar por título, resumo ou slug"
+              placeholder="Buscar por título ou categoria"
                 className="w-full rounded-2xl border border-outline/40 bg-[#faf8f5] py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[rgb(148_53_21)]"
               />
             </label>

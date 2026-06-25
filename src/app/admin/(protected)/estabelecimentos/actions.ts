@@ -40,6 +40,24 @@ function formatPhoneBR(input: string) {
   return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
+function formatLandlineBR(input: string) {
+  const digits = input.replace(/\D/g, "").slice(0, 10);
+
+  if (!digits) {
+    return "";
+  }
+
+  if (digits.length <= 2) {
+    return `(${digits}`;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+}
+
 async function uploadCoverImage(file: File, slug: string) {
   const adminClient = createAdminClient();
   const bucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
@@ -131,7 +149,7 @@ export async function createEstablishmentAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || name);
-  const formattedPhone = formatPhoneBR(phone);
+  const formattedPhone = formatLandlineBR(phone);
   const formattedWhatsapp = formatPhoneBR(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || null;
 
@@ -232,7 +250,7 @@ export async function updateEstablishmentAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || name);
-  const formattedPhone = formatPhoneBR(phone);
+  const formattedPhone = formatLandlineBR(phone);
   const formattedWhatsapp = formatPhoneBR(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || currentImageCoverUrl || null;
 

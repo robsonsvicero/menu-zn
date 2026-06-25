@@ -19,12 +19,12 @@ function formatRating(value: number | null) {
   return value.toFixed(1);
 }
 
-function formatPhoneBR(value: string | null) {
+function formatLandlineBR(value: string | null) {
   if (!value) {
     return "Telefone não informado";
   }
 
-  const digits = value.replace(/\D/g, "").slice(0, 11);
+  const digits = value.replace(/\D/g, "").slice(0, 10);
 
   if (!digits) {
     return "Telefone não informado";
@@ -34,11 +34,11 @@ function formatPhoneBR(value: string | null) {
     return `(${digits}`;
   }
 
-  if (digits.length <= 7) {
-    return `(${digits.slice(0, 2)})${digits.slice(2)}`;
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
   }
 
-  return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
 }
 
 function getRelation<T>(relation: T | T[] | null | undefined): T | null {
@@ -52,14 +52,46 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const establishment = await fetchPublishedEstablishmentBySlug(slug);
 
   if (!establishment) {
-    return { title: "Estabelecimento não encontrado | Menu ZN" };
+    return { title: "Estabelecimento não encontrado | Menu Zona Norte" };
   }
 
+  const title = `${establishment.name} | Menu Zona Norte`;
+  const description =
+    establishment.short_description ?? establishment.description ?? undefined;
+  const imageUrl = establishment.image_cover_url ?? "/images/hero-restaurantes.png";
+  const canonical = `https://www.menuzonanorte.com.br/local/${establishment.slug}`;
+
   return {
-    title: `${establishment.name} | Menu ZN`,
-    description: establishment.short_description ?? establishment.description ?? undefined,
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: canonical,
+      siteName: "Menu Zona Norte",
+      locale: "pt_BR",
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: establishment.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
+
 
 export default async function LocalDetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -81,8 +113,47 @@ export default async function LocalDetailPage({ params }: PageProps) {
 
   const imageSrc = establishment.image_cover_url ?? "/images/hero-restaurantes.png";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: establishment.name,
+    image: imageSrc,
+    "@id": `https://www.menuzonanorte.com.br/local/${establishment.slug}`,
+    url: `https://www.menuzonanorte.com.br/local/${establishment.slug}`,
+    telephone: establishment.phone || establishment.whatsapp || undefined,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: establishment.address || undefined,
+      addressLocality: "São Paulo",
+      addressRegion: "SP",
+      addressCountry: "BR",
+    },
+    geo:
+      establishment.latitude && establishment.longitude
+        ? {
+            "@type": "GeoCoordinates",
+            latitude: establishment.latitude,
+            longitude: establishment.longitude,
+          }
+        : undefined,
+    aggregateRating: establishment.rating
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: establishment.rating,
+          ratingCount: 1,
+        }
+      : undefined,
+    servesCuisine: category?.name || undefined,
+    priceRange: establishment.price_range || undefined,
+  };
+
   return (
-    <main className="min-h-screen bg-[#faf8f5] text-on-surface">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className="min-h-screen bg-[#faf8f5] text-on-surface">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image src={imageSrc} alt={establishment.name} fill className="object-cover object-center" priority />
@@ -152,7 +223,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-on-surface/75">
                     <Phone size={16} />
-                    <span>{formatPhoneBR(establishment.phone)}</span>
+                    <span>{formatLandlineBR(establishment.phone)}</span>
                   </div>
                   {establishment.price_range && (
                     <div className="flex items-center gap-3 text-sm text-on-surface/75">
@@ -246,5 +317,6 @@ export default async function LocalDetailPage({ params }: PageProps) {
         </section>
       ) : null}
     </main>
+    </>
   );
 }
