@@ -3,6 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { fetchPublishedBlogPostBySlug, fetchPublishedBlogPosts } from "@/lib/blog-public";
 
 export const dynamic = "force-dynamic";
@@ -29,66 +33,51 @@ function estimateReadTime(content: string | null) {
   return `${minutes} min de leitura`;
 }
 
+const markdownSanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames ?? []), "u"],
+};
+
 function renderContent(content: string | null) {
   if (!content) {
     return null;
   }
 
-  const blocks = content
-    .split(/\n\s*\n/)
-    .map((block) => block.trim())
-    .filter(Boolean);
-
-  return blocks.map((block, index) => {
-    if (block.startsWith("### ")) {
-      return (
-        <h3 key={index} className="mt-10 font-serif text-2xl text-[rgb(148_53_21)]">
-          {block.replace(/^###\s+/, "")}
-        </h3>
-      );
-    }
-
-    if (block.startsWith("## ")) {
-      return (
-        <h2 key={index} className="mt-12 font-serif text-3xl text-on-surface">
-          {block.replace(/^##\s+/, "")}
-        </h2>
-      );
-    }
-
-    if (block.startsWith("# ")) {
-      return (
-        <h1 key={index} className="mt-12 font-serif text-4xl text-on-surface">
-          {block.replace(/^#\s+/, "")}
-        </h1>
-      );
-    }
-
-    if (/^[-*]\s+/m.test(block)) {
-      const lines = block.split("\n").filter(Boolean);
-      return (
-        <ul key={index} className="mt-6 list-disc space-y-2 pl-6 text-[17px] leading-8 text-on-surface/90">
-          {lines.map((line, lineIndex) => (
-            <li key={lineIndex}>{line.replace(/^[-*]\s+/, "")}</li>
-          ))}
-        </ul>
-      );
-    }
-
-    if (/^>\s+/.test(block)) {
-      return (
-        <blockquote key={index} className="my-10 rounded-3xl border-l-4 border-[rgb(148_53_21)] bg-[#faf3ee] p-8 font-serif text-xl italic leading-9 text-on-surface">
-          {block.replace(/^>\s+/gm, "")}
-        </blockquote>
-      );
-    }
-
-    return (
-      <p key={index} className="text-[17px] leading-8 text-on-surface/90 whitespace-pre-line">
-        {block}
-      </p>
-    );
-  });
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw, [rehypeSanitize, markdownSanitizeSchema]]}
+      components={{
+        h1: ({ children }) => <h1 className="mt-12 font-serif text-4xl text-on-surface">{children}</h1>,
+        h2: ({ children }) => <h2 className="mt-12 font-serif text-3xl text-on-surface">{children}</h2>,
+        h3: ({ children }) => <h3 className="mt-10 font-serif text-2xl text-[rgb(148_53_21)]">{children}</h3>,
+        p: ({ children }) => <p className="text-[17px] leading-8 text-on-surface/90">{children}</p>,
+        ul: ({ children }) => <ul className="mt-6 list-disc space-y-2 pl-6 text-[17px] leading-8 text-on-surface/90">{children}</ul>,
+        ol: ({ children }) => <ol className="mt-6 list-decimal space-y-2 pl-6 text-[17px] leading-8 text-on-surface/90">{children}</ol>,
+        li: ({ children }) => <li>{children}</li>,
+        blockquote: ({ children }) => (
+          <blockquote className="my-10 rounded-3xl border-l-4 border-[rgb(148_53_21)] bg-[#faf3ee] p-8 font-serif text-xl italic leading-9 text-on-surface">
+            {children}
+          </blockquote>
+        ),
+        a: ({ href, children }) => (
+          <a
+            href={href}
+            className="font-semibold text-[rgb(148_53_21)] underline decoration-[rgb(148_53_21)]/40 underline-offset-2 transition hover:decoration-[rgb(148_53_21)]"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {children}
+          </a>
+        ),
+        strong: ({ children }) => <strong className="font-bold text-on-surface">{children}</strong>,
+        em: ({ children }) => <em className="italic">{children}</em>,
+        u: ({ children }) => <u className="underline decoration-1 underline-offset-3">{children}</u>,
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
