@@ -91,8 +91,8 @@ export default async function NovoBlogPostPage({
               </select>
             </div>
             <div>
-              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Data de publicação *</label>
-              <input type="date" required className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Data de publicação</label>
+              <input type="date" name="published_at" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Tags</label>

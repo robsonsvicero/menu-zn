@@ -78,9 +78,6 @@ export default async function AdminCategoriasBlogPage({
                       <button 
                         type="submit" 
                         className="rounded-lg border border-error/30 px-2.5 py-1 text-xs text-error hover:bg-error/10"
-                        onClick={(e) => {
-                          if (!confirm("Tem certeza que deseja excluir esta categoria?")) e.preventDefault();
-                        }}
                       >
                         Excluir
                       </button>

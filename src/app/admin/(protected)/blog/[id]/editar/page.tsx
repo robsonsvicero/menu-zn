@@ -20,6 +20,7 @@ type BlogPost = {
   category_id: string | null;
   blog_categories: any;
   author_id: string | null;
+  published_at: string | null;
   seo_title: string | null;
   seo_description: string | null;
   status: "draft" | "published" | "archived";
@@ -39,7 +40,7 @@ export default async function EditarBlogPostPage({
   const [{ data: post }, { data: categories }, { data: authorsData }] = await Promise.all([
     supabase
       .from("blog_posts")
-      .select("id, title, slug, excerpt, content_md, cover_image_url, category_id, blog_categories(name), author_id, seo_title, seo_description, status")
+      .select("id, title, slug, excerpt, content_md, cover_image_url, category_id, blog_categories(name), author_id, published_at, seo_title, seo_description, status")
       .eq("id", id)
       .single(),
     supabase.from("blog_categories").select("id, name").order("name"),
@@ -109,6 +110,18 @@ export default async function EditarBlogPostPage({
                   <option key={item.id} value={item.id}>{item.name}</option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Data de publicação</label>
+              <input
+                type="date"
+                name="published_at"
+                defaultValue={blogPost.published_at ? blogPost.published_at.substring(0, 10) : ""}
+                className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition"
+              />
             </div>
           </div>
         </div>

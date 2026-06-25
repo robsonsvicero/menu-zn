@@ -95,6 +95,7 @@ export async function createBlogPostAction(formData: FormData) {
     const imageFile = formData.get("image_file");
     const categoryId = String(formData.get("category_id") ?? "").trim() || null;
     const authorId = String(formData.get("author_id") ?? "").trim();
+    const publishedAtInput = String(formData.get("published_at") ?? "").trim();
     const seoTitle = String(formData.get("seo_title") ?? "").trim();
     const seoDescription = String(formData.get("seo_description") ?? "").trim();
     const status = String(formData.get("status") ?? "draft").trim();
@@ -110,6 +111,11 @@ export async function createBlogPostAction(formData: FormData) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
     }
 
+    // Use the date provided by the user, or fallback to now if published without a date
+    const publishedAt = status === "published"
+      ? (publishedAtInput ? new Date(publishedAtInput).toISOString() : new Date().toISOString())
+      : null;
+
     const { error } = await supabase.from("blog_posts").insert({
       title,
       slug,
@@ -118,7 +124,7 @@ export async function createBlogPostAction(formData: FormData) {
       cover_image_url: coverImageUrl,
       category_id: categoryId || null,
       status: status === "published" || status === "archived" ? status : "draft",
-      published_at: status === "published" ? new Date().toISOString() : null,
+      published_at: publishedAt,
       seo_title: seoTitle || null,
       seo_description: seoDescription || null,
       created_by: user.id,
@@ -180,6 +186,7 @@ export async function updateBlogPostAction(formData: FormData) {
     const currentCoverImageUrl = String(formData.get("current_cover_image_url") ?? "").trim();
     const categoryId = String(formData.get("category_id") ?? "").trim() || null;
     const authorId = String(formData.get("author_id") ?? "").trim();
+    const publishedAtInput = String(formData.get("published_at") ?? "").trim();
     const seoTitle = String(formData.get("seo_title") ?? "").trim();
     const seoDescription = String(formData.get("seo_description") ?? "").trim();
     const status = String(formData.get("status") ?? "draft").trim();
@@ -195,6 +202,11 @@ export async function updateBlogPostAction(formData: FormData) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
     }
 
+    // Use the date provided by the user, or fallback to now if published without a date
+    const publishedAt = status === "published"
+      ? (publishedAtInput ? new Date(publishedAtInput).toISOString() : new Date().toISOString())
+      : null;
+
     const { error } = await supabase
       .from("blog_posts")
       .update({
@@ -205,7 +217,7 @@ export async function updateBlogPostAction(formData: FormData) {
         cover_image_url: coverImageUrl,
         category_id: categoryId || null,
         status: status === "published" || status === "archived" ? status : "draft",
-        published_at: status === "published" ? new Date().toISOString() : null,
+        published_at: publishedAt,
         seo_title: seoTitle || null,
         seo_description: seoDescription || null,
         updated_by: user.id,
