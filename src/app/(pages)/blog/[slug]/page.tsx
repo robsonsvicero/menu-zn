@@ -162,9 +162,18 @@ export default async function BlogPostDetail({ params }: PageProps) {
                 <Clock size={16} />
                 {estimateReadTime(post.content_md)}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                Por Equipe Menu ZN
-              </span>
+              {post.authors ? (
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                  {post.authors.avatar_url && (
+                    <img src={post.authors.avatar_url} alt={post.authors.name} className="w-5 h-5 rounded-full object-cover" />
+                  )}
+                  Por {post.authors.name}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                  Por Equipe Menu ZN
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -195,14 +204,18 @@ export default async function BlogPostDetail({ params }: PageProps) {
 
             <div className="mt-16 rounded-[28px] border border-outline/20 bg-[#faf8f5] p-8 md:p-10">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-white font-serif text-2xl">
-                  M
-                </div>
+                {post.authors?.avatar_url ? (
+                  <img src={post.authors.avatar_url} alt={post.authors.name} className="h-16 w-16 rounded-full object-cover" />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-white font-serif text-2xl">
+                    {post.authors?.name ? post.authors.name.charAt(0).toUpperCase() : 'M'}
+                  </div>
+                )}
                 <div>
                   <p className="text-sm uppercase tracking-[0.18em] text-on-surface/55">Publicado por</p>
-                  <h2 className="mt-1 font-serif text-2xl">Equipe Menu ZN</h2>
+                  <h2 className="mt-1 font-serif text-2xl">{post.authors?.name ?? "Equipe Menu ZN"}</h2>
                   <p className="mt-2 text-sm leading-7 text-on-surface/70">
-                    Conteúdo editorial publicado pelo painel administrativo, agora alimentando o front público diretamente do Supabase.
+                    {post.authors?.role ?? "Conteúdo editorial publicado pelo painel administrativo, agora alimentando o front público diretamente do Supabase."}
                   </p>
                 </div>
               </div>

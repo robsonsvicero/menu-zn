@@ -52,64 +52,21 @@ export default async function BlogPage({
   ]);
 
   const orderedPosts = sort === "oldest" ? [...posts].reverse() : posts;
-  const featuredPost = orderedPosts[0] ?? null;
-  const listPosts = featuredPost ? orderedPosts.slice(1) : orderedPosts;
+  const listPosts = orderedPosts;
   const fallbackImage = "/images/hero-blog-destaque.png";
 
   return (
     <main className="min-h-screen bg-[#faf8f5] text-on-surface">
-      <section className="relative overflow-hidden border-b border-outline/30">
-        <div className="absolute inset-0">
-          <Image
-            src={featuredPost?.cover_image_url ?? fallbackImage}
-            alt={featuredPost?.title ?? "Blog Menu ZN"}
-            fill
-            className="object-cover object-center"
-            priority
-          />
-          <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/30" />
-        </div>
-
-        <div className="relative mx-auto flex min-h-160 max-w-300 items-end px-6 py-20 md:px-10 lg:px-12">
-          <div className="max-w-3xl pb-4 text-white">
-            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] backdrop-blur-sm">
-              Blog Menu ZN
-            </span>
-            <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl">
-              {featuredPost?.title ?? "Histórias, guias e descobertas da Zona Norte"}
-            </h1>
-            <p className="mt-6 max-w-2xl text-sm leading-7 text-white/85 md:text-base">
-              {featuredPost?.excerpt ?? "Acompanhe nossas matérias, guias e bastidores da gastronomia da Zona Norte com conteúdo publicado direto do painel administrativo."}
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-white/85">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                <CalendarDays size={16} />
-                {formatDate(featuredPost?.published_at ?? null)}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                Por Equipe Menu ZN
-              </span>
-              {featuredPost?.blog_categories?.[0]?.name ? (
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                  {featuredPost.blog_categories[0].name}
-                </span>
-              ) : null}
-            </div>
-
-            {featuredPost ? (
-              <div className="mt-10">
-                <Link
-                  href={`/blog/${featuredPost.slug}`}
-                  className="inline-flex items-center gap-2 rounded-full bg-[rgb(148_53_21)] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:opacity-90"
-                >
-                  Ler matéria completa
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
-            ) : null}
-          </div>
-        </div>
+      <section className="pt-32 pb-10 px-6 md:px-10 lg:px-12 text-center max-w-300 mx-auto">
+        <span className="inline-flex rounded-full border border-outline/20 bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[rgb(148_53_21)]">
+          Blog Menu ZN
+        </span>
+        <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl text-on-surface">
+          Histórias, guias e descobertas da Zona Norte
+        </h1>
+        <p className="mt-6 max-w-2xl text-sm leading-7 text-on-surface/70 md:text-base mx-auto">
+          Acompanhe nossas matérias, guias e bastidores da gastronomia da Zona Norte com conteúdo publicado direto do painel administrativo.
+        </p>
       </section>
 
       <section className="sticky top-0 z-30 border-b border-outline/20 bg-[#faf8f5]/90 backdrop-blur-md">
@@ -181,49 +138,54 @@ export default async function BlogPage({
           </div>
         </div>
 
-        {orderedPosts.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {listPosts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="group overflow-hidden rounded-[28px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-              >
-                <div className="relative aspect-4/3 overflow-hidden">
-                  <Image
-                    src={post.cover_image_url ?? fallbackImage}
-                    alt={post.title}
-                    fill
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/0 to-transparent" />
-                  {post.blog_categories?.[0]?.name ? (
-                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
-                      {post.blog_categories[0].name}
-                    </span>
-                  ) : null}
-                </div>
+        {listPosts.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {listPosts.map((post, index) => {
+              const isBigLeft = index % 6 === 0;
+              const isBigRight = index % 6 === 3;
+              const isBig = isBigLeft || isBigRight;
 
-                <div className="space-y-4 p-6">
-                  <div className="flex items-center justify-between gap-4 text-xs uppercase tracking-[0.16em] text-on-surface/55">
-                    <span>{formatDate(post.published_at)}</span>
-                    <span>Equipe Menu ZN</span>
+              return (
+                <Link
+                  key={post.id}
+                  href={`/blog/${post.slug}`}
+                  className={`group overflow-hidden rounded-[28px] border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md flex ${
+                    isBig ? "col-span-1 md:col-span-2 flex-col md:flex-row" : "col-span-1 flex-col"
+                  } ${isBigRight ? "bg-[#2D2A26] border-transparent text-white" : "bg-white border-outline/20"}`}
+                >
+                  <div className={`relative overflow-hidden ${isBig ? "md:w-[55%] aspect-[4/3] md:aspect-auto" : "aspect-[4/3]"} ${isBigRight ? "md:order-2" : ""}`}>
+                    <Image
+                      src={post.cover_image_url ?? fallbackImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/0 to-transparent" />
                   </div>
 
-                  <h3 className="font-serif text-2xl leading-tight text-on-surface transition group-hover:text-[rgb(148_53_21)]">
-                    {post.title}
-                  </h3>
-                  <p className="line-clamp-3 text-sm leading-7 text-on-surface/70">
-                    {post.excerpt ?? "Conteúdo publicado pelo time editorial do Menu ZN."}
-                  </p>
+                  <div className={`flex flex-col justify-center p-8 lg:p-10 ${isBig ? "md:w-[45%]" : "flex-1"} ${isBigRight ? "md:order-1" : ""}`}>
+                    <div className={`flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-[0.18em] ${isBigRight ? "text-[rgb(219_107_66)]" : "text-[rgb(148_53_21)]"}`}>
+                      <span>{post.blog_categories?.[0]?.name ?? "Dicas"}</span>
+                      <span className="text-on-surface/50 font-medium">{formatDate(post.published_at)}</span>
+                    </div>
 
-                  <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[rgb(148_53_21)]">
-                    Ler matéria
-                    <ArrowRight size={14} />
-                  </span>
-                </div>
-              </Link>
-            ))}
+                    <h3 className={`mt-4 font-serif text-3xl leading-tight transition ${isBigRight ? "group-hover:text-[rgb(219_107_66)]" : "group-hover:text-[rgb(148_53_21)]"}`}>
+                      {post.title}
+                    </h3>
+                    <p className={`mt-4 line-clamp-3 text-sm leading-7 ${isBigRight ? "text-white/70" : "text-on-surface/70"}`}>
+                      {post.excerpt ?? "Conteúdo publicado pelo time editorial do Menu ZN."}
+                    </p>
+
+                    <div className="mt-8 flex items-center gap-2">
+                      <span className={`text-[10px] font-bold uppercase tracking-[0.18em] ${isBigRight ? "text-white/80" : "text-[rgb(148_53_21)]"}`}>
+                        Ler Mais
+                      </span>
+                      <ArrowRight size={14} className={isBigRight ? "text-white/80" : "text-[rgb(148_53_21)]"} />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="rounded-[28px] border border-outline/30 bg-white p-10 text-center shadow-sm">

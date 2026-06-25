@@ -8,6 +8,7 @@ export type BlogListItem = {
   cover_image_url: string | null;
   published_at: string | null;
   blog_categories: { name: string; slug: string }[] | null;
+  authors: any;
 };
 
 export type BlogDetailItem = {
@@ -21,6 +22,7 @@ export type BlogDetailItem = {
   seo_title: string | null;
   seo_description: string | null;
   blog_categories: { name: string; slug: string }[] | null;
+  authors: any;
 };
 
 export async function fetchPublishedBlogPosts(options?: {
@@ -33,7 +35,7 @@ export async function fetchPublishedBlogPosts(options?: {
 
   let query = supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, cover_image_url, published_at, blog_categories(name, slug)")
+    .select("id, title, slug, excerpt, cover_image_url, published_at, blog_categories(name, slug), authors(name, avatar_url, role)")
     .eq("status", "published")
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(limit);
@@ -65,7 +67,7 @@ export async function fetchPublishedBlogPostBySlug(slug: string) {
 
   const { data, error } = await supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, seo_title, seo_description, blog_categories(name, slug)")
+    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role)")
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle();
