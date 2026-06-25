@@ -1,10 +1,27 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { LogOut, LayoutDashboard, Store, BookOpen, Users, MessageSquareQuote, UserCog } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 const allowedAdminRoles = new Set(["super_admin", "admin", "editor"]);
+
+const navLinks = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/estabelecimentos", label: "Estabelecimentos", icon: Store },
+  { href: "/admin/blog", label: "Blog", icon: BookOpen },
+  { href: "/admin/autores", label: "Autores", icon: Users },
+  { href: "/admin/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+  { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
+];
+
+async function signOut() {
+  "use server";
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/admin/login");
+}
 
 export default async function AdminProtectedLayout({
   children,
@@ -42,44 +59,75 @@ export default async function AdminProtectedLayout({
     redirect("/admin/login?error=unauthorized");
   }
 
+  const displayName = profile?.full_name ?? "Usuário";
+  const initials = displayName
+    .split(" ")
+    .slice(0, 2)
+    .map((n: string) => n[0])
+    .join("")
+    .toUpperCase();
+
   return (
-    <div className="min-h-screen bg-background text-on-surface">
-      <header className="h-16 border-b border-outline bg-white px-6 md:px-10 flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-on-surface/60">MENU ZN</p>
-          <h1 className="font-serif text-xl leading-none">Painel Administrativo</h1>
+    <div className="flex min-h-screen bg-background text-on-surface">
+      {/* ── Sidebar ── */}
+      <aside className="hidden md:flex flex-col w-[260px] shrink-0 border-r border-outline bg-white sticky top-0 h-screen">
+        {/* Logo */}
+        <div className="px-6 py-5 border-b border-outline">
+          <p className="text-xs uppercase tracking-widest text-on-surface/50">MENU ZN</p>
+          <p className="font-serif text-lg leading-tight">Painel Admin</p>
         </div>
-        <div className="text-right">
-          <p className="text-sm font-medium">{profile?.full_name ?? "Usuário"}</p>
-          <p className="text-xs text-on-surface/60">{roleCodes.join(", ")}</p>
+
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+          {navLinks.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-on-surface/70 hover:bg-background hover:text-on-surface transition-colors"
+            >
+              <Icon size={16} className="shrink-0" />
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* User + Logout */}
+        <div className="border-t border-outline p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium truncate">{displayName}</p>
+              <p className="text-xs text-on-surface/50 truncate">{roleCodes.join(", ")}</p>
+            </div>
+          </div>
+
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-on-surface/60 hover:bg-background hover:text-error transition-colors"
+            >
+              <LogOut size={15} className="shrink-0" />
+              Sair
+            </button>
+          </form>
         </div>
-      </header>
+      </aside>
 
-      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr]">
-        <aside className="border-r border-outline bg-white p-4">
-          <nav className="space-y-2">
-            <Link href="/admin" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
-              Dashboard
-            </Link>
-            <Link href="/admin/estabelecimentos" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
-              Estabelecimentos
-            </Link>
-            <Link href="/admin/blog" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
-              Blog
-            </Link>
-            <Link href="/admin/autores" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
-              Autores
-            </Link>
-            <Link href="/admin/depoimentos" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
-              Depoimentos
-            </Link>
-            <Link href="/admin/usuarios" className="block rounded-lg px-3 py-2 text-sm hover:bg-background">
-              Usuários
-            </Link>
-          </nav>
-        </aside>
+      {/* ── Content ── */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile header */}
+        <header className="md:hidden h-14 border-b border-outline bg-white px-4 flex items-center justify-between shrink-0">
+          <p className="font-serif text-base">Painel Admin</p>
+          <form action={signOut}>
+            <button type="submit" className="text-on-surface/60 hover:text-error transition-colors">
+              <LogOut size={18} />
+            </button>
+          </form>
+        </header>
 
-        <main className="p-6 md:p-10">{children}</main>
+        <main className="flex-1 p-6 md:p-10">{children}</main>
       </div>
     </div>
   );
