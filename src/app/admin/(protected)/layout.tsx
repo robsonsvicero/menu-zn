@@ -3,6 +3,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LogOut, LayoutDashboard, Store, BookOpen, Users, MessageSquareQuote, UserCog, Tags } from "lucide-react";
+import AdminMobileNav from "@/components/admin/AdminMobileNav";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +72,7 @@ export default async function AdminProtectedLayout({
 
   return (
     <div className="flex min-h-screen bg-background text-on-surface">
-      {/* ── Sidebar ── */}
+      {/* ── Desktop Sidebar ── */}
       <aside className="hidden md:flex flex-col w-[260px] shrink-0 border-r border-outline bg-white sticky top-0 h-screen">
         {/* Logo */}
         <div className="px-6 py-5 border-b border-outline">
@@ -130,17 +131,16 @@ export default async function AdminProtectedLayout({
 
       {/* ── Content ── */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile header */}
-        <header className="md:hidden h-14 border-b border-outline bg-white px-4 flex items-center justify-between shrink-0">
-          <p className="font-serif text-base">Painel Admin</p>
-          <form action={signOut}>
-            <button type="submit" className="text-on-surface/60 hover:text-error transition-colors">
-              <LogOut size={18} />
-            </button>
-          </form>
-        </header>
+        {/* Mobile Nav (hamburger + drawer + bottom bar) */}
+        <AdminMobileNav
+          displayName={displayName}
+          initials={initials}
+          avatarUrl={profile?.avatar_url}
+          roleCodes={roleCodes}
+        />
 
-        <main className="flex-1 p-6 md:p-10">{children}</main>
+        {/* Main content — extra bottom padding on mobile for bottom bar */}
+        <main className="flex-1 p-4 pb-24 md:p-10 md:pb-10">{children}</main>
       </div>
     </div>
   );
