@@ -85,75 +85,83 @@ async function ensureAdminAccess() {
 }
 
 export async function createBlogPostAction(formData: FormData) {
-  const { supabase, user } = await ensureAdminAccess();
+  try {
+    const { supabase, user } = await ensureAdminAccess();
 
-  const title = String(formData.get("title") ?? "").trim();
-  const slugInput = String(formData.get("slug") ?? "").trim();
-  const excerpt = String(formData.get("excerpt") ?? "").trim();
-  const contentMd = String(formData.get("content_md") ?? "").trim();
-  const imageFile = formData.get("image_file");
-  const categoryName = String(formData.get("category_name") ?? "").trim();
-  const authorId = String(formData.get("author_id") ?? "").trim();
-  const seoTitle = String(formData.get("seo_title") ?? "").trim();
-  const seoDescription = String(formData.get("seo_description") ?? "").trim();
-  const status = String(formData.get("status") ?? "draft").trim();
+    const title = String(formData.get("title") ?? "").trim();
+    const slugInput = String(formData.get("slug") ?? "").trim();
+    const excerpt = String(formData.get("excerpt") ?? "").trim();
+    const contentMd = String(formData.get("content_md") ?? "").trim();
+    const imageFile = formData.get("image_file");
+    const categoryName = String(formData.get("category_name") ?? "").trim();
+    const authorId = String(formData.get("author_id") ?? "").trim();
+    const seoTitle = String(formData.get("seo_title") ?? "").trim();
+    const seoDescription = String(formData.get("seo_description") ?? "").trim();
+    const status = String(formData.get("status") ?? "draft").trim();
 
-  if (!title || !authorId) {
-    throw new Error("Título e autor são obrigatórios.");
-  }
+    if (!title || !authorId) {
+      throw new Error("Título e autor são obrigatórios.");
+    }
 
-  const slug = slugify(slugInput || title);
-  let coverImageUrl: string | null = null;
+    const slug = slugify(slugInput || title);
+    let coverImageUrl: string | null = null;
 
-  if (imageFile instanceof File && imageFile.size > 0) {
-    coverImageUrl = await uploadCoverImage(imageFile, slug);
-  }
+    if (imageFile instanceof File && imageFile.size > 0) {
+      coverImageUrl = await uploadCoverImage(imageFile, slug);
+    }
 
-  let categoryId: string | null = null;
-  if (categoryName) {
-    const { data: existingCategory } = await supabase
-      .from("blog_categories")
-      .select("id")
-      .ilike("name", categoryName)
-      .maybeSingle();
-
-    if (existingCategory) {
-      categoryId = existingCategory.id;
-    } else {
-      const catSlug = slugify(categoryName);
-      const { data: newCategory, error: catError } = await supabase
+    let categoryId: string | null = null;
+    if (categoryName) {
+      const { data: existingCategory } = await supabase
         .from("blog_categories")
-        .insert({ name: categoryName, slug: catSlug })
         .select("id")
-        .single();
-      
-      if (catError) {
-        throw new Error("Erro ao criar categoria: " + catError.message);
-      }
-      if (newCategory) {
-        categoryId = newCategory.id;
+        .ilike("name", categoryName)
+        .maybeSingle();
+
+      if (existingCategory) {
+        categoryId = existingCategory.id;
+      } else {
+        const catSlug = slugify(categoryName);
+        const { data: newCategory, error: catError } = await supabase
+          .from("blog_categories")
+          .insert({ name: categoryName, slug: catSlug })
+          .select("id")
+          .single();
+        
+        if (catError) {
+          throw new Error("Erro ao criar categoria: " + catError.message);
+        }
+        if (newCategory) {
+          categoryId = newCategory.id;
+        }
       }
     }
-  }
 
-  const { error } = await supabase.from("blog_posts").insert({
-    title,
-    slug,
-    excerpt: excerpt || null,
-    content_md: contentMd || null,
-    cover_image_url: coverImageUrl,
-    category_id: categoryId || null,
-    status: status === "published" || status === "archived" ? status : "draft",
-    published_at: status === "published" ? new Date().toISOString() : null,
-    seo_title: seoTitle || null,
-    seo_description: seoDescription || null,
-    created_by: user.id,
-    updated_by: user.id,
-    author_id: authorId,
-  });
+    const { error } = await supabase.from("blog_posts").insert({
+      title,
+      slug,
+      excerpt: excerpt || null,
+      content_md: contentMd || null,
+      cover_image_url: coverImageUrl,
+      category_id: categoryId || null,
+      status: status === "published" || status === "archived" ? status : "draft",
+      published_at: status === "published" ? new Date().toISOString() : null,
+      seo_title: seoTitle || null,
+      seo_description: seoDescription || null,
+      created_by: user.id,
+      updated_by: user.id,
+      author_id: authorId,
+    });
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      throw new Error("Erro ao salvar artigo no banco: " + error.message);
+    }
+
+  } catch (error: any) {
+    console.error("Action Error (createBlogPostAction):", error);
+    // Ignore redirect errors as they are thrown by next/navigation
+    if (error.message === 'NEXT_REDIRECT') throw error;
+    redirect(`/admin/blog/novo?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/admin/blog");
@@ -187,79 +195,86 @@ export async function updateBlogPostStatusAction(formData: FormData) {
 }
 
 export async function updateBlogPostAction(formData: FormData) {
-  const { supabase, user } = await ensureAdminAccess();
-
   const id = String(formData.get("id") ?? "").trim();
-  const title = String(formData.get("title") ?? "").trim();
-  const slugInput = String(formData.get("slug") ?? "").trim();
-  const excerpt = String(formData.get("excerpt") ?? "").trim();
-  const contentMd = String(formData.get("content_md") ?? "").trim();
-  const imageFile = formData.get("image_file");
-  const currentCoverImageUrl = String(formData.get("current_cover_image_url") ?? "").trim();
-  const categoryName = String(formData.get("category_name") ?? "").trim();
-  const authorId = String(formData.get("author_id") ?? "").trim();
-  const seoTitle = String(formData.get("seo_title") ?? "").trim();
-  const seoDescription = String(formData.get("seo_description") ?? "").trim();
-  const status = String(formData.get("status") ?? "draft").trim();
+  try {
+    const { supabase, user } = await ensureAdminAccess();
 
-  if (!id || !title || !authorId) {
-    throw new Error("ID, título e autor são obrigatórios.");
-  }
+    const title = String(formData.get("title") ?? "").trim();
+    const slugInput = String(formData.get("slug") ?? "").trim();
+    const excerpt = String(formData.get("excerpt") ?? "").trim();
+    const contentMd = String(formData.get("content_md") ?? "").trim();
+    const imageFile = formData.get("image_file");
+    const currentCoverImageUrl = String(formData.get("current_cover_image_url") ?? "").trim();
+    const categoryName = String(formData.get("category_name") ?? "").trim();
+    const authorId = String(formData.get("author_id") ?? "").trim();
+    const seoTitle = String(formData.get("seo_title") ?? "").trim();
+    const seoDescription = String(formData.get("seo_description") ?? "").trim();
+    const status = String(formData.get("status") ?? "draft").trim();
 
-  const slug = slugify(slugInput || title);
-  let coverImageUrl: string | null = currentCoverImageUrl || null;
+    if (!id || !title || !authorId) {
+      throw new Error("ID, título e autor são obrigatórios.");
+    }
 
-  if (imageFile instanceof File && imageFile.size > 0) {
-    coverImageUrl = await uploadCoverImage(imageFile, slug);
-  }
+    const slug = slugify(slugInput || title);
+    let coverImageUrl: string | null = currentCoverImageUrl || null;
 
-  let categoryId: string | null = null;
-  if (categoryName) {
-    const { data: existingCategory } = await supabase
-      .from("blog_categories")
-      .select("id")
-      .ilike("name", categoryName)
-      .maybeSingle();
+    if (imageFile instanceof File && imageFile.size > 0) {
+      coverImageUrl = await uploadCoverImage(imageFile, slug);
+    }
 
-    if (existingCategory) {
-      categoryId = existingCategory.id;
-    } else {
-      const catSlug = slugify(categoryName);
-      const { data: newCategory, error: catError } = await supabase
+    let categoryId: string | null = null;
+    if (categoryName) {
+      const { data: existingCategory } = await supabase
         .from("blog_categories")
-        .insert({ name: categoryName, slug: catSlug })
         .select("id")
-        .single();
-      
-      if (catError) {
-        throw new Error("Erro ao criar categoria: " + catError.message);
-      }
-      if (newCategory) {
-        categoryId = newCategory.id;
+        .ilike("name", categoryName)
+        .maybeSingle();
+
+      if (existingCategory) {
+        categoryId = existingCategory.id;
+      } else {
+        const catSlug = slugify(categoryName);
+        const { data: newCategory, error: catError } = await supabase
+          .from("blog_categories")
+          .insert({ name: categoryName, slug: catSlug })
+          .select("id")
+          .single();
+        
+        if (catError) {
+          throw new Error("Erro ao criar categoria: " + catError.message);
+        }
+        if (newCategory) {
+          categoryId = newCategory.id;
+        }
       }
     }
-  }
 
-  const { error } = await supabase
-    .from("blog_posts")
-    .update({
-      title,
-      slug,
-      excerpt: excerpt || null,
-      content_md: contentMd || null,
-      cover_image_url: coverImageUrl,
-      category_id: categoryId || null,
-      status: status === "published" || status === "archived" ? status : "draft",
-      published_at: status === "published" ? new Date().toISOString() : null,
-      seo_title: seoTitle || null,
-      seo_description: seoDescription || null,
-      updated_by: user.id,
-      author_id: authorId,
-    })
-    .eq("id", id);
+    const { error } = await supabase
+      .from("blog_posts")
+      .update({
+        title,
+        slug,
+        excerpt: excerpt || null,
+        content_md: contentMd || null,
+        cover_image_url: coverImageUrl,
+        category_id: categoryId || null,
+        status: status === "published" || status === "archived" ? status : "draft",
+        published_at: status === "published" ? new Date().toISOString() : null,
+        seo_title: seoTitle || null,
+        seo_description: seoDescription || null,
+        updated_by: user.id,
+        author_id: authorId,
+      })
+      .eq("id", id);
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      throw new Error("Erro ao salvar artigo no banco: " + error.message);
+    }
+
+  } catch (error: any) {
+    console.error("Action Error (updateBlogPostAction):", error);
+    if (error.message === 'NEXT_REDIRECT') throw error;
+    redirect(`/admin/blog/${id}/editar?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/admin/blog");

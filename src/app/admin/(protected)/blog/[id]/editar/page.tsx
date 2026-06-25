@@ -27,10 +27,13 @@ type BlogPost = {
 
 export default async function EditarBlogPostPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { id } = await params;
+  const { error } = await searchParams;
   const supabase = await createClient();
 
   const [{ data: post }, { data: categories }, { data: authorsData }] = await Promise.all([
@@ -59,6 +62,12 @@ export default async function EditarBlogPostPage({
           Voltar
         </Link>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-[#fff0f0] border border-[#ffc2c2] text-[#d62d2d] text-sm">
+          <strong>Erro ao salvar:</strong> {error}
+        </div>
+      )}
 
       <form action={updateBlogPostAction} className="space-y-10">
         <input type="hidden" name="id" value={blogPost.id} />

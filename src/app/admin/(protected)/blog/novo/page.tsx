@@ -18,7 +18,12 @@ type BlogPostRow = {
   blog_categories: { name: string }[] | null;
 };
 
-export default async function NovoBlogPostPage() {
+export default async function NovoBlogPostPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const supabase = await createClient();
   
   // Buscar categorias, autores e posts cadastrados para a listagem na mesma página
@@ -40,6 +45,12 @@ export default async function NovoBlogPostPage() {
           Limpar
         </Link>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-[#fff0f0] border border-[#ffc2c2] text-[#d62d2d] text-sm">
+          <strong>Erro ao salvar:</strong> {error}
+        </div>
+      )}
 
       <form action={createBlogPostAction} className="space-y-10">
         {/* INFORMAÇÕES */}
