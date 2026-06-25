@@ -6,7 +6,7 @@ import Showcase from '@/components/sections/Showcase'
 import CtaAdvertise from '@/components/sections/CtaAdvertise'
 import EditorPicks from '@/components/sections/EditorPicks'
 import Chronicles from '@/components/sections/Chronicles'
-import Testimonials from '@/components/sections/Testimonials'
+// import Testimonials from '@/components/sections/Testimonials'
 import Newsletter from '@/components/sections/Newsletter'
 
 export const dynamic = 'force-dynamic'
@@ -22,7 +22,7 @@ export default function Home() {
       <CtaAdvertise />
       <EditorPicks />
       <Chronicles />
-      <Testimonials />
+      {/* <Testimonials /> */}
       <Newsletter />
     </main>
   )

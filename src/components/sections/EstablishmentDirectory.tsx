@@ -40,7 +40,19 @@ function formatPriceRange(value: string | null) {
 }
 
 function formatPhone(value: string | null) {
-  return value || "Sem telefone";
+  if (!value) return "Sem telefone";
+
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "Sem telefone";
+
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 10) {
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  } else {
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+  }
 }
 
 function getRelation<T>(relation: T | T[] | null | undefined): T | null {

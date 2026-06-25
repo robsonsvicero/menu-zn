@@ -19,12 +19,12 @@ function formatRating(value: number | null) {
   return value.toFixed(1);
 }
 
-function formatLandlineBR(value: string | null) {
+function formatDynamicPhone(value: string | null) {
   if (!value) {
     return "Telefone não informado";
   }
 
-  const digits = value.replace(/\D/g, "").slice(0, 10);
+  const digits = value.replace(/\D/g, "").slice(0, 11);
 
   if (!digits) {
     return "Telefone não informado";
@@ -34,11 +34,14 @@ function formatLandlineBR(value: string | null) {
     return `(${digits}`;
   }
 
-  if (digits.length <= 6) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) {
+    if (digits.length <= 6) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    }
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  } else {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   }
-
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
 }
 
 function getRelation<T>(relation: T | T[] | null | undefined): T | null {
@@ -223,7 +226,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-on-surface/75">
                     <Phone size={16} />
-                    <span>{formatLandlineBR(establishment.phone)}</span>
+                    <span>{formatDynamicPhone(establishment.phone)}</span>
                   </div>
                   {establishment.price_range && (
                     <div className="flex items-center gap-3 text-sm text-on-surface/75">

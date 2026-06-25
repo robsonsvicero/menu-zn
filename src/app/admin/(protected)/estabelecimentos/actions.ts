@@ -22,8 +22,8 @@ function sanitizeFileName(input: string) {
   return slugify(input.replace(/\.[^/.]+$/, "")) || "arquivo";
 }
 
-function formatPhoneBR(input: string) {
-  const digits = input.replace(/\D/g, "").slice(0, 11);
+function formatDynamicPhone(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
 
   if (!digits) {
     return "";
@@ -33,29 +33,14 @@ function formatPhoneBR(input: string) {
     return `(${digits}`;
   }
 
-  if (digits.length <= 7) {
-    return `(${digits.slice(0, 2)})${digits.slice(2)}`;
+  if (digits.length <= 10) {
+    if (digits.length <= 6) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    }
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  } else {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   }
-
-  return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
-}
-
-function formatLandlineBR(input: string) {
-  const digits = input.replace(/\D/g, "").slice(0, 10);
-
-  if (!digits) {
-    return "";
-  }
-
-  if (digits.length <= 2) {
-    return `(${digits}`;
-  }
-
-  if (digits.length <= 6) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  }
-
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
 }
 
 async function uploadCoverImage(file: File, slug: string) {
@@ -149,8 +134,8 @@ export async function createEstablishmentAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || name);
-  const formattedPhone = formatLandlineBR(phone);
-  const formattedWhatsapp = formatPhoneBR(whatsapp);
+  const formattedPhone = formatDynamicPhone(phone);
+  const formattedWhatsapp = formatDynamicPhone(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || null;
 
   if (imageFile instanceof File && imageFile.size > 0) {
@@ -250,8 +235,8 @@ export async function updateEstablishmentAction(formData: FormData) {
   }
 
   const slug = slugify(slugInput || name);
-  const formattedPhone = formatLandlineBR(phone);
-  const formattedWhatsapp = formatPhoneBR(whatsapp);
+  const formattedPhone = formatDynamicPhone(phone);
+  const formattedWhatsapp = formatDynamicPhone(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || currentImageCoverUrl || null;
 
   if (imageFile instanceof File && imageFile.size > 0) {

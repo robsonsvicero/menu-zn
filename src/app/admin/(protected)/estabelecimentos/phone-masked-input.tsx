@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 
-function formatPhoneBR(value: string) {
+function formatDynamicPhone(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 11);
 
   if (!digits) {
@@ -13,29 +13,14 @@ function formatPhoneBR(value: string) {
     return `(${digits}`;
   }
 
-  if (digits.length <= 7) {
-    return `(${digits.slice(0, 2)})${digits.slice(2)}`;
+  if (digits.length <= 10) {
+    if (digits.length <= 6) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    }
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  } else {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   }
-
-  return `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
-}
-
-function formatLandlineBR(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-
-  if (!digits) {
-    return "";
-  }
-
-  if (digits.length <= 2) {
-    return `(${digits}`;
-  }
-
-  if (digits.length <= 6) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  }
-
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
 }
 
 type PhoneMaskedInputProps = {
@@ -43,16 +28,14 @@ type PhoneMaskedInputProps = {
   defaultValue?: string;
   className?: string;
   placeholder?: string;
-  isLandline?: boolean;
 };
 
-export function PhoneMaskedInput({ name, defaultValue, className, placeholder, isLandline }: PhoneMaskedInputProps) {
-  const formatFn = useCallback((val: string) => (isLandline ? formatLandlineBR(val) : formatPhoneBR(val)), [isLandline]);
-  const [value, setValue] = useState(formatFn(defaultValue ?? ""));
+export function PhoneMaskedInput({ name, defaultValue, className, placeholder }: PhoneMaskedInputProps) {
+  const [value, setValue] = useState(formatDynamicPhone(defaultValue ?? ""));
 
   useEffect(() => {
-    setValue(formatFn(defaultValue ?? ""));
-  }, [defaultValue, formatFn]);
+    setValue(formatDynamicPhone(defaultValue ?? ""));
+  }, [defaultValue]);
 
   return (
     <input
@@ -60,9 +43,9 @@ export function PhoneMaskedInput({ name, defaultValue, className, placeholder, i
       name={name}
       inputMode="numeric"
       autoComplete="tel"
-      maxLength={isLandline ? 14 : 14}
+      maxLength={15}
       value={value}
-      onChange={(event) => setValue(formatFn(event.target.value))}
+      onChange={(event) => setValue(formatDynamicPhone(event.target.value))}
       className={className}
       placeholder={placeholder}
     />
