@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import StatsBar from "@/components/sections/StatsBar";  
 import Categories from "@/components/sections/Categories";
+import EstablishmentShowcase from "@/components/sections/EstablishmentShowcase";
 import Newsletter from "@/components/sections/Newsletter";
 
 export const metadata: Metadata = {
@@ -31,7 +32,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ZonaNortePage() {
+type SearchParams = {
+  q?: string;
+  neighborhood?: string;
+  sort?: string;
+  ifood?: string;
+};
+
+type Props = {
+  searchParams: Promise<SearchParams>;
+};
+
+export default async function ZonaNortePage({ searchParams }: Props) {
+  const params = await searchParams;
+
   return (
     <main className="min-h-screen">
       <section className="relative w-full h-[600px] md:h-[700px] flex items-center">
@@ -70,6 +84,7 @@ export default function ZonaNortePage() {
       </section>
       <StatsBar />
       <Categories />
+      <EstablishmentShowcase searchParams={params} />
       <Newsletter />
     </main>
   );
