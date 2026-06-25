@@ -8,28 +8,28 @@ import AboutZonaNorte from "@/components/sections/AboutZonaNorte";
 import Newsletter from "@/components/sections/Newsletter";
 
 export const metadata: Metadata = {
-  title: "Alta Gastronomia Zona Norte — SP | Menu Zona Norte",
+  title: "Menu Zona Norte | Restaurante alta gastronomia São Paulo",
   description:
     "Explore a gastronomia da Zona Norte de São Paulo. Restaurantes, pizzarias, bares e padarias de Santana, Tucuruvi e Cantareira no guia editorial Menu ZN.",
   openGraph: {
-    title: "Alta Gastronomia Zona Norte — SP | Menu Zona Norte",
+    title: "Menu Zona Norte | Restaurante alta gastronomia São Paulo",
     description:
       "Explore a gastronomia da Zona Norte de São Paulo. Restaurantes, pizzarias, bares e padarias de Santana, Tucuruvi e Cantareira.",
     images: [
       {
-        url: "/images/hero-zonanorte.png",
+        url: "/images/og-menuzn.jpg",
         width: 1200,
         height: 630,
-        alt: "Alta Gastronomia Zona Norte São Paulo — Menu Zona Norte",
+        alt: "Menu Zona Norte | Restaurante alta gastronomia São Paulo",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Alta Gastronomia Zona Norte — SP | Menu Zona Norte",
+    title: "Menu Zona Norte | Restaurante alta gastronomia São Paulo",
     description:
       "Explore a gastronomia da Zona Norte de São Paulo. Santana, Tucuruvi e Cantareira.",
-    images: ["/images/hero-zonanorte.png"],
+    images: ["/images/og-menuzn.jpg"],
   },
 };
 

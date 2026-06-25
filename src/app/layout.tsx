@@ -29,10 +29,10 @@ export const metadata: Metadata = {
       "Descubra os melhores restaurantes, bares, pizzarias e padarias da Zona Norte de São Paulo. Guia editorial de alta gastronomia em Santana, Tucuruvi e Cantareira.",
     images: [
       {
-        url: "/images/hero-menuzn.png",
+        url: "/images/og-menuzn.jpg",
         width: 1200,
         height: 630,
-        alt: "Menu Zona Norte — Alta Gastronomia SP",
+        alt: "Menu Zona Norte | Restaurante alta gastronomia São Paulo",
       },
     ],
   },
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     title: "Menu Zona Norte | Restaurante alta gastronomia São Paulo",
     description:
       "Descubra os melhores restaurantes, bares, pizzarias e padarias da Zona Norte de São Paulo.",
-    images: ["/images/hero-menuzn.png"],
+    images: ["/images/og-menuzn.jpg"],
   },
 };
 
