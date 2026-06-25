@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LogOut, LayoutDashboard, Store, BookOpen, Users, MessageSquareQuote, UserCog } from "lucide-react";
@@ -40,7 +41,7 @@ export default async function AdminProtectedLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -94,8 +95,19 @@ export default async function AdminProtectedLayout({
         {/* User + Logout */}
         <div className="border-t border-outline p-4">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
-              {initials}
+            <div className="h-9 w-9 rounded-full overflow-hidden bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0 border border-outline">
+              {profile?.avatar_url ? (
+                <Image
+                  src={profile.avatar_url}
+                  alt={displayName}
+                  width={36}
+                  height={36}
+                  className="object-cover w-full h-full"
+                  unoptimized
+                />
+              ) : (
+                initials
+              )}
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium truncate">{displayName}</p>

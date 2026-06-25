@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { UserCircle } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { resetUserPasswordAction, updateUserRoleAction } from "./actions";
@@ -9,6 +11,7 @@ type UserRow = {
   id: string;
   email: string;
   full_name: string | null;
+  avatar_url: string | null;
   is_active: boolean | null;
   role_codes: string[];
   created_at: string;
@@ -81,7 +84,7 @@ export default async function AdminUsuariosPage({
 
   const [{ data: authUsers }, { data: profiles }, { data: roles }, { data: roleOptions }] = await Promise.all([
     adminClient.auth.admin.listUsers(),
-    adminClient.from("profiles").select("id, full_name, is_active, created_at, last_login_at"),
+    adminClient.from("profiles").select("id, full_name, avatar_url, is_active, created_at, last_login_at"),
     adminClient.from("user_roles").select("user_id, roles(code)"),
     adminClient.from("roles").select("code, name").order("name"),
   ]);
@@ -109,6 +112,7 @@ export default async function AdminUsuariosPage({
       id: authUser.id,
       email: authUser.email ?? "-",
       full_name: profile?.full_name ?? null,
+      avatar_url: (profile as { avatar_url?: string | null } | undefined)?.avatar_url ?? null,
       is_active: profile?.is_active ?? null,
       role_codes: roleCodesByUser.get(authUser.id) ?? [],
       created_at: profile?.created_at ?? authUser.created_at,
@@ -197,9 +201,27 @@ export default async function AdminUsuariosPage({
             {filteredUsers.map((item) => (
               <tr key={item.id} className="border-t border-outline/60 align-top">
                 <td className="px-4 py-3">
-                  <div className="font-medium">{item.full_name ?? "Sem nome"}</div>
-                  <div className="text-xs text-on-surface/60">{item.email}</div>
-                  <div className="text-[11px] text-on-surface/50 mt-1">ID: {item.id}</div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/10 border border-outline shrink-0 flex items-center justify-center">
+                      {item.avatar_url ? (
+                        <Image
+                          src={item.avatar_url}
+                          alt={item.full_name ?? item.email}
+                          width={32}
+                          height={32}
+                          className="object-cover w-full h-full"
+                          unoptimized
+                        />
+                      ) : (
+                        <UserCircle size={18} className="text-on-surface/30" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-medium">{item.full_name ?? "Sem nome"}</div>
+                      <div className="text-xs text-on-surface/60">{item.email}</div>
+                      <div className="text-[11px] text-on-surface/50 mt-1">ID: {item.id}</div>
+                    </div>
+                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <div className="text-sm font-medium">{getPrimaryRole(item.role_codes)}</div>
