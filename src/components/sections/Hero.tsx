@@ -2,10 +2,19 @@
 
 import { Search } from 'lucide-react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '../ui/button'
 
 export default function Hero() {
   const [search, setSearch] = useState('')
+  const router = useRouter()
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (search.trim()) {
+      router.push(`/restaurantes?q=${encodeURIComponent(search.trim())}`)
+    }
+  }
 
   return (
     <section
@@ -24,12 +33,12 @@ export default function Hero() {
         <div className="max-w-xl">
           {/* Title */}
           <h1 className="font-serif text-5xl md:text-6xl font-bold text-white mb-8 leading-[1.15]">
-            Alta gastronomia na Zona Norte,{' '}
-            <span className="font-serif italic ligatures font-normal">curada por especialistas.</span>
+            Alta gastronomia na Zona Norte
+            {/* ,{' '} <span className="font-serif italic ligatures font-normal">curada por especialistas.</span> */}
           </h1>
 
           {/* Search Bar */}
-          <div className="mb-6">
+          <form onSubmit={handleSearch} className="mb-6">
             <div className="flex items-center gap-3 bg-black/40 border border-white/20 rounded-lg px-5 py-3 max-w-md">
               <input
                 type="text"
@@ -38,11 +47,11 @@ export default function Hero() {
                 onChange={(e) => setSearch(e.target.value)}
                 className="flex-1 bg-transparent text-white placeholder-white/50 outline-none text-sm"
               />
-              <button className="text-white/70 hover:text-white transition-colors">
+              <button type="submit" className="text-white/70 hover:text-white transition-colors">
                 <Search size={18} />
               </button>
             </div>
-          </div>
+          </form>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
