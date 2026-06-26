@@ -20,12 +20,6 @@ export default async function Showcase() {
             Indicações
           </h2>
         </div>
-        <Link 
-          href="/indicacoes" 
-          className="flex items-center gap-2 text-muted hover:text-on-surface transition-colors text-xs font-semibold tracking-wider uppercase"
-        >
-          Ver Todos <ArrowRight size={14} />
-        </Link>
       </div>
 
       {/* Grid */}
