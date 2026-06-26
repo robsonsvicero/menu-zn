@@ -77,11 +77,11 @@ export default function Footer() {
             <div className="flex flex-col gap-5">
               <div className="flex items-center gap-4">
                 <Phone size={18} className="text-[#D69869]" strokeWidth={2} />
-                <span className="text-[#a8a8a8] text-sm">(11) 97323-7060</span>
+                <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer"><span className="text-[#a8a8a8] text-sm">(11) 97323-7060</span></a>
               </div>
               <div className="flex items-center gap-4">
                 <Mail size={18} className="text-[#D69869]" strokeWidth={2} />
-                <span className="text-[#a8a8a8] text-sm">menuzonanorte@gmail.com</span>
+                <a href="mailto: menuzonanorte@gmail.com"><span className="text-[#a8a8a8] text-sm">menuzonanorte@gmail.com</span></a>
               </div>
               <div className="flex items-center gap-4">
                 <MapPin size={18} className="text-[#D69869]" strokeWidth={2} />
