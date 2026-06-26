@@ -76,9 +76,11 @@ export default async function ZonaNortePage({ searchParams }: Props) {
               <Button variant="default" size="lg" className="w-full sm:w-auto text-base">
                 Explorar Restaurantes
               </Button>
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto text-base">
-                Anuncie seu negócio
-              </Button>
+              <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button variant="secondary" size="lg" className="w-full text-base">
+                  Anuncie seu negócio
+                </Button>
+              </a>
             </div>
           </div>
         </div>

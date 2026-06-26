@@ -64,7 +64,7 @@ export default function Footer() {
           <div className="flex flex-col">
             <h3 className="font-serif text-xl font-bold mb-6">Para Empresas</h3>
             <div className="flex flex-col gap-4">
-              <a href="/anuncie" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Anuncie Aqui</a>
+              <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Anuncie Aqui</a>
               <a href="/planos" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Planos e Preços</a>
               <a href="/parceiros" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Seja Parceiro</a>
               <a href="/depoimentos" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Depoimentos</a>

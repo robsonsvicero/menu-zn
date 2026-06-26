@@ -98,9 +98,11 @@ export default function Header() {
               >
                 <Settings size={20} />
               </a>
-              <Button variant="default" size="lg" className="w-[180px] px-6 tracking-[0.9px]">
-                Anuncie
-              </Button>
+              <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer">
+                <Button variant="default" size="lg" className="w-[180px] px-6 tracking-[0.9px]">
+                  Anuncie
+                </Button>
+              </a>
             </div>
 
             {/* Mobile: Hotdog button */}
@@ -179,7 +181,7 @@ export default function Header() {
 
           {/* Drawer CTA */}
           <div className="px-8 pb-10">
-            <a href="/anuncie" className="block">
+            <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer" className="block">
               <button className="w-full bg-primary hover:bg-[#7a2a10] text-white font-serif text-lg font-bold py-5 rounded-2xl transition-colors">
                 Anuncie
               </button>

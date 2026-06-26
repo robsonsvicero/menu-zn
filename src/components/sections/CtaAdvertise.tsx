@@ -45,7 +45,7 @@ export default function CtaAdvertise() {
 
         {/* Right CTA */}
         <div className="flex-shrink-0 w-full lg:w-auto">
-          <a href="/anunciar">
+          <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer">
             <button className="w-full lg:w-auto bg-[#D69869] hover:bg-[#c28659] text-black font-bold text-xs uppercase tracking-widest px-8 py-4 rounded-2xl transition-colors shadow-lg">
               Anunciar Agora
             </button>
