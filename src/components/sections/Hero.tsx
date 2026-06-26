@@ -38,7 +38,7 @@ export default function Hero() {
           </h1>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="mb-6">
+          {/* <form onSubmit={handleSearch} className="mb-6">
             <div className="flex items-center gap-3 bg-black/40 border border-white/20 rounded-lg px-5 py-3 max-w-md">
               <input
                 type="text"
@@ -51,7 +51,7 @@ export default function Hero() {
                 <Search size={18} />
               </button>
             </div>
-          </form>
+          </form> */}
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
