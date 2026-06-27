@@ -63,13 +63,10 @@ export default async function AdminEstabelecimentosPage({
     .select("id, name, slug, status, is_featured, is_category_featured, is_indicated, rating, category_id, categories(name), neighborhoods(name)")
     .limit(100);
 
-  // Apply sorting
-  if (currentSort === "category") {
-     // Sorting by relation might be tricky or unsupported out of the box depending on Supabase version,
-     // we'll fallback to name or let the API handle it if possible. For foreign tables, we might just not sort.
-     // To keep it simple, we sort on root table columns only.
-  } else {
-     query = query.order(currentSort as any, { ascending: currentDir === "asc", nullsFirst: false });
+  // Apply sorting — related columns (category, neighborhood) are sorted in-memory after fetch
+  const relationSortColumns = new Set(["category", "neighborhood"]);
+  if (!relationSortColumns.has(currentSort)) {
+    query = query.order(currentSort as string, { ascending: currentDir === "asc", nullsFirst: false });
   }
 
   if (statusFilter && ["draft", "published", "archived"].includes(statusFilter)) {
@@ -97,8 +94,25 @@ export default async function AdminEstabelecimentosPage({
     supabase.from("categories").select("id, name").order("name"),
   ]);
 
-  const establishments = (data ?? []) as EstablishmentRow[];
+  let establishments = (data ?? []) as EstablishmentRow[];
   const categoryOptions = (categories ?? []) as CategoryFilterRow[];
+
+  // In-memory sort for related table columns
+  if (relationSortColumns.has(currentSort)) {
+    const asc = currentDir === "asc";
+    establishments = [...establishments].sort((a, b) => {
+      const valA =
+        currentSort === "category"
+          ? getRelationName(a.categories)
+          : getRelationName(a.neighborhoods);
+      const valB =
+        currentSort === "category"
+          ? getRelationName(b.categories)
+          : getRelationName(b.neighborhoods);
+      const cmp = valA.localeCompare(valB, "pt-BR", { sensitivity: "base" });
+      return asc ? cmp : -cmp;
+    });
+  }
 
   return (
     <section>
@@ -264,8 +278,22 @@ export default async function AdminEstabelecimentosPage({
                 baseUrl="/admin/estabelecimentos"
                 extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
               />
-              <th className="px-4 py-3 text-left font-medium">Categoria</th>
-              <th className="px-4 py-3 text-left font-medium">Bairro</th>
+              <SortableHeader
+                label="Categoria"
+                column="category"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
+              <SortableHeader
+                label="Bairro"
+                column="neighborhood"
+                currentSort={currentSort}
+                currentDir={currentDir}
+                baseUrl="/admin/estabelecimentos"
+                extraParams={{ q: searchTerm, status: statusFilter, category: categoryFilter, indicated: indicatedFilter }}
+              />
               <SortableHeader
                 label="Status"
                 column="status"
