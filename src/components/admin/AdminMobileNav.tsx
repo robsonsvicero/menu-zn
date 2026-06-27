@@ -13,6 +13,7 @@ import {
   MessageSquareQuote,
   UserCog,
   Tags,
+  Mail,
   LogOut,
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ const navLinks = [
   { href: "/admin/categorias-blog", label: "Categorias", icon: Tags },
   { href: "/admin/autores", label: "Autores", icon: Users },
   { href: "/admin/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+  { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
   { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
 ];
 
