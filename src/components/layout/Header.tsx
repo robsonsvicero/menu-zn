@@ -91,13 +91,13 @@ export default function Header() {
 
             {/* Desktop CTA & Admin */}
             <div className="hidden lg:flex items-center gap-4">
-              <a
+              {/* <a
                 href="/admin/login"
                 className="text-white/80 hover:text-white transition-colors pr-8"
                 aria-label="Admin"
               >
                 <Settings size={20} />
-              </a>
+              </a> */}
               <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer">
                 <Button variant="default" size="lg" className="w-[180px] px-6 tracking-[0.9px]">
                   Anuncie
