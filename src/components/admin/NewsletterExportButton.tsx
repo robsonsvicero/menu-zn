@@ -32,7 +32,7 @@ export default function NewsletterExportButton() {
   return (
     <button
       onClick={handleExport}
-      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-[#222222] hover:bg-emerald-700 transition-colors"
     >
       <Download size={16} />
       Exportar XLS
