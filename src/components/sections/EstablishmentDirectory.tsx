@@ -224,7 +224,7 @@ export default async function EstablishmentDirectory({
       <section className="mx-auto max-w-300 px-6 py-14 md:px-10 lg:px-12 lg:py-18">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-serif text-2xl md:text-3xl">Resultados</h2>
+            <h2 className="font-serif text-2xl md:text-3xl capitalize">{categoryName || "Estabelecimentos"}</h2>
             <p className="mt-1 text-sm text-on-surface/65">
               {items.length} estabelecimento{items.length === 1 ? "" : "s"} encontrado{items.length === 1 ? "" : "s"}.
             </p>

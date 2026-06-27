@@ -165,7 +165,7 @@ export async function fetchPublishedEstablishments(options?: {
       break;
     case "featured":
     default:
-      query = query.order("is_featured", { ascending: false }).order("rating", { ascending: false, nullsFirst: false }).order("name");
+      query = query.order("created_at", { ascending: false });
       break;
   }
 
