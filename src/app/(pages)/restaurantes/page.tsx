@@ -45,7 +45,7 @@ export default async function RestaurantesPage({
     <EstablishmentDirectory
       categorySlug="restaurantes"
       heroTitle="Os Melhores Restaurantes da Zona Norte"
-      heroText="Uma seleção rigorosa e editorial alimentada pelo Supabase, com restaurantes publicados no painel administrativo."
+      heroText="Restaurantes selecionados por sua qualidade e sabor para quem busca boas experiências gastronômicas na Zona Norte de São Paulo."
       heroImage="/images/hero-restaurantes.png"
       heroAlt="Os Melhores Restaurantes da Zona Norte"
       buttonLabel="Explorar Guia"
