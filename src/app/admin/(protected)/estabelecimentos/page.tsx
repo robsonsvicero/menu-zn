@@ -423,7 +423,7 @@ export default async function AdminEstabelecimentosPage({
         </table>
       </div>
 
-      <p className="mt-4 text-xs text-on-surface/60">Cadastro, edição e troca de status já estão ativos.</p>
+      <p className="mt-4 text-xs text-on-surface/60">Total: {establishments.length} estabelecimento{establishments.length !== 1 ? "s" : ""} cadastrado{establishments.length !== 1 ? "s" : ""}.</p>
 
       <div className="mt-6">
         <Link href="/admin" className="text-sm text-primary hover:underline">
