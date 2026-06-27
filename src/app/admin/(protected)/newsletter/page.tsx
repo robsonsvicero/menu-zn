@@ -72,7 +72,7 @@ export default async function AdminNewsletterPage({
           </p>
         </div>
 
-        <NewsletterExportButton />
+        <NewsletterExportButton className="text-[#222222]" />
       </div>
 
       {/* Search */}
