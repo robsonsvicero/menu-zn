@@ -146,13 +146,13 @@ export default function Header() {
               />
             </a>
             <div className="flex items-center gap-2">
-              <a
+              {/* <a
                 href="/admin/login"
                 className="w-10 h-10 flex items-center justify-center text-on-surface hover:text-primary transition-colors"
                 aria-label="Admin"
               >
                 <Settings size={22} />
-              </a>
+              </a> */}
               <button
                 onClick={() => setMobileOpen(false)}
                 className="w-10 h-10 flex items-center justify-center text-on-surface hover:text-primary transition-colors"
