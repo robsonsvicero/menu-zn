@@ -43,6 +43,61 @@ function formatDynamicPhone(value: string) {
   }
 }
 
+function redirectWithError(path: string, message: string): never {
+  redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
+async function findDuplicateEstablishment(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  name: string,
+  slug: string,
+  ignoredId?: string
+) {
+  let slugQuery = supabase
+    .from("establishments")
+    .select("id, name, slug")
+    .eq("slug", slug)
+    .limit(1);
+
+  let nameQuery = supabase
+    .from("establishments")
+    .select("id, name, slug")
+    .ilike("name", name)
+    .limit(1);
+
+  if (ignoredId) {
+    slugQuery = slugQuery.neq("id", ignoredId);
+    nameQuery = nameQuery.neq("id", ignoredId);
+  }
+
+  const [{ data: slugMatches, error: slugError }, { data: nameMatches, error: nameError }] =
+    await Promise.all([slugQuery, nameQuery]);
+
+  if (slugError) {
+    throw new Error(slugError.message);
+  }
+
+  if (nameError) {
+    throw new Error(nameError.message);
+  }
+
+  return slugMatches?.[0] ?? nameMatches?.[0] ?? null;
+}
+
+function revalidateEstablishmentPaths(slug?: string | null) {
+  revalidatePath("/");
+  revalidatePath("/admin/estabelecimentos");
+  revalidatePath("/restaurantes");
+  revalidatePath("/bares");
+  revalidatePath("/pizzarias");
+  revalidatePath("/padarias");
+  revalidatePath("/sitemap.xml");
+
+  if (slug) {
+    revalidatePath(`/local/${slug}`);
+  }
+}
+
 async function uploadCoverImage(file: File, slug: string) {
   const adminClient = createAdminClient();
   const bucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
@@ -139,6 +194,15 @@ export async function createEstablishmentAction(formData: FormData) {
   const formattedWhatsapp = formatDynamicPhone(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || null;
 
+  const duplicate = await findDuplicateEstablishment(supabase, name, slug);
+
+  if (duplicate) {
+    redirectWithError(
+      "/admin/estabelecimentos/novo",
+      `Ja existe um estabelecimento cadastrado com este nome ou slug: ${duplicate.name}.`
+    );
+  }
+
   if (imageFile instanceof File && imageFile.size > 0) {
     const uploadedUrl = await uploadCoverImage(imageFile, slug);
     if (uploadedUrl) {
@@ -175,7 +239,7 @@ export async function createEstablishmentAction(formData: FormData) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/admin/estabelecimentos");
+  revalidateEstablishmentPaths(slug);
   redirect("/admin/estabelecimentos");
 }
 
@@ -202,7 +266,7 @@ export async function updateEstablishmentStatusAction(formData: FormData) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/admin/estabelecimentos");
+  revalidateEstablishmentPaths();
 }
 
 export async function updateEstablishmentAction(formData: FormData) {
@@ -242,6 +306,15 @@ export async function updateEstablishmentAction(formData: FormData) {
   const formattedWhatsapp = formatDynamicPhone(whatsapp);
   let finalImageCoverUrl: string | null = imageCoverUrl || currentImageCoverUrl || null;
 
+  const duplicate = await findDuplicateEstablishment(supabase, name, slug, id);
+
+  if (duplicate) {
+    redirectWithError(
+      `/admin/estabelecimentos/${id}/editar`,
+      `Ja existe um estabelecimento cadastrado com este nome ou slug: ${duplicate.name}.`
+    );
+  }
+
   if (imageFile instanceof File && imageFile.size > 0) {
     const uploadedUrl = await uploadCoverImage(imageFile, slug);
     if (uploadedUrl) {
@@ -280,8 +353,36 @@ export async function updateEstablishmentAction(formData: FormData) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/admin/estabelecimentos");
+  revalidateEstablishmentPaths(slug);
   redirect("/admin/estabelecimentos");
+}
+
+export async function deleteEstablishmentAction(formData: FormData) {
+  const { supabase } = await ensureAdminAccess();
+
+  const id = String(formData.get("id") ?? "").trim();
+
+  if (!id) {
+    redirectWithError("/admin/estabelecimentos", "ID invalido para exclusao.");
+  }
+
+  const { data: establishment, error: fetchError } = await supabase
+    .from("establishments")
+    .select("slug")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) {
+    redirectWithError("/admin/estabelecimentos", fetchError.message);
+  }
+
+  const { error } = await supabase.from("establishments").delete().eq("id", id);
+
+  if (error) {
+    redirectWithError("/admin/estabelecimentos", error.message);
+  }
+
+  revalidateEstablishmentPaths(establishment?.slug);
 }
 
 export async function addNeighborhoodAction(name: string) {

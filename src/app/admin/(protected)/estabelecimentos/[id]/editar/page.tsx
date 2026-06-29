@@ -34,10 +34,13 @@ type Establishment = {
 
 export default async function EditarEstabelecimentoPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { id } = await params;
+  const { error: searchError } = await searchParams;
   const supabase = await createClient();
 
   const [{ data: item }, { data: categories }, { data: neighborhoods }] = await Promise.all([
@@ -66,6 +69,12 @@ export default async function EditarEstabelecimentoPage({
         <h2 className="text-3xl font-serif">Editar estabelecimento</h2>
         <p className="text-sm text-on-surface/70 mt-1">Atualize os dados do estabelecimento selecionado.</p>
       </div>
+
+      {searchError ? (
+        <div className="mb-5 rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-error">
+          {searchError}
+        </div>
+      ) : null}
 
       <form action={updateEstablishmentAction} className="rounded-2xl border border-outline bg-white p-6 md:p-8 space-y-5">
         <input type="hidden" name="id" value={establishment.id} />

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { updateEstablishmentStatusAction } from "./actions";
+import { deleteEstablishmentAction, updateEstablishmentStatusAction } from "./actions";
 import { SortableHeader } from "@/components/admin/SortableHeader";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +26,7 @@ type SearchParams = {
   rating?: string;
   sort?: string;
   dir?: string;
+  error?: string;
 };
 
 type CategoryFilterRow = {
@@ -47,6 +48,7 @@ export default async function AdminEstabelecimentosPage({
   const indicatedFilter = (params.indicated ?? "").trim();
   const currentSort = params.sort ?? "created_at";
   const currentDir = params.dir ?? "desc";
+  const searchError = params.error;
 
   const getRelationName = (
     relation: { name: string }[] | { name: string } | null | undefined
@@ -135,6 +137,12 @@ export default async function AdminEstabelecimentosPage({
       {error ? (
         <div className="rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-error">
           Erro ao carregar estabelecimentos: {error.message}
+        </div>
+      ) : null}
+
+      {searchError ? (
+        <div className="mb-5 rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-error">
+          {searchError}
         </div>
       ) : null}
 
@@ -260,6 +268,13 @@ export default async function AdminEstabelecimentosPage({
                   </button>
                 </form>
               ) : null}
+
+              <form action={deleteEstablishmentAction} className="flex-1">
+                <input type="hidden" name="id" value={item.id} />
+                <button type="submit" className="w-full rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-xs font-medium text-error hover:bg-error/15">
+                  Excluir
+                </button>
+              </form>
             </div>
           </div>
         ))}
@@ -408,13 +423,23 @@ export default async function AdminEstabelecimentosPage({
                         </button>
                       </form>
                     ) : null}
+
+                    <form action={deleteEstablishmentAction}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <button
+                        type="submit"
+                        className="rounded-lg border border-error/30 px-2.5 py-1 text-xs text-error hover:bg-error/10"
+                      >
+                        Excluir
+                      </button>
+                    </form>
                   </div>
                 </td>
               </tr>
             ))}
             {establishments.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-on-surface/70">
+                <td colSpan={10} className="px-4 py-8 text-center text-on-surface/70">
                   Nenhum estabelecimento cadastrado ainda.
                 </td>
               </tr>

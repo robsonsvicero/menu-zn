@@ -9,8 +9,13 @@ export const dynamic = "force-dynamic";
 
 type OptionRow = { id: string; name: string };
 
-export default async function NovoEstabelecimentoPage() {
+export default async function NovoEstabelecimentoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const supabase = await createClient();
+  const { error: searchError } = await searchParams;
 
   const [{ data: categories }, { data: neighborhoods }] = await Promise.all([
     supabase.from("categories").select("id, name").order("name"),
@@ -26,6 +31,12 @@ export default async function NovoEstabelecimentoPage() {
         <h2 className="text-3xl font-serif">Novo estabelecimento</h2>
         <p className="text-sm text-on-surface/70 mt-1">Cadastre restaurante, bar, pizzaria, padaria e outros locais.</p>
       </div>
+
+      {searchError ? (
+        <div className="mb-5 rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-error">
+          {searchError}
+        </div>
+      ) : null}
 
       <form action={createEstablishmentAction} className="rounded-2xl border border-outline bg-white p-6 md:p-8 space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
