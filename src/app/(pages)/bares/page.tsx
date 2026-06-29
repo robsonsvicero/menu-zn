@@ -45,7 +45,7 @@ export default async function BaresPage({
     <EstablishmentDirectory
       categorySlug="bares"
       heroTitle="A Vida Noturna da Zona Norte em Foco"
-      heroText="Do boteco raiz ao gastrobars com alta coquetelaria, em uma vitrine real alimentada pelo Supabase."
+      heroText="Descubra os melhores bares e pubs da Zona Norte de São Paulo. Do boteco raiz à alta coquetelaria em Santana, Tucuruvi e região."
       heroImage="/images/hero-menuzn.png"
       heroAlt="Os Melhores Bares da Zona Norte"
       buttonLabel="Descobrir Bares"
