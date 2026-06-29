@@ -166,10 +166,10 @@ export default async function EditarEstabelecimentoPage({
             <label className="block text-sm mb-1">Faixa de Preço</label>
             <select name="price_range" defaultValue={establishment.price_range ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
               <option value="">Sob consulta</option>
-              <option value="$">$ - Econômico</option>
-              <option value="$$">$$ - Moderado</option>
-              <option value="$$$">$$$ - Caro</option>
-              <option value="$$$$">$$$$ - Muito caro</option>
+              <option value="$">$ - Até R$ 60 - Econômico</option>
+              <option value="$$">$$ - R$ 61 a R$ 120 - Moderado</option>
+              <option value="$$$">$$$ - R$ 121 a R$ 250 - Premium</option>
+              <option value="$$$$">$$$$ - Acima de R$ 250 - Alta Gastronomia</option>
             </select>
           </div>
           <div>
