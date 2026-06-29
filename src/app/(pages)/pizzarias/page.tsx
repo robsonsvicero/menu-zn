@@ -45,7 +45,7 @@ export default async function PizzariasPage({
     <EstablishmentDirectory
       categorySlug="pizzarias"
       heroTitle="A Verdadeira Pizza Paulistana Mora Aqui"
-      heroText="Cantinas tradicionais e pizzarias napolitanas com dados reais do painel administrativo."
+      heroText="As melhores pizzarias da Zona Norte de São Paulo. Cantinas tradicionais e pizzas napolitanas autorais em Santana, Tucuruvi e região."
       heroImage="/images/hero-restaurantes.png"
       heroAlt="As Melhores Pizzarias da Zona Norte"
       buttonLabel="Escolher Fatias"

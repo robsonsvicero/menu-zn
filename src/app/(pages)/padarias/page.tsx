@@ -45,7 +45,7 @@ export default async function PadariasPage({
     <EstablishmentDirectory
       categorySlug="padarias"
       heroTitle="O Pão Quentinho e o Café Perfeito Estão Aqui"
-      heroText="Padarias e cafeterias com conteúdo real vindo do Supabase, do balcão clássico às boutiques artesanais."
+      heroText="Encontre as melhores padarias, cafeterias e empórios da Zona Norte de São Paulo. Do balcão clássico às boutiques artesanais em Santana e região."
       heroImage="/images/hero-menuzn.png"
       heroAlt="As Melhores Padarias da Zona Norte"
       buttonLabel="Sentar no Balcão"
