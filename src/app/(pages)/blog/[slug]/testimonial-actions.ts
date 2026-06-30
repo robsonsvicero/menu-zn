@@ -70,6 +70,6 @@ export async function submitBlogTestimonialAction(
 
   return {
     status: "success",
-    message: "Comentário enviado. Ele vai aparecer no site depois da moderação.",
+    message: "Comentário enviado. Ele vai aparecer no site após aprovação.",
   };
 }
