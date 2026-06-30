@@ -23,8 +23,7 @@ function SubmitButton() {
       className="inline-flex items-center justify-center gap-2 rounded-xl bg-[rgb(148_53_21)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[rgb(120_42_16)] disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Send size={16} />
-      {pending ? "Enviando..." : "Enviar para moderação"}
-    </button>
+      {pending ? "Enviando..." : "Enviar comentário"}
   );
 }
 
