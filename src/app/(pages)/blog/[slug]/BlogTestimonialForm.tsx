@@ -24,6 +24,7 @@ function SubmitButton() {
     >
       <Send size={16} />
       {pending ? "Enviando..." : "Enviar comentário"}
+    </button>
   );
 }
 
