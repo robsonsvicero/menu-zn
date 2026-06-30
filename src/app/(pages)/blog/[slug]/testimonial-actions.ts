@@ -10,24 +10,8 @@ export type BlogTestimonialFormState = {
 
 const initialErrorState: BlogTestimonialFormState = {
   status: "error",
-  message: "Nao foi possivel enviar seu depoimento. Tente novamente.",
+  message: "Não foi possível enviar seu comentário. Tente novamente.",
 };
-
-function parseRating(value: FormDataEntryValue | null) {
-  const raw = String(value ?? "").trim();
-
-  if (!raw) {
-    return null;
-  }
-
-  const parsed = Number(raw);
-
-  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 5) {
-    return null;
-  }
-
-  return parsed;
-}
 
 export async function submitBlogTestimonialAction(
   _prevState: BlogTestimonialFormState,
@@ -36,18 +20,16 @@ export async function submitBlogTestimonialAction(
   const blogPostId = String(formData.get("blog_post_id") ?? "").trim();
   const blogPostSlug = String(formData.get("blog_post_slug") ?? "").trim();
   const authorName = String(formData.get("author_name") ?? "").trim();
-  const authorRole = String(formData.get("author_role") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
-  const rating = parseRating(formData.get("rating"));
 
   if (!blogPostId || !blogPostSlug || !authorName || !content) {
     return {
       status: "error",
-      message: "Preencha nome e depoimento antes de enviar.",
+      message: "Preencha nome e comentário antes de enviar.",
     };
   }
 
-  if (authorName.length > 120 || authorRole.length > 140 || content.length > 1200) {
+  if (authorName.length > 120 || content.length > 1200) {
     return {
       status: "error",
       message: "Revise o tamanho dos campos e tente novamente.",
@@ -70,9 +52,9 @@ export async function submitBlogTestimonialAction(
 
   const { error } = await supabase.from("testimonials").insert({
     author_name: authorName,
-    author_role: authorRole || null,
+    author_role: null,
     content,
-    rating,
+    rating: null,
     source: `Blog: ${post.title}`,
     status: "pending",
     is_featured: false,
@@ -88,6 +70,6 @@ export async function submitBlogTestimonialAction(
 
   return {
     status: "success",
-    message: "Depoimento enviado. Ele vai aparecer no site depois da moderacao.",
+    message: "Comentário enviado. Ele vai aparecer no site depois da moderação.",
   };
 }
