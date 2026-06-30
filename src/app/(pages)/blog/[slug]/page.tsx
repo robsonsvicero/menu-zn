@@ -8,6 +8,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { fetchPublishedBlogPostBySlug, fetchPublishedBlogPosts } from "@/lib/blog-public";
+import { BlogTestimonialForm } from "./BlogTestimonialForm";
 
 export const dynamic = "force-dynamic";
 
@@ -279,6 +280,8 @@ export default async function BlogPostDetail({ params }: PageProps) {
                 </div>
               </div>
             </div>
+
+            <BlogTestimonialForm postId={post.id} postSlug={post.slug} />
           </div>
         </div>
       </section>

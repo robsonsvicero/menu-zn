@@ -165,6 +165,7 @@ create table if not exists public.testimonials (
   content text not null,
   rating integer check (rating between 1 and 5),
   source text,
+  blog_post_id uuid references public.blog_posts(id) on delete set null,
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   is_featured boolean not null default false,
   approved_by uuid references public.profiles(id),
@@ -174,6 +175,7 @@ create table if not exists public.testimonials (
 );
 
 create index if not exists idx_testimonials_status on public.testimonials(status);
+create index if not exists idx_testimonials_blog_post_id on public.testimonials(blog_post_id);
 
 -- =============================================
 -- Mídia e auditoria

@@ -61,6 +61,7 @@ export async function createTestimonialAction(formData: FormData) {
   const authorAvatarUrl = String(formData.get("author_avatar_url") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const source = String(formData.get("source") ?? "").trim();
+  const blogPostId = String(formData.get("blog_post_id") ?? "").trim();
   const rating = parseRating(formData.get("rating"));
   const status = String(formData.get("status") ?? "pending").trim();
   const isFeatured = formData.get("is_featured") === "on";
@@ -75,6 +76,7 @@ export async function createTestimonialAction(formData: FormData) {
     author_avatar_url: authorAvatarUrl || null,
     content,
     source: source || null,
+    blog_post_id: blogPostId || null,
     rating,
     status: status === "approved" || status === "rejected" ? status : "pending",
     is_featured: isFeatured,
@@ -99,6 +101,7 @@ export async function updateTestimonialAction(formData: FormData) {
   const authorAvatarUrl = String(formData.get("author_avatar_url") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const source = String(formData.get("source") ?? "").trim();
+  const blogPostId = String(formData.get("blog_post_id") ?? "").trim();
   const rating = parseRating(formData.get("rating"));
   const status = String(formData.get("status") ?? "pending").trim();
   const isFeatured = formData.get("is_featured") === "on";
@@ -117,6 +120,7 @@ export async function updateTestimonialAction(formData: FormData) {
       author_avatar_url: authorAvatarUrl || null,
       content,
       source: source || null,
+      blog_post_id: blogPostId || null,
       rating,
       status: status === "approved" || status === "rejected" ? status : "pending",
       is_featured: isFeatured,

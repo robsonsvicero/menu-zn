@@ -12,6 +12,7 @@ type TestimonialRow = {
   content: string;
   rating: number | null;
   source: string | null;
+  blog_posts: { title: string; slug: string } | { title: string; slug: string }[] | null;
   status: "pending" | "approved" | "rejected";
   is_featured: boolean;
 };
@@ -21,6 +22,25 @@ type SearchParams = {
   dir?: string;
 };
 
+const sortableColumns = new Set([
+  "author_name",
+  "rating",
+  "status",
+  "is_featured",
+  "source",
+  "created_at",
+]);
+
+function getRelatedPost(
+  value: TestimonialRow["blog_posts"]
+): { title: string; slug: string } | null {
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+
+  return value;
+}
+
 export default async function AdminDepoimentosPage({
   searchParams,
 }: {
@@ -29,15 +49,15 @@ export default async function AdminDepoimentosPage({
   const params = await searchParams;
   const supabase = await createClient();
 
-  const currentSort = params.sort ?? "created_at";
+  const currentSort = sortableColumns.has(params.sort ?? "") ? params.sort! : "created_at";
   const currentDir = params.dir ?? "desc";
 
   let query = supabase
     .from("testimonials")
-    .select("id, author_name, author_role, content, rating, source, status, is_featured")
+    .select("id, author_name, author_role, content, rating, source, status, is_featured, blog_posts(title, slug)")
     .limit(100);
 
-  query = query.order(currentSort as any, { ascending: currentDir === "asc", nullsFirst: false });
+  query = query.order(currentSort, { ascending: currentDir === "asc", nullsFirst: false });
 
   const { data, error } = await query;
 
@@ -48,7 +68,9 @@ export default async function AdminDepoimentosPage({
       <div className="mb-6 flex items-center justify-between gap-3">
         <div>
           <h2 className="text-3xl font-serif">Depoimentos</h2>
-          <p className="text-sm text-on-surface/70 mt-1">Moderação de avaliações e opiniões publicadas no site.</p>
+          <p className="mt-1 text-sm text-on-surface/70">
+            Moderação de avaliações e opiniões publicadas no site.
+          </p>
         </div>
 
         <Link href="/admin/depoimentos/novo" className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90">
@@ -101,66 +123,80 @@ export default async function AdminDepoimentosPage({
                 currentDir={currentDir}
                 baseUrl="/admin/depoimentos"
               />
+              <th className="px-4 py-3 text-left font-medium">Artigo</th>
               <th className="px-4 py-3 text-left font-medium">Ações</th>
             </tr>
           </thead>
           <tbody>
-            {testimonials.map((item) => (
-              <tr key={item.id} className="border-t border-outline/60">
-                <td className="px-4 py-3">
-                  <div className="font-medium">{item.author_name}</div>
-                  <div className="text-xs text-on-surface/60">{item.author_role ?? "-"}</div>
-                </td>
-                <td className="px-4 py-3">{item.rating ?? "-"}</td>
-                <td className="px-4 py-3">
-                  <span className="rounded-full bg-background px-2.5 py-1 text-xs uppercase tracking-wide">
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">{item.is_featured ? "Sim" : "Não"}</td>
-                <td className="px-4 py-3 text-on-surface/70">{item.source ?? "-"}</td>
-                <td className="px-4 py-3">
-                  <div className="flex flex-wrap gap-2">
-                    <Link href={`/admin/depoimentos/${item.id}/editar`} className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
-                      Editar
-                    </Link>
+            {testimonials.map((item) => {
+              const relatedPost = getRelatedPost(item.blog_posts);
 
-                    {item.status !== "approved" ? (
-                      <form action={updateTestimonialStatusAction}>
-                        <input type="hidden" name="id" value={item.id} />
-                        <input type="hidden" name="next_status" value="approved" />
-                        <button type="submit" className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
-                          Aprovar
-                        </button>
-                      </form>
-                    ) : null}
+              return (
+                <tr key={item.id} className="border-t border-outline/60">
+                  <td className="px-4 py-3">
+                    <div className="font-medium">{item.author_name}</div>
+                    <div className="text-xs text-on-surface/60">{item.author_role ?? "-"}</div>
+                  </td>
+                  <td className="px-4 py-3">{item.rating ?? "-"}</td>
+                  <td className="px-4 py-3">
+                    <span className="rounded-full bg-background px-2.5 py-1 text-xs uppercase tracking-wide">
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">{item.is_featured ? "Sim" : "Não"}</td>
+                  <td className="px-4 py-3 text-on-surface/70">{item.source ?? "-"}</td>
+                  <td className="px-4 py-3 text-on-surface/70">
+                    {relatedPost ? (
+                      <Link href={`/blog/${relatedPost.slug}`} className="underline underline-offset-2 hover:text-primary">
+                        {relatedPost.title}
+                      </Link>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-2">
+                      <Link href={`/admin/depoimentos/${item.id}/editar`} className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
+                        Editar
+                      </Link>
 
-                    {item.status !== "rejected" ? (
-                      <form action={updateTestimonialStatusAction}>
-                        <input type="hidden" name="id" value={item.id} />
-                        <input type="hidden" name="next_status" value="rejected" />
-                        <button type="submit" className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
-                          Rejeitar
-                        </button>
-                      </form>
-                    ) : null}
+                      {item.status !== "approved" ? (
+                        <form action={updateTestimonialStatusAction}>
+                          <input type="hidden" name="id" value={item.id} />
+                          <input type="hidden" name="next_status" value="approved" />
+                          <button type="submit" className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
+                            Aprovar
+                          </button>
+                        </form>
+                      ) : null}
 
-                    {item.status !== "pending" ? (
-                      <form action={updateTestimonialStatusAction}>
-                        <input type="hidden" name="id" value={item.id} />
-                        <input type="hidden" name="next_status" value="pending" />
-                        <button type="submit" className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
-                          Pendente
-                        </button>
-                      </form>
-                    ) : null}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {item.status !== "rejected" ? (
+                        <form action={updateTestimonialStatusAction}>
+                          <input type="hidden" name="id" value={item.id} />
+                          <input type="hidden" name="next_status" value="rejected" />
+                          <button type="submit" className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
+                            Rejeitar
+                          </button>
+                        </form>
+                      ) : null}
+
+                      {item.status !== "pending" ? (
+                        <form action={updateTestimonialStatusAction}>
+                          <input type="hidden" name="id" value={item.id} />
+                          <input type="hidden" name="next_status" value="pending" />
+                          <button type="submit" className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background">
+                            Pendente
+                          </button>
+                        </form>
+                      ) : null}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
             {testimonials.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-on-surface/70">
+                <td colSpan={7} className="px-4 py-8 text-center text-on-surface/70">
                   Nenhum depoimento cadastrado ainda.
                 </td>
               </tr>
@@ -168,8 +204,6 @@ export default async function AdminDepoimentosPage({
           </tbody>
         </table>
       </div>
-
-      <p className="mt-4 text-xs text-on-surface/60">Próxima entrega: criação/edição de depoimentos com aprovação e destaque.</p>
     </section>
   );
 }

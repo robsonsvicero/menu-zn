@@ -13,6 +13,7 @@ type Testimonial = {
   content: string;
   rating: number | null;
   source: string | null;
+  blog_post_id: string | null;
   status: "pending" | "approved" | "rejected";
   is_featured: boolean;
 };
@@ -25,11 +26,18 @@ export default async function EditarDepoimentoPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: item } = await supabase
-    .from("testimonials")
-    .select("id, author_name, author_role, author_avatar_url, content, rating, source, status, is_featured")
-    .eq("id", id)
-    .single();
+  const [{ data: item }, { data: posts }] = await Promise.all([
+    supabase
+      .from("testimonials")
+      .select("id, author_name, author_role, author_avatar_url, content, rating, source, blog_post_id, status, is_featured")
+      .eq("id", id)
+      .single(),
+    supabase
+      .from("blog_posts")
+      .select("id, title")
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .limit(100),
+  ]);
 
   if (!item) {
     notFound();
@@ -87,6 +95,18 @@ export default async function EditarDepoimentoPage({
               <option value="rejected">Rejeitado</option>
             </select>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Artigo relacionado</label>
+          <select name="blog_post_id" defaultValue={testimonial.blog_post_id ?? ""} className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
+            <option value="">Sem artigo relacionado</option>
+            {(posts ?? []).map((post) => (
+              <option key={post.id} value={post.id}>
+                {post.title}
+              </option>
+            ))}
+          </select>
         </div>
 
         <label className="inline-flex items-center gap-2 text-sm">

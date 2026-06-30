@@ -1,9 +1,17 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { createTestimonialAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
-export default function NovoDepoimentoPage() {
+export default async function NovoDepoimentoPage() {
+  const supabase = await createClient();
+  const { data: posts } = await supabase
+    .from("blog_posts")
+    .select("id, title")
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .limit(100);
+
   return (
     <section className="max-w-4xl">
       <div className="mb-6">
@@ -52,6 +60,18 @@ export default function NovoDepoimentoPage() {
               <option value="rejected">Rejeitado</option>
             </select>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Artigo relacionado</label>
+          <select name="blog_post_id" defaultValue="" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
+            <option value="">Sem artigo relacionado</option>
+            {(posts ?? []).map((post) => (
+              <option key={post.id} value={post.id}>
+                {post.title}
+              </option>
+            ))}
+          </select>
         </div>
 
         <label className="inline-flex items-center gap-2 text-sm">
