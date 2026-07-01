@@ -3,6 +3,7 @@ export type Categoria =
   | "bar"
   | "padaria"
   | "pizzaria"
+  | "hamburgueria"
   | "oriental"
   | "lanchonete";
 

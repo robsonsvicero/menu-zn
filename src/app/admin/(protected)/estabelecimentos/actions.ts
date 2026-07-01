@@ -91,6 +91,7 @@ function revalidateEstablishmentPaths(slug?: string | null) {
   revalidatePath("/bares");
   revalidatePath("/pizzarias");
   revalidatePath("/padarias");
+  revalidatePath("/hamburguerias");
   revalidatePath("/sitemap.xml");
 
   if (slug) {

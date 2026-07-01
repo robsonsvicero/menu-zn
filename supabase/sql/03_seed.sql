@@ -22,6 +22,7 @@ values
   ('Pizzarias', 'pizzarias', 'Pizzarias recomendadas da Zona Norte'),
   ('Bares', 'bares', 'Bares e botecos da Zona Norte'),
   ('Padarias', 'padarias', 'Padarias e cafeterias da Zona Norte'),
+  ('Hamburguerias', 'hamburguerias', 'Hamburguerias artesanais da Zona Norte'),
   ('Lanchonetes', 'lanchonetes', 'Lanches e hamburguerias da Zona Norte'),
   ('Orientais', 'orientais', 'Culinaria oriental na Zona Norte')
 on conflict (slug) do nothing;

@@ -14,6 +14,7 @@ const navLinks = [
   { href: '/bares', label: 'Bares' },
   { href: '/pizzarias', label: 'Pizzarias' },
   { href: '/padarias', label: 'Padarias' },
+  { href: '/hamburguerias', label: 'Hamburguerias' },
   { href: '/blog', label: 'Blog' },
 ]
 
@@ -76,7 +77,7 @@ export default function Header() {
             </a>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex gap-8 items-center">
+            <nav className="hidden lg:flex gap-6 items-center">
               {navLinks.map((link) => (
                 <a
                   key={link.href}

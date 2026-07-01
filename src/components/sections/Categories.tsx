@@ -39,6 +39,13 @@ const categories: CategoryItem[] = [
     subtitle: 'CAFÉ & BRUNCH',
     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=600&h=800',
     href: '/padarias'
+  },
+  {
+    id: '5',
+    title: 'Hamburguerias',
+    subtitle: 'BURGERS ARTESANAIS',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600&h=800',
+    href: '/hamburguerias'
   }
 ]
 
@@ -56,7 +63,7 @@ export default function Categories() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {categories.map((category) => (
           <a
             key={category.id}
