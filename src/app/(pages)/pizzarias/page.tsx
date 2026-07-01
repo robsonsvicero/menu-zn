@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EstablishmentDirectory from "@/components/sections/EstablishmentDirectory";
+import { categoryImages } from "@/lib/category-images";
 
 export const metadata: Metadata = {
   title: "Pizzarias ZN | Alta Gastronomia Zona Norte — Menu Zona Norte | SP",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
       "As melhores pizzarias da Zona Norte de São Paulo. Cantinas tradicionais e pizzas napolitanas autorais em Santana e região.",
     images: [
       {
-        url: "/images/hero-menuzn.png",
+        url: categoryImages.pizzarias,
         width: 1200,
         height: 630,
         alt: "Pizzarias da Zona Norte de São Paulo — Menu Zona Norte",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     title: "Pizzarias ZN | Alta Gastronomia Zona Norte — Menu Zona Norte | SP",
     description:
       "As melhores pizzarias da Zona Norte de São Paulo. Cantinas tradicionais e pizzas napolitanas em Santana e região.",
-    images: ["/images/hero-menuzn.png"],
+    images: [categoryImages.pizzarias],
   },
 };
 
@@ -46,7 +47,7 @@ export default async function PizzariasPage({
       categorySlug="pizzarias"
       heroTitle="A Verdadeira Pizza Paulistana Mora Aqui"
       heroText="As melhores pizzarias da Zona Norte de São Paulo. Cantinas tradicionais e pizzas napolitanas autorais em Santana, Tucuruvi e região."
-      heroImage="/images/hero-restaurantes.png"
+      heroImage={categoryImages.pizzarias}
       heroAlt="As Melhores Pizzarias da Zona Norte"
       buttonLabel="Escolher Fatias"
       buttonHref="/pizzarias"

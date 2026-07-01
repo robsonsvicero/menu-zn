@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EstablishmentDirectory from "@/components/sections/EstablishmentDirectory";
+import { categoryImages } from "@/lib/category-images";
 
 export const metadata: Metadata = {
   title: "Bares / Pub Zona Norte ZN | Alta Gastronomia — Menu Zona Norte | SP",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
       "Descubra os melhores bares e pubs da Zona Norte de São Paulo. Do boteco raiz à alta coquetelaria em Santana, Tucuruvi e região.",
     images: [
       {
-        url: "/images/hero-menuzn.png",
+        url: categoryImages.bares,
         width: 1200,
         height: 630,
         alt: "Bares e Pubs da Zona Norte de São Paulo — Menu Zona Norte",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     title: "Bares / Pub Zona Norte ZN | Alta Gastronomia — Menu Zona Norte | SP",
     description:
       "Os melhores bares e pubs da Zona Norte de São Paulo. Alta coquetelaria em Santana e Tucuruvi.",
-    images: ["/images/hero-menuzn.png"],
+    images: [categoryImages.bares],
   },
 };
 
@@ -46,7 +47,7 @@ export default async function BaresPage({
       categorySlug="bares"
       heroTitle="A Vida Noturna da Zona Norte em Foco"
       heroText="Descubra os melhores bares e pubs da Zona Norte de São Paulo. Do boteco raiz à alta coquetelaria em Santana, Tucuruvi e região."
-      heroImage="/images/hero-menuzn.png"
+      heroImage={categoryImages.bares}
       heroAlt="Os Melhores Bares da Zona Norte"
       buttonLabel="Descobrir Bares"
       buttonHref="/bares"

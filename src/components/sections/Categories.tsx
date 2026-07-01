@@ -2,6 +2,7 @@
 
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
+import { categoryImages } from '@/lib/category-images'
 
 interface CategoryItem {
   id: string
@@ -16,35 +17,35 @@ const categories: CategoryItem[] = [
     id: '1',
     title: 'Restaurantes',
     subtitle: 'DESCOBRIR LOCAIS',
-    image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=600&h=800',
+    image: categoryImages.restaurantes,
     href: '/restaurantes'
   },
   {
     id: '2',
     title: 'Bares',
     subtitle: 'HAPPY HOUR',
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=600&h=800',
+    image: categoryImages.bares,
     href: '/bares'
   },
   {
     id: '3',
     title: 'Pizzarias',
     subtitle: 'MELHORES MASSAS',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=600&h=800',
+    image: categoryImages.pizzarias,
     href: '/pizzarias'
   },
   {
     id: '4',
     title: 'Padarias',
     subtitle: 'CAFÉ & BRUNCH',
-    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=600&h=800',
+    image: categoryImages.padarias,
     href: '/padarias'
   },
   {
     id: '5',
     title: 'Hamburguerias',
     subtitle: 'BURGERS ARTESANAIS',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600&h=800',
+    image: categoryImages.hamburguerias,
     href: '/hamburguerias'
   }
 ]
@@ -75,7 +76,7 @@ export default function Categories() {
               src={category.image} 
               alt={category.title}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             

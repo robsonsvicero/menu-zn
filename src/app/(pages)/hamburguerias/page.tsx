@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EstablishmentDirectory from "@/components/sections/EstablishmentDirectory";
+import { categoryImages } from "@/lib/category-images";
 
 export const metadata: Metadata = {
   title: "Hamburguerias Zona Norte SP | Menu Zona Norte",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
       "As melhores hamburguerias da Zona Norte de Sao Paulo. Hamburguer artesanal, smash burger e lanches selecionados pelo guia Menu ZN.",
     images: [
       {
-        url: "/images/hero-restaurantes.png",
+        url: categoryImages.hamburguerias,
         width: 1200,
         height: 630,
         alt: "Hamburguerias da Zona Norte de Sao Paulo - Menu Zona Norte",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     title: "Hamburguerias Zona Norte SP | Menu Zona Norte",
     description:
       "Hamburguerias artesanais, smash burgers e lanches selecionados na Zona Norte de Sao Paulo.",
-    images: ["/images/hero-restaurantes.png"],
+    images: [categoryImages.hamburguerias],
   },
 };
 
@@ -46,7 +47,7 @@ export default async function HamburgueriasPage({
       categorySlug="hamburguerias"
       heroTitle="Hamburguerias Artesanais da Zona Norte"
       heroText="Hamburguerias selecionadas pelo Menu ZN: casas autorais, smash burgers e lanches feitos para quem procura sabor, consistencia e boa experiencia."
-      heroImage="/images/hero-restaurantes.png"
+      heroImage={categoryImages.hamburguerias}
       heroAlt="As melhores hamburguerias da Zona Norte"
       buttonLabel="Explorar Hamburguerias"
       buttonHref="/hamburguerias"

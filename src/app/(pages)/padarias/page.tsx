@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EstablishmentDirectory from "@/components/sections/EstablishmentDirectory";
+import { categoryImages } from "@/lib/category-images";
 
 export const metadata: Metadata = {
   title: "Padarias / Empório Zona Norte ZN | Alta Gastronomia — Menu Zona Norte | SP",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
       "As melhores padarias, cafeterias e empórios da Zona Norte de São Paulo. Do balcão clássico às boutiques artesanais em Santana e região.",
     images: [
       {
-        url: "/images/hero-menuzn.png",
+        url: categoryImages.padarias,
         width: 1200,
         height: 630,
         alt: "Padarias e Empórios da Zona Norte de São Paulo — Menu Zona Norte",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     title: "Padarias / Empório Zona Norte ZN | Alta Gastronomia — Menu Zona Norte | SP",
     description:
       "As melhores padarias e empórios da Zona Norte de São Paulo. Do balcão clássico às boutiques artesanais.",
-    images: ["/images/hero-menuzn.png"],
+    images: [categoryImages.padarias],
   },
 };
 
@@ -46,7 +47,7 @@ export default async function PadariasPage({
       categorySlug="padarias"
       heroTitle="O Pão Quentinho e o Café Perfeito Estão Aqui"
       heroText="Encontre as melhores padarias, cafeterias e empórios da Zona Norte de São Paulo. Do balcão clássico às boutiques artesanais em Santana e região."
-      heroImage="/images/hero-menuzn.png"
+      heroImage={categoryImages.padarias}
       heroAlt="As Melhores Padarias da Zona Norte"
       buttonLabel="Sentar no Balcão"
       buttonHref="/padarias"
