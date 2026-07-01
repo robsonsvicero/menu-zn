@@ -162,3 +162,24 @@ export async function updateTestimonialStatusAction(formData: FormData) {
 
   revalidatePath("/admin/depoimentos");
 }
+
+export async function deleteTestimonialAction(id: string) {
+  const { supabase } = await ensureAdminAccess();
+  const testimonialId = id.trim();
+
+  if (!testimonialId) {
+    return { success: false, message: "ID do depoimento é obrigatório." };
+  }
+
+  const { error } = await supabase
+    .from("testimonials")
+    .delete()
+    .eq("id", testimonialId);
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  revalidatePath("/admin/depoimentos");
+  return { success: true, message: "Depoimento removido com sucesso." };
+}

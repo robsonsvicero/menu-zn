@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { updateTestimonialStatusAction } from "./actions";
 import { SortableHeader } from "@/components/admin/SortableHeader";
+import { DeleteTestimonialButton } from "./DeleteTestimonialButton";
 
 export const dynamic = "force-dynamic";
 
@@ -189,6 +190,8 @@ export default async function AdminDepoimentosPage({
                           </button>
                         </form>
                       ) : null}
+
+                      <DeleteTestimonialButton id={item.id} authorName={item.author_name} />
                     </div>
                   </td>
                 </tr>

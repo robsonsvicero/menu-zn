@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateTestimonialAction } from "../../actions";
+import { DeleteTestimonialButton } from "../../DeleteTestimonialButton";
 
 export const dynamic = "force-dynamic";
 
@@ -47,8 +48,14 @@ export default async function EditarDepoimentoPage({
 
   return (
     <section className="max-w-4xl">
-      <div className="mb-6">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <h2 className="text-3xl font-serif">Editar depoimento</h2>
+        <DeleteTestimonialButton
+          id={testimonial.id}
+          authorName={testimonial.author_name}
+          redirectAfterDelete
+          className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
+        />
         <p className="text-sm text-on-surface/70 mt-1">Atualize conteúdo, nota, status e destaque.</p>
       </div>
 
