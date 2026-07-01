@@ -1,14 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye } from "lucide-react";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
-import { fetchPublishedBlogPostBySlug, fetchPublishedBlogPosts } from "@/lib/blog-public";
+import { formatViewCount } from "@/lib/blog-format";
+import {
+  fetchPublishedBlogPostBySlug,
+  fetchPublishedBlogPosts,
+  type BlogCategoryRelation,
+} from "@/lib/blog-public";
 import { BlogTestimonialForm } from "./BlogTestimonialForm";
+import { BlogViewTracker } from "./BlogViewTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +38,10 @@ function estimateReadTime(content: string | null) {
   const words = content?.split(/\s+/).filter(Boolean).length ?? 0;
   const minutes = Math.max(1, Math.round(words / 180));
   return `${minutes} min de leitura`;
+}
+
+function getCategoryName(value: BlogCategoryRelation) {
+  return Array.isArray(value) ? value[0]?.name : value?.name;
 }
 
 const markdownSanitizeSchema = {
@@ -146,9 +156,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
     .filter((item) => item.slug !== post.slug)
     .slice(0, 3);
 
-  const categoryName = Array.isArray(post.blog_categories)
-    ? post.blog_categories[0]?.name
-    : (post.blog_categories as any)?.name;
+  const categoryName = getCategoryName(post.blog_categories);
 
   const postAuthorName =
     typeof post.authors === "object" && post.authors !== null && "name" in post.authors
@@ -234,6 +242,8 @@ export default async function BlogPostDetail({ params }: PageProps) {
               <span>{formatDate(post.published_at)}</span>
               <span className="opacity-50">•</span>
               <span>{estimateReadTime(post.content_md)}</span>
+              <span className="opacity-50">•</span>
+              <BlogViewTracker slug={post.slug} initialViewCount={post.view_count} />
             </div>
           </div>
         </div>
@@ -302,9 +312,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
 
             <div className="grid gap-6 md:grid-cols-3">
               {relatedPosts.map((item) => {
-                const itemCategory = Array.isArray(item.blog_categories)
-                  ? item.blog_categories[0]?.name
-                  : (item.blog_categories as any)?.name;
+                const itemCategory = getCategoryName(item.blog_categories);
 
                 return (
                   <Link key={item.id} href={`/blog/${item.slug}`} className="group overflow-hidden rounded-[26px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
@@ -319,6 +327,10 @@ export default async function BlogPostDetail({ params }: PageProps) {
                     <div className="space-y-3 p-6">
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
                         {itemCategory ?? "Artigo"}
+                      </p>
+                      <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface/50">
+                        <Eye size={14} aria-hidden="true" />
+                        {formatViewCount(item.view_count)}
                       </p>
                       <h3 className="font-serif text-xl leading-snug text-on-surface transition group-hover:text-[rgb(148_53_21)]">
                         {item.title}

@@ -143,6 +143,7 @@ create table if not exists public.blog_posts (
   author_id uuid references public.authors(id),
   status text not null default 'draft' check (status in ('draft', 'published', 'archived')),
   published_at timestamptz,
+  view_count integer not null default 0 check (view_count >= 0),
   seo_title text,
   seo_description text,
   created_by uuid references public.profiles(id),
@@ -153,6 +154,7 @@ create table if not exists public.blog_posts (
 
 create index if not exists idx_blog_posts_status on public.blog_posts(status);
 create index if not exists idx_blog_posts_category on public.blog_posts(category_id);
+create index if not exists idx_blog_posts_view_count on public.blog_posts(view_count desc);
 
 -- =============================================
 -- Depoimentos

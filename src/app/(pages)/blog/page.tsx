@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, ArrowRight, Search } from "lucide-react";
+import { ArrowRight, Eye, Search } from "lucide-react";
 import type { Metadata } from "next";
-import { fetchBlogCategoryOptions, fetchPublishedBlogPosts } from "@/lib/blog-public";
+import { formatViewCount } from "@/lib/blog-format";
+import { fetchBlogCategoryOptions, fetchPublishedBlogPosts, type BlogCategoryRelation } from "@/lib/blog-public";
 
 export const metadata: Metadata = {
   title: "Blog | Menu Zona Norte — Gastronomia e Guias da Zona Norte SP",
@@ -48,6 +49,10 @@ function formatDate(value: string | null) {
     month: "short",
     year: "numeric",
   }).format(new Date(value));
+}
+
+function getCategoryName(value: BlogCategoryRelation) {
+  return Array.isArray(value) ? value[0]?.name : value?.name;
 }
 
 function buildQueryString(params: Record<string, string | undefined>) {
@@ -184,9 +189,7 @@ export default async function BlogPage({
               const isBigLeft = index % 6 === 0;
               const isBigRight = index % 6 === 3;
               const isBig = isBigLeft || isBigRight;
-              const categoryName = Array.isArray(post.blog_categories) 
-                ? post.blog_categories[0]?.name 
-                : (post.blog_categories as any)?.name;
+              const categoryName = getCategoryName(post.blog_categories);
 
               return (
                 <Link
@@ -210,6 +213,10 @@ export default async function BlogPage({
                     <div className={`flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-[0.18em] ${isBigRight ? "text-[rgb(219_107_66)]" : "text-[rgb(148_53_21)]"}`}>
                       <span>{categoryName ?? "Artigo"}</span>
                       <span className="text-on-surface/50 font-medium">{formatDate(post.published_at)}</span>
+                    </div>
+                    <div className={`mt-3 inline-flex items-center gap-1.5 text-xs font-semibold ${isBigRight ? "text-white/65" : "text-on-surface/55"}`}>
+                      <Eye size={14} aria-hidden="true" />
+                      {formatViewCount(post.view_count)}
                     </div>
 
                     <h3 className={`mt-4 font-serif text-3xl leading-tight transition ${isBigRight ? "group-hover:text-[rgb(219_107_66)]" : "group-hover:text-[rgb(148_53_21)]"}`}>

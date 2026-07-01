@@ -1,7 +1,12 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Eye } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { fetchPublishedBlogPosts } from '@/lib/blog-public'
+import { formatViewCount } from '@/lib/blog-format'
+import { fetchPublishedBlogPosts, type BlogCategoryRelation } from '@/lib/blog-public'
+
+function getCategoryName(value: BlogCategoryRelation) {
+  return Array.isArray(value) ? value[0]?.name : value?.name
+}
 
 export default async function Chronicles() {
   let articles = [] as Awaited<ReturnType<typeof fetchPublishedBlogPosts>>
@@ -48,9 +53,13 @@ export default async function Chronicles() {
             </div>
 
             {/* Tag */}
-            <span className="text-[#A25F4B] text-[10px] font-bold tracking-[0.15em] uppercase mb-3">
-              {article.blog_categories?.[0]?.name ?? 'Blog'}
-            </span>
+            <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[#A25F4B]">
+              <span>{getCategoryName(article.blog_categories) ?? 'Blog'}</span>
+              <span className="inline-flex items-center gap-1.5 text-muted">
+                <Eye size={13} aria-hidden="true" />
+                {formatViewCount(article.view_count)}
+              </span>
+            </div>
 
             {/* Title */}
             <h3 className="font-serif text-[26px] leading-tight text-on-surface mb-3 group-hover:text-primary transition-colors">

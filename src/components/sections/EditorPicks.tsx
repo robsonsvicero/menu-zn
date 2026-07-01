@@ -1,7 +1,12 @@
-import { Star } from 'lucide-react'
+import { Eye, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { fetchPublishedBlogPosts } from '@/lib/blog-public'
+import { formatViewCount } from '@/lib/blog-format'
+import { fetchPublishedBlogPosts, type BlogCategoryRelation } from '@/lib/blog-public'
+
+function getCategoryName(value: BlogCategoryRelation) {
+  return Array.isArray(value) ? value[0]?.name : value?.name
+}
 
 export default async function EditorPicks() {
   let posts = [] as Awaited<ReturnType<typeof fetchPublishedBlogPosts>>
@@ -21,7 +26,7 @@ export default async function EditorPicks() {
   if (!post) return null
 
   const imageSrc = post.cover_image_url || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=1000'
-  const category = post.blog_categories?.[0]?.name ?? 'Blog'
+  const category = getCategoryName(post.blog_categories) ?? 'Blog'
 
   return (
     <section className="w-full bg-transparent px-6 md:px-16 lg:px-30 py-16">
@@ -51,6 +56,10 @@ export default async function EditorPicks() {
           {/* Eyebrow */}
           <p className="text-primary text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase mb-6">
             Descobertas do Editor
+          </p>
+          <p className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface/55">
+            <Eye size={14} aria-hidden="true" />
+            {formatViewCount(post.view_count)}
           </p>
 
           {/* Title */}

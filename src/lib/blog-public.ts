@@ -1,5 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 
+export type BlogCategoryRelation =
+  | { name: string; slug: string }
+  | { name: string; slug: string }[]
+  | null;
+
+export type BlogAuthor = {
+  name: string;
+  avatar_url: string | null;
+  role: string | null;
+} | null;
+
 export type BlogListItem = {
   id: string;
   title: string;
@@ -7,8 +18,9 @@ export type BlogListItem = {
   excerpt: string | null;
   cover_image_url: string | null;
   published_at: string | null;
-  blog_categories: { name: string; slug: string }[] | null;
-  authors: any;
+  view_count: number | null;
+  blog_categories: BlogCategoryRelation;
+  authors: BlogAuthor;
 };
 
 export type BlogDetailItem = {
@@ -19,10 +31,11 @@ export type BlogDetailItem = {
   content_md: string | null;
   cover_image_url: string | null;
   published_at: string | null;
+  view_count: number | null;
   seo_title: string | null;
   seo_description: string | null;
-  blog_categories: { name: string; slug: string }[] | null;
-  authors: any;
+  blog_categories: BlogCategoryRelation;
+  authors: BlogAuthor;
 };
 
 export async function fetchPublishedBlogPosts(options?: {
@@ -35,7 +48,7 @@ export async function fetchPublishedBlogPosts(options?: {
 
   let query = supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, cover_image_url, published_at, blog_categories(name, slug), authors(name, avatar_url, role)")
+    .select("id, title, slug, excerpt, cover_image_url, published_at, view_count, blog_categories(name, slug), authors(name, avatar_url, role)")
     .eq("status", "published")
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(limit);
@@ -59,7 +72,7 @@ export async function fetchPublishedBlogPosts(options?: {
     throw new Error(error.message);
   }
 
-  return (data ?? []) as BlogListItem[];
+  return (data ?? []) as unknown as BlogListItem[];
 }
 
 export async function fetchPublishedBlogPostBySlug(slug: string) {
@@ -67,7 +80,7 @@ export async function fetchPublishedBlogPostBySlug(slug: string) {
 
   const { data, error } = await supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role)")
+    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role)")
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle();
@@ -76,7 +89,7 @@ export async function fetchPublishedBlogPostBySlug(slug: string) {
     throw new Error(error.message);
   }
 
-  return (data ?? null) as BlogDetailItem | null;
+  return (data ?? null) as unknown as BlogDetailItem | null;
 }
 
 export async function fetchBlogCategoryOptions() {
