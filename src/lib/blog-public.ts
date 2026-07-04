@@ -9,6 +9,7 @@ export type BlogAuthor = {
   name: string;
   avatar_url: string | null;
   role: string | null;
+  instagram_url: string | null;
 } | null;
 
 export type BlogListItem = {
@@ -48,7 +49,7 @@ export async function fetchPublishedBlogPosts(options?: {
 
   let query = supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, cover_image_url, published_at, view_count, blog_categories(name, slug), authors(name, avatar_url, role)")
+    .select("id, title, slug, excerpt, cover_image_url, published_at, view_count, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
     .eq("status", "published")
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(limit);
@@ -80,7 +81,7 @@ export async function fetchPublishedBlogPostBySlug(slug: string) {
 
   const { data, error } = await supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role)")
+    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle();

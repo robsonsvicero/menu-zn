@@ -22,6 +22,30 @@ function sanitizeFileName(input: string) {
   return slugify(input.replace(/\.[^/.]+$/, "")) || "arquivo";
 }
 
+function normalizeInstagramUrl(input: string) {
+  const value = input.trim();
+
+  if (!value) {
+    return null;
+  }
+
+  if (value.startsWith("@")) {
+    const handle = value.slice(1).trim().replace(/^\/+|\/+$/g, "");
+    return handle ? `https://www.instagram.com/${handle}` : null;
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  const handle = value
+    .replace(/^instagram\.com\//i, "")
+    .replace(/^www\.instagram\.com\//i, "")
+    .replace(/^\/+|\/+$/g, "");
+
+  return handle ? `https://www.instagram.com/${handle}` : null;
+}
+
 async function uploadAvatarImage(file: File, slug: string) {
   const adminClient = createAdminClient();
   const bucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
@@ -88,6 +112,7 @@ export async function createAuthorAction(formData: FormData) {
 
   const name = String(formData.get("name") ?? "").trim();
   const role = String(formData.get("role") ?? "").trim();
+  const instagramUrl = normalizeInstagramUrl(String(formData.get("instagram_url") ?? ""));
   const imageFile = formData.get("image_file");
 
   if (!name) {
@@ -104,6 +129,7 @@ export async function createAuthorAction(formData: FormData) {
   const { error } = await supabase.from("authors").insert({
     name,
     role: role || null,
+    instagram_url: instagramUrl,
     avatar_url: avatarUrl,
   });
 
@@ -139,6 +165,7 @@ export async function updateAuthorAction(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   const name = String(formData.get("name") ?? "").trim();
   const role = String(formData.get("role") ?? "").trim();
+  const instagramUrl = normalizeInstagramUrl(String(formData.get("instagram_url") ?? ""));
   const imageFile = formData.get("image_file");
   const currentAvatarUrl = String(formData.get("current_avatar_url") ?? "").trim();
 
@@ -158,6 +185,7 @@ export async function updateAuthorAction(formData: FormData) {
     .update({
       name,
       role: role || null,
+      instagram_url: instagramUrl,
       avatar_url: avatarUrl,
     })
     .eq("id", id);

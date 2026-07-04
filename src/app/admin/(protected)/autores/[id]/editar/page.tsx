@@ -10,6 +10,7 @@ type Author = {
   id: string;
   name: string;
   role: string | null;
+  instagram_url: string | null;
   avatar_url: string | null;
 };
 
@@ -23,7 +24,7 @@ export default async function EditarAutorPage({
 
   const { data: authorData } = await supabase
     .from("authors")
-    .select("id, name, role, avatar_url")
+    .select("id, name, role, instagram_url, avatar_url")
     .eq("id", id)
     .single();
 
@@ -60,6 +61,10 @@ export default async function EditarAutorPage({
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Cargo / Especialidade</label>
               <input name="role" defaultValue={author.role ?? ""} className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+            </div>
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Link do Instagram</label>
+              <input name="instagram_url" defaultValue={author.instagram_url ?? ""} className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
             </div>
           </div>
 

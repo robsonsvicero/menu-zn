@@ -44,6 +44,30 @@ function getCategoryName(value: BlogCategoryRelation) {
   return Array.isArray(value) ? value[0]?.name : value?.name;
 }
 
+function getInstagramHandle(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (trimmed.startsWith("@")) {
+    return trimmed;
+  }
+
+  try {
+    const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
+    const handle = url.pathname.split("/").filter(Boolean)[0];
+    return handle ? `@${handle}` : null;
+  } catch {
+    const handle = trimmed.replace(/^\/+|\/+$/g, "");
+    return handle ? `@${handle}` : null;
+  }
+}
+
 const markdownSanitizeSchema = {
   ...defaultSchema,
   tagNames: [...(defaultSchema.tagNames ?? []), "u"],
@@ -157,6 +181,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
     .slice(0, 3);
 
   const categoryName = getCategoryName(post.blog_categories);
+  const authorInstagramHandle = getInstagramHandle(post.authors?.instagram_url);
 
   const postAuthorName =
     typeof post.authors === "object" && post.authors !== null && "name" in post.authors
@@ -287,6 +312,16 @@ export default async function BlogPostDetail({ params }: PageProps) {
                   <p className="mt-2 text-sm leading-7 text-on-surface/70">
                     {post.authors?.role ?? "Conteúdo editorial publicado pelo painel administrativo, agora alimentando o front público diretamente do Supabase."}
                   </p>
+                  {post.authors?.instagram_url && authorInstagramHandle ? (
+                    <a
+                      href={post.authors.instagram_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 inline-flex text-sm font-semibold text-[rgb(148_53_21)] underline decoration-[rgb(148_53_21)]/35 underline-offset-2 transition hover:decoration-[rgb(148_53_21)]"
+                    >
+                      {authorInstagramHandle}
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>

@@ -9,6 +9,7 @@ type AuthorRow = {
   id: string;
   name: string;
   role: string | null;
+  instagram_url: string | null;
   avatar_url: string | null;
   created_at: string;
 };
@@ -18,7 +19,7 @@ export default async function AdminAutoresPage() {
 
   const { data, error } = await supabase
     .from("authors")
-    .select("id, name, role, avatar_url, created_at")
+    .select("id, name, role, instagram_url, avatar_url, created_at")
     .order("created_at", { ascending: false });
 
   const authors = (data ?? []) as AuthorRow[];
@@ -40,6 +41,10 @@ export default async function AdminAutoresPage() {
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Cargo / Especialidade</label>
               <input name="role" placeholder="Product Designer" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+            </div>
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Link do Instagram</label>
+              <input name="instagram_url" placeholder="https://www.instagram.com/usuario" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
             </div>
           </div>
 
@@ -88,6 +93,7 @@ export default async function AdminAutoresPage() {
                 <div>
                   <h4 className="text-base font-medium text-on-surface">{author.name}</h4>
                   {author.role && <p className="text-xs text-on-surface/50 mt-0.5">{author.role}</p>}
+                  {author.instagram_url && <p className="text-xs text-on-surface/50 mt-0.5">{author.instagram_url}</p>}
                 </div>
               </div>
 
