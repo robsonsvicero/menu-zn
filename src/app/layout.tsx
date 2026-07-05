@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Libre_Caslon_Text } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import SiteShell from "@/components/layout/SiteShell";
 
@@ -73,6 +74,18 @@ export default function RootLayout({
       >
         <SiteShell>{children}</SiteShell>
       </body>
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-D6PCTGJQC3"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-D6PCTGJQC3');
+        `}
+      </Script>
     </html>
   );
 }
