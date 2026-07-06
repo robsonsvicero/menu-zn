@@ -68,6 +68,31 @@ export async function fetchPublicNeighborhoods() {
   return (data ?? []) as PublicNeighborhood[];
 }
 
+export async function fetchEstablishmentStats() {
+  const supabase = await createClient();
+
+  const [totalResult, publishedResult] = await Promise.all([
+    supabase.from("establishments").select("id", { count: "exact", head: true }),
+    supabase
+      .from("establishments")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "published"),
+  ]);
+
+  if (totalResult.error) {
+    throw new Error(totalResult.error.message);
+  }
+
+  if (publishedResult.error) {
+    throw new Error(publishedResult.error.message);
+  }
+
+  return {
+    total: totalResult.count ?? 0,
+    published: publishedResult.count ?? 0,
+  };
+}
+
 async function resolveCategoryId(categorySlug?: string) {
   if (!categorySlug) {
     return null;
