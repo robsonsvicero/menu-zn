@@ -24,9 +24,16 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+  } catch {
+    // Se a sessão estiver corrompida/expirada, tratamos como deslogado.
+    // O redirect abaixo cobre o fluxo protegido sem derrubar a página.
+    user = null;
+  }
 
   const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
   const isPublicAdminPath = [

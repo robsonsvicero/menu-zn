@@ -218,20 +218,21 @@ export default async function BlogPostDetail({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="min-h-screen bg-white text-on-surface">
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src={post.cover_image_url ?? "/images/hero-blog-destaque.png"}
-            alt={post.title}
-            fill
-            className="object-cover object-center"
-            priority
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/50 to-black/20" />
-        </div>
+      <section className="relative overflow-hidden bg-black">
+        <div className="relative h-[72svh] min-h-130 md:mx-auto md:h-auto md:min-h-0 md:w-full md:max-w-480 md:aspect-video">
+          <div className="absolute inset-0">
+            <Image
+              src={post.cover_image_url ?? "/images/hero-blog-destaque.png"}
+              alt={post.title}
+              fill
+              className="object-cover object-center md:object-cover md:object-[center_35%]"
+              priority
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/50 to-black/20" />
+          </div>
 
-        <div className="relative mx-auto flex min-h-155 max-w-300 items-end px-6 py-16 md:px-10 lg:px-12">
-          <div className="max-w-4xl pb-4 text-white">
+          <div className="relative mx-auto flex h-full max-w-300 items-end px-6 py-16 md:px-10 lg:px-12">
+            <div className="max-w-4xl pb-4 text-white">
             {categoryName ? (
               <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-white shadow-sm mb-4">
                 {categoryName}
@@ -269,6 +270,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
               <span>{estimateReadTime(post.content_md)}</span>
               <span className="opacity-50">•</span>
               <BlogViewTracker slug={post.slug} initialViewCount={post.view_count} />
+            </div>
             </div>
           </div>
         </div>

@@ -39,6 +39,51 @@ export type EstablishmentDetailItem = EstablishmentListItem & {
   longitude: number | null;
 };
 
+type PublishedEstablishmentOptions = {
+  categorySlug?: string;
+  search?: string;
+  neighborhoodSlug?: string;
+  ifoodOnly?: boolean;
+  featuredOnly?: boolean;
+  indicatedOnly?: boolean;
+};
+
+function applyPublishedEstablishmentFilters(
+  query: any,
+  options: PublishedEstablishmentOptions,
+  categoryId: string | null,
+  neighborhoodId: string | null
+) {
+  if (categoryId) {
+    query = query.eq("category_id", categoryId);
+  }
+
+  if (neighborhoodId) {
+    query = query.eq("neighborhood_id", neighborhoodId);
+  }
+
+  if (options.ifoodOnly) {
+    query = query.eq("has_ifood", true);
+  }
+
+  if (options.featuredOnly) {
+    query = query.eq("is_featured", true);
+  }
+
+  if (options.indicatedOnly) {
+    query = query.eq("is_indicated", true);
+  }
+
+  const search = options.search?.trim();
+  if (search) {
+    query = query.or(
+      `name.ilike.%${search}%,slug.ilike.%${search}%,short_description.ilike.%${search}%,address.ilike.%${search}%`
+    );
+  }
+
+  return query;
+}
+
 export async function fetchPublicCategories() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -154,32 +199,7 @@ export async function fetchPublishedEstablishments(options?: {
     .eq("status", "published")
     .limit(limit);
 
-  if (categoryId) {
-    query = query.eq("category_id", categoryId);
-  }
-
-  if (neighborhoodId) {
-    query = query.eq("neighborhood_id", neighborhoodId);
-  }
-
-  if (options?.ifoodOnly) {
-    query = query.eq("has_ifood", true);
-  }
-
-  if (options?.featuredOnly) {
-    query = query.eq("is_featured", true);
-  }
-
-  if (options?.indicatedOnly) {
-    query = query.eq("is_indicated", true);
-  }
-
-  const search = options?.search?.trim();
-  if (search) {
-    query = query.or(
-      `name.ilike.%${search}%,slug.ilike.%${search}%,short_description.ilike.%${search}%,address.ilike.%${search}%`
-    );
-  }
+  query = applyPublishedEstablishmentFilters(query, options ?? {}, categoryId, neighborhoodId);
 
   switch (options?.sort) {
     case "rating":
@@ -201,6 +221,34 @@ export async function fetchPublishedEstablishments(options?: {
   }
 
   return (data ?? []) as EstablishmentListItem[];
+}
+
+export async function fetchPublishedEstablishmentsCount(options?: {
+  categorySlug?: string;
+  search?: string;
+  neighborhoodSlug?: string;
+  ifoodOnly?: boolean;
+  featuredOnly?: boolean;
+  indicatedOnly?: boolean;
+}) {
+  const supabase = await createClient();
+  const categoryId = await resolveCategoryId(options?.categorySlug);
+  const neighborhoodId = await resolveNeighborhoodId(options?.neighborhoodSlug);
+
+  let query = supabase
+    .from("establishments")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "published");
+
+  query = applyPublishedEstablishmentFilters(query, options ?? {}, categoryId, neighborhoodId);
+
+  const { count, error } = await query;
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return count ?? 0;
 }
 
 export async function fetchPublishedEstablishmentBySlug(slug: string) {

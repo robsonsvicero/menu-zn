@@ -4,6 +4,7 @@ import { ArrowRight, MapPin, Phone, Star } from "lucide-react";
 import {
   fetchPublicCategories,
   fetchPublicNeighborhoods,
+  fetchPublishedEstablishmentsCount,
   fetchPublishedEstablishments,
 } from "@/lib/establishments-public";
 import ShowcaseFilterForm from "./ShowcaseFilterForm";
@@ -67,7 +68,7 @@ export default async function EstablishmentShowcase({ searchParams }: Establishm
   const sortFilter = (searchParams?.sort ?? "featured") as keyof typeof sortLabels;
   const ifoodOnly = searchParams?.ifood === "1" || searchParams?.ifood === "true";
 
-  const [items, neighborhoods, categories] = await Promise.all([
+  const [items, totalCount, neighborhoods, categories] = await Promise.all([
     fetchPublishedEstablishments({
       categorySlug: categoryFilter || undefined,
       search: searchTerm,
@@ -75,6 +76,12 @@ export default async function EstablishmentShowcase({ searchParams }: Establishm
       ifoodOnly,
       sort: sortFilter === "rating" || sortFilter === "name" ? sortFilter : "featured",
       limit: 30,
+    }),
+    fetchPublishedEstablishmentsCount({
+      categorySlug: categoryFilter || undefined,
+      search: searchTerm,
+      neighborhoodSlug: neighborhoodFilter,
+      ifoodOnly,
     }),
     fetchPublicNeighborhoods(),
     fetchPublicCategories(),
@@ -105,7 +112,7 @@ export default async function EstablishmentShowcase({ searchParams }: Establishm
           <div>
             <h2 className="font-serif text-2xl md:text-3xl">Vitrine de Estabelecimentos</h2>
             <p className="mt-1 text-sm text-on-surface/65">
-              {items.length} estabelecimento{items.length === 1 ? "" : "s"} encontrado{items.length === 1 ? "" : "s"}.
+              {totalCount} estabelecimento{totalCount === 1 ? "" : "s"} encontrado{totalCount === 1 ? "" : "s"}.
             </p>
           </div>
           <div className="text-xs uppercase tracking-[0.18em] text-on-surface/55">

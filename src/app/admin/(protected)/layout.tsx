@@ -34,9 +34,14 @@ export default async function AdminProtectedLayout({
 }) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+  } catch {
+    redirect("/admin/login");
+  }
 
   if (!user) {
     redirect("/admin/login");
@@ -74,7 +79,7 @@ export default async function AdminProtectedLayout({
   return (
     <div className="flex min-h-screen bg-background text-on-surface">
       {/* ── Desktop Sidebar ── */}
-      <aside className="hidden md:flex flex-col w-[260px] shrink-0 border-r border-outline bg-white sticky top-0 h-screen">
+      <aside className="hidden md:flex flex-col w-65 shrink-0 border-r border-outline bg-white sticky top-0 h-screen">
         {/* Logo */}
         <div className="px-6 py-5 border-b border-outline">
           <p className="text-xs uppercase tracking-widest text-on-surface/50">MENU ZN</p>
