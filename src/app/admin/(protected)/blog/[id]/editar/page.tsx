@@ -2,9 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateBlogPostAction } from "../../actions";
-import { BlogSlugGenerator } from "../../blog-slug-generator";
+import { BlogContentEditor } from "../../blog-content-editor";
 import { ImagePreviewInput } from "../../image-preview-input";
-import { Image as ImageIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +17,7 @@ type BlogPost = {
   content_md: string | null;
   cover_image_url: string | null;
   category_id: string | null;
-  blog_categories: any;
+  blog_categories: { name: string }[] | { name: string } | null;
   author_id: string | null;
   published_at: string | null;
   seo_title: string | null;
@@ -139,8 +138,8 @@ export default async function EditarBlogPostPage({
           </div>
 
           <div>
-            <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Conteúdo (Markdown)</label>
-            <textarea name="content_md" defaultValue={blogPost.content_md ?? ""} rows={12} className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition resize-none font-mono" />
+            <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Conteúdo do artigo</label>
+            <BlogContentEditor defaultValue={blogPost.content_md ?? ""} />
           </div>
         </div>
 

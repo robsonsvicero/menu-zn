@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function formatDynamicPhone(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -32,10 +32,6 @@ type PhoneMaskedInputProps = {
 
 export function PhoneMaskedInput({ name, defaultValue, className, placeholder }: PhoneMaskedInputProps) {
   const [value, setValue] = useState(formatDynamicPhone(defaultValue ?? ""));
-
-  useEffect(() => {
-    setValue(formatDynamicPhone(defaultValue ?? ""));
-  }, [defaultValue]);
 
   return (
     <input

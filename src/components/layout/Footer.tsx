@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { Globe, Phone, Mail, MapPin } from 'lucide-react'
 
 export default function Footer() {
@@ -50,14 +51,14 @@ export default function Footer() {
           <div className="flex flex-col">
             <h3 className="font-serif text-xl font-bold mb-6">Navegação</h3>
             <div className="flex flex-col gap-4">
-              <a href="/" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Home</a>
-              <a href="/zona-norte" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Zona Norte</a>
-              <a href="/restaurantes" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Restaurantes</a>
-              <a href="/bares" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Bares</a>
-              <a href="/pizzarias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Pizzarias</a>
-              <a href="/padarias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Padarias</a>
-              <a href="/hamburguerias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Hamburguerias</a>
-              <a href="/blog" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Blog</a>
+              <Link href="/" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Home</Link>
+              <Link href="/zona-norte" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Zona Norte</Link>
+              <Link href="/restaurantes" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Restaurantes</Link>
+              <Link href="/bares" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Bares</Link>
+              <Link href="/pizzarias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Pizzarias</Link>
+              <Link href="/padarias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Padarias</Link>
+              <Link href="/hamburguerias" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Hamburguerias</Link>
+              <Link href="/blog" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Blog</Link>
             </div>
           </div>
 
@@ -99,12 +100,12 @@ export default function Footer() {
             © 2026 Menu Zona Norte. Todos os direitos reservados.
           </p>
           <div className="flex items-center gap-8">
-            <a href="/privacidade" className="text-[#a8a8a8] hover:text-white text-[10px] font-bold tracking-[0.15em] uppercase transition-colors">
+            <Link href="/privacidade" className="text-[#a8a8a8] hover:text-white text-[10px] font-bold tracking-[0.15em] uppercase transition-colors">
               Privacidade
-            </a>
-            <a href="/termos" className="text-[#a8a8a8] hover:text-white text-[10px] font-bold tracking-[0.15em] uppercase transition-colors">
+            </Link>
+            <Link href="/termos" className="text-[#a8a8a8] hover:text-white text-[10px] font-bold tracking-[0.15em] uppercase transition-colors">
               Termos de Uso
-            </a>
+            </Link>
             <div className="flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
               <span className="text-[#a8a8a8] text-[9px] tracking-wider uppercase">Desenvolvido por</span>
               <a href="https://robsonsvicero.com.br" target="_blank" rel="noopener noreferrer">

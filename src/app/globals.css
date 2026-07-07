@@ -209,3 +209,67 @@ img {
   display: none !important;
 }
 
+.blog-rich-editor:empty::before {
+  content: attr(data-placeholder);
+  color: rgb(47 46 46 / 45%);
+  pointer-events: none;
+}
+
+.blog-rich-editor > * + * {
+  margin-top: 0.9rem;
+}
+
+.blog-rich-editor p,
+.blog-rich-editor li {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.blog-rich-editor h2,
+.blog-rich-editor h3 {
+  color: #2f2e2e;
+  font-family: var(--font-caslon), Georgia, serif;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.blog-rich-editor h2 {
+  font-size: 30px;
+}
+
+.blog-rich-editor h3 {
+  color: rgb(148 53 21);
+  font-size: 24px;
+}
+
+.blog-rich-editor ul,
+.blog-rich-editor ol {
+  padding-left: 1.5rem;
+}
+
+.blog-rich-editor ul {
+  list-style: disc;
+}
+
+.blog-rich-editor ol {
+  list-style: decimal;
+}
+
+.blog-rich-editor blockquote {
+  border-left: 4px solid rgb(148 53 21);
+  border-radius: 16px;
+  background: #fff7f0;
+  padding: 1rem 1.25rem;
+  color: rgb(47 46 46 / 85%);
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 20px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.blog-rich-editor a {
+  color: rgb(148 53 21);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

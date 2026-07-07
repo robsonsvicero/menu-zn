@@ -11,13 +11,15 @@ type BlogPostRow = {
   slug: string;
   status: "draft" | "published" | "archived";
   published_at: string | null;
-  blog_categories: any;
+  blog_categories: { name: string }[] | { name: string } | null;
 };
 
 type SearchParams = {
   sort?: string;
   dir?: string;
 };
+
+const sortableColumns = new Set(["created_at", "title", "status", "published_at", "slug"]);
 
 export default async function AdminBlogPage({
   searchParams,
@@ -27,7 +29,7 @@ export default async function AdminBlogPage({
   const params = await searchParams;
   const supabase = await createClient();
 
-  const currentSort = params.sort ?? "created_at";
+  const currentSort = sortableColumns.has(params.sort ?? "") ? params.sort! : "created_at";
   const currentDir = params.dir ?? "desc";
 
   let query = supabase
@@ -38,7 +40,7 @@ export default async function AdminBlogPage({
   if (currentSort === "blog_categories") {
      // fallback
   } else {
-     query = query.order(currentSort as any, { ascending: currentDir === "asc", nullsFirst: false });
+     query = query.order(currentSort, { ascending: currentDir === "asc", nullsFirst: false });
   }
 
   const { data, error } = await query;

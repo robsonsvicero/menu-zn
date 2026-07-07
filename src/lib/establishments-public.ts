@@ -48,12 +48,17 @@ type PublishedEstablishmentOptions = {
   indicatedOnly?: boolean;
 };
 
-function applyPublishedEstablishmentFilters(
-  query: any,
+type FilterableQuery<T> = {
+  eq(column: string, value: string | boolean): T;
+  or(filters: string): T;
+};
+
+function applyPublishedEstablishmentFilters<T extends FilterableQuery<T>>(
+  query: T,
   options: PublishedEstablishmentOptions,
   categoryId: string | null,
   neighborhoodId: string | null
-) {
+): T {
   if (categoryId) {
     query = query.eq("category_id", categoryId);
   }

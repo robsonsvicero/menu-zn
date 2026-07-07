@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createBlogPostAction, updateBlogPostStatusAction } from "../actions";
+import { BlogContentEditor } from "../blog-content-editor";
 import { BlogSlugGenerator } from "../blog-slug-generator";
 import { ImagePreviewInput } from "../image-preview-input";
 import { Image as ImageIcon } from "lucide-react";
@@ -114,8 +115,8 @@ export default async function NovoBlogPostPage({
           </div>
 
           <div>
-            <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Conteúdo (Markdown)</label>
-            <textarea name="content_md" placeholder="Escreva o artigo aqui..." rows={12} className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition resize-none font-mono" />
+            <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Conteúdo do artigo</label>
+            <BlogContentEditor />
           </div>
         </div>
 

@@ -22,6 +22,10 @@ function sanitizeFileName(input: string) {
   return slugify(input.replace(/\.[^/.]+$/, "")) || "arquivo";
 }
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Erro inesperado.";
+}
+
 async function uploadCoverImage(file: File, slug: string) {
   const adminClient = createAdminClient();
   const bucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
@@ -136,11 +140,11 @@ export async function createBlogPostAction(formData: FormData) {
       throw new Error("Erro ao salvar artigo no banco: " + error.message);
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Action Error (createBlogPostAction):", error);
     // Ignore redirect errors as they are thrown by next/navigation
-    if (error.message === 'NEXT_REDIRECT') throw error;
-    redirect(`/admin/blog/novo?error=${encodeURIComponent(error.message)}`);
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") throw error;
+    redirect(`/admin/blog/novo?error=${encodeURIComponent(getErrorMessage(error))}`);
   }
 
   revalidatePath("/admin/blog");
@@ -229,10 +233,10 @@ export async function updateBlogPostAction(formData: FormData) {
       throw new Error("Erro ao salvar artigo no banco: " + error.message);
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Action Error (updateBlogPostAction):", error);
-    if (error.message === 'NEXT_REDIRECT') throw error;
-    redirect(`/admin/blog/${id}/editar?error=${encodeURIComponent(error.message)}`);
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") throw error;
+    redirect(`/admin/blog/${id}/editar?error=${encodeURIComponent(getErrorMessage(error))}`);
   }
 
   revalidatePath("/admin/blog");

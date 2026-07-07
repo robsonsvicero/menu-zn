@@ -10,27 +10,24 @@ interface NeighborhoodDialogProps {
 
 export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogProps) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
   const handleOpenDialog = () => {
-    setIsOpen(true);
     setError(null);
     dialogRef.current?.showModal();
   };
 
   const handleCloseDialog = () => {
-    setIsOpen(false);
     dialogRef.current?.close();
     if (nameRef.current) {
       nameRef.current.value = "";
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLDivElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
@@ -46,22 +43,13 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
     try {
       await addNeighborhoodAction(name);
       handleCloseDialog();
+      onNeighborhoodAdded?.();
       // Recarrega dados do servidor sem limpar formulário
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao criar bairro");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !isLoading) {
-      e.preventDefault();
-      const name = nameRef.current?.value.trim();
-      if (name) {
-        handleSubmit(e as any);
-      }
     }
   };
 
@@ -82,7 +70,7 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
         <div className="p-6">
           <h3 className="text-lg font-serif mb-4">Adicionar novo bairro</h3>
 
-          <div onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm mb-1">Nome do bairro *</label>
               <input
@@ -90,7 +78,6 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
                 name="neighborhood_name"
                 type="text"
                 autoFocus
-                onKeyDown={handleKeyDown}
                 className="w-full rounded-xl border border-outline px-3 py-2 text-sm"
                 placeholder="ex: Centro, Zona Sul..."
               />
@@ -104,8 +91,7 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
 
             <div className="flex gap-3 pt-2">
               <button
-                type="button"
-                onClick={(e) => handleSubmit(e as any)}
+                type="submit"
                 disabled={isLoading}
                 className="flex-1 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
               >
@@ -120,7 +106,7 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
                 Cancelar
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </dialog>
     </>

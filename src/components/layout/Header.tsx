@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { X, Settings } from 'lucide-react'
+import Link from 'next/link'
+import { X } from 'lucide-react'
 import Image from 'next/image'
 import Container from './Container'
 import { Button } from '../ui/button'
@@ -53,11 +54,6 @@ export default function Header() {
     return () => { document.body.style.overflow = '' }
   }, [mobileOpen])
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false)
-  }, [pathname])
-
   return (
     <>
       <header className="absolute top-0 left-0 right-0 z-50 bg-[rgba(250,248,242,0.15)] backdrop-blur-[8px]">
@@ -65,7 +61,7 @@ export default function Header() {
           <div className="flex h-20 items-center justify-between">
 
             {/* Logo */}
-            <a href="/" className="flex items-center">
+            <Link href="/" className="flex items-center">
               <Image
                 src="/logos/logo-horizontal 6.png"
                 alt="Menu ZN"
@@ -74,19 +70,19 @@ export default function Header() {
                 className="object-contain h-10 w-auto"
                 priority
               />
-            </a>
+            </Link>
 
             {/* Desktop Nav */}
             <nav className="hidden lg:flex gap-6 items-center">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.href}
                   href={link.href}
                   className={`text-sm font-medium transition-colors ${pathname === link.href ? 'text-secondary' : 'text-white/80 hover:text-white'
                     }`}
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </nav>
 
@@ -137,7 +133,7 @@ export default function Header() {
         >
           {/* Drawer Header */}
           <div className="flex items-center justify-between px-8 h-20 border-b border-outline/40">
-            <a href="/">
+            <Link href="/" onClick={() => setMobileOpen(false)}>
               <Image
                 src="/logos/logo-horizontal 4.png"
                 alt="Menu ZN"
@@ -145,7 +141,7 @@ export default function Header() {
                 height={36}
                 className="object-contain h-9 w-auto"
               />
-            </a>
+            </Link>
             <div className="flex items-center gap-2">
               {/* <a
                 href="/admin/login"
@@ -167,16 +163,17 @@ export default function Header() {
           {/* Drawer Nav Links */}
           <nav className="flex-1 flex flex-col px-8 py-6 overflow-y-auto">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => setMobileOpen(false)}
                 className={`py-5 border-b border-outline/30 font-serif text-[28px] font-bold transition-colors ${pathname === link.href
                     ? 'text-secondary'
                     : 'text-on-surface hover:text-secondary'
                   }`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
