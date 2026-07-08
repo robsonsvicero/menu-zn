@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { type ClipboardEvent, useMemo, useRef, useState } from "react";
 import {
   Bold,
   Heading2,
@@ -139,6 +139,96 @@ function sanitizeHtml(value: string) {
   return template.innerHTML;
 }
 
+function unwrapElement(element: Element) {
+  element.replaceWith(...Array.from(element.childNodes));
+}
+
+function wrapRootListItems(template: HTMLTemplateElement) {
+  const nodes = Array.from(template.content.childNodes);
+  const wrappedNodes: ChildNode[] = [];
+  let list: HTMLUListElement | null = null;
+
+  nodes.forEach((node) => {
+    if (node.nodeType === Node.ELEMENT_NODE && (node as Element).tagName === "LI") {
+      if (!list) {
+        list = document.createElement("ul");
+        wrappedNodes.push(list);
+      }
+
+      list.appendChild(node);
+      return;
+    }
+
+    list = null;
+    wrappedNodes.push(node);
+  });
+
+  template.content.replaceChildren(...wrappedNodes);
+}
+
+function cleanWordHtml(value: string) {
+  if (typeof window === "undefined" || !value.trim()) {
+    return value;
+  }
+
+  const template = document.createElement("template");
+  template.innerHTML = value
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<\?xml[\s\S]*?>/gi, "");
+
+  template.content.querySelectorAll("style, script, meta, link, xml").forEach((element) => {
+    element.remove();
+  });
+
+  template.content.querySelectorAll("*").forEach((element) => {
+    const tagName = element.tagName;
+
+    if (tagName === "H1") {
+      const heading = document.createElement("h2");
+      heading.replaceChildren(...Array.from(element.childNodes));
+      element.replaceWith(heading);
+      return;
+    }
+
+    if (["H4", "H5", "H6"].includes(tagName)) {
+      const heading = document.createElement("h3");
+      heading.replaceChildren(...Array.from(element.childNodes));
+      element.replaceWith(heading);
+      return;
+    }
+
+    if (tagName === "SPAN" || tagName === "FONT" || tagName === "O:P") {
+      unwrapElement(element);
+      return;
+    }
+
+    const className = element.getAttribute("class") ?? "";
+    const style = element.getAttribute("style") ?? "";
+    const looksLikeWordList = /\bMsoListParagraph\b/i.test(className) || /mso-list:/i.test(style);
+
+    if (looksLikeWordList && tagName === "P") {
+      const item = document.createElement("li");
+      item.innerHTML = element.innerHTML.replace(/^(\s|&nbsp;|[\u00b7\u2022\-o]|\d+[.)])+/, "");
+      element.replaceWith(item);
+    }
+  });
+
+  const nodes = Array.from(template.content.childNodes);
+  const wrappedNodes = nodes.map((node) => {
+    if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = node.textContent;
+      return paragraph;
+    }
+
+    return node;
+  });
+
+  template.content.replaceChildren(...wrappedNodes);
+  wrapRootListItems(template);
+  return sanitizeHtml(template.innerHTML);
+}
+
 function prepareInitialHtml(value: string) {
   const trimmed = value.trim();
 
@@ -150,6 +240,34 @@ function prepareInitialHtml(value: string) {
   return sanitizeHtml(looksLikeHtml ? trimmed : markdownToHtml(trimmed));
 }
 
+function insertHtmlAtSelection(editor: HTMLElement, value: string) {
+  editor.focus();
+
+  const selection = window.getSelection();
+  const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+
+  if (!selection || !range || !editor.contains(range.commonAncestorContainer)) {
+    editor.insertAdjacentHTML("beforeend", value);
+    return;
+  }
+
+  range.deleteContents();
+
+  const template = document.createElement("template");
+  template.innerHTML = value;
+  const fragment = template.content;
+  const lastNode = fragment.lastChild;
+
+  range.insertNode(fragment);
+
+  if (lastNode) {
+    range.setStartAfter(lastNode);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+}
+
 export function BlogContentEditor({ name = "content_md", defaultValue = "" }: BlogContentEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const initialHtml = useMemo(() => prepareInitialHtml(defaultValue), [defaultValue]);
@@ -157,6 +275,26 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
 
   function syncEditor() {
     setHtml(sanitizeHtml(editorRef.current?.innerHTML ?? ""));
+  }
+
+  function handlePaste(event: ClipboardEvent<HTMLDivElement>) {
+    const editor = editorRef.current;
+
+    if (!editor) {
+      return;
+    }
+
+    const clipboardHtml = event.clipboardData.getData("text/html");
+    const clipboardText = event.clipboardData.getData("text/plain");
+    const pastedHtml = clipboardHtml ? cleanWordHtml(clipboardHtml) : markdownToHtml(clipboardText);
+
+    if (!pastedHtml.trim()) {
+      return;
+    }
+
+    event.preventDefault();
+    insertHtmlAtSelection(editor, pastedHtml);
+    setHtml(sanitizeHtml(editor.innerHTML));
   }
 
   function runCommand(command: string, value?: string) {
@@ -237,7 +375,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         dangerouslySetInnerHTML={{ __html: initialHtml }}
         onInput={syncEditor}
         onBlur={syncEditor}
-        onPaste={() => window.setTimeout(syncEditor, 0)}
+        onPaste={handlePaste}
       />
     </div>
   );
