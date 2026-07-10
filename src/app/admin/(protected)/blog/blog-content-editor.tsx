@@ -1,6 +1,6 @@
 "use client";
 
-import { type ClipboardEvent, useMemo, useRef, useState } from "react";
+import { type ClipboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bold,
   Heading2,
@@ -139,6 +139,21 @@ function sanitizeHtml(value: string) {
   return template.innerHTML;
 }
 
+function normalizeEditorHtml(value: string) {
+  const sanitized = sanitizeHtml(value);
+
+  if (typeof window === "undefined" || !sanitized.trim()) {
+    return sanitized.trim();
+  }
+
+  const template = document.createElement("template");
+  template.innerHTML = sanitized;
+  const hasMeaningfulElement = template.content.querySelector("img, iframe, video, audio, table, hr");
+  const text = template.content.textContent?.replace(/\u00a0/g, " ").trim() ?? "";
+
+  return text || hasMeaningfulElement ? sanitized : "";
+}
+
 function unwrapElement(element: Element) {
   element.replaceWith(...Array.from(element.childNodes));
 }
@@ -273,8 +288,26 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
   const initialHtml = useMemo(() => prepareInitialHtml(defaultValue), [defaultValue]);
   const [html, setHtml] = useState(initialHtml);
 
+  useEffect(() => {
+    const editor = editorRef.current;
+
+    if (!editor) {
+      return;
+    }
+
+    editor.innerHTML = initialHtml;
+    setHtml(normalizeEditorHtml(initialHtml));
+  }, [initialHtml]);
+
   function syncEditor() {
-    setHtml(sanitizeHtml(editorRef.current?.innerHTML ?? ""));
+    const editor = editorRef.current;
+    const nextHtml = normalizeEditorHtml(editor?.innerHTML ?? "");
+
+    if (editor && !nextHtml && editor.innerHTML) {
+      editor.replaceChildren();
+    }
+
+    setHtml(nextHtml);
   }
 
   function handlePaste(event: ClipboardEvent<HTMLDivElement>) {
@@ -294,7 +327,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
 
     event.preventDefault();
     insertHtmlAtSelection(editor, pastedHtml);
-    setHtml(sanitizeHtml(editor.innerHTML));
+    syncEditor();
   }
 
   function runCommand(command: string, value?: string) {
@@ -372,7 +405,6 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         suppressContentEditableWarning
         className="blog-rich-editor min-h-80 rounded-xl px-4 py-4 text-sm text-on-surface outline-none"
         data-placeholder="Escreva o artigo aqui..."
-        dangerouslySetInnerHTML={{ __html: initialHtml }}
         onInput={syncEditor}
         onBlur={syncEditor}
         onPaste={handlePaste}
