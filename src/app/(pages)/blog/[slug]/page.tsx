@@ -8,6 +8,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { formatViewCount } from "@/lib/blog-format";
+import { sanitizeStyleAttribute } from "@/lib/html-style-sanitize";
 import {
   fetchPublishedBlogPostBySlug,
   fetchPublishedBlogPosts,
@@ -70,8 +71,40 @@ function getInstagramHandle(value: string | null | undefined) {
 
 const markdownSanitizeSchema = {
   ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames ?? []), "u"],
+  tagNames: [...(defaultSchema.tagNames ?? []), "span", "u"],
+  attributes: {
+    ...defaultSchema.attributes,
+    "*": [...(defaultSchema.attributes?.["*"] ?? []), "style"],
+  },
 };
+
+type HastNode = {
+  children?: HastNode[];
+  properties?: Record<string, unknown>;
+};
+
+function sanitizeInlineStyles() {
+  return function transformer(tree: HastNode) {
+    function visit(node: HastNode) {
+      const properties = node.properties;
+      const style = properties?.style;
+
+      if (properties && typeof style === "string") {
+        const sanitizedStyle = sanitizeStyleAttribute(style);
+
+        if (sanitizedStyle) {
+          properties.style = sanitizedStyle;
+        } else {
+          delete properties.style;
+        }
+      }
+
+      node.children?.forEach(visit);
+    }
+
+    visit(tree);
+  };
+}
 
 function renderContent(content: string | null) {
   if (!content) {
@@ -81,22 +114,23 @@ function renderContent(content: string | null) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw, [rehypeSanitize, markdownSanitizeSchema]]}
+      rehypePlugins={[rehypeRaw, sanitizeInlineStyles, [rehypeSanitize, markdownSanitizeSchema]]}
       components={{
-        h1: ({ children }) => <h1 className="mt-12 font-serif text-4xl text-on-surface">{children}</h1>,
-        h2: ({ children }) => <h2 className="mt-12 font-serif text-3xl text-on-surface">{children}</h2>,
-        h3: ({ children }) => <h3 className="mt-10 font-serif text-2xl text-[rgb(148_53_21)]">{children}</h3>,
-        p: ({ children }) => <p className="text-[17px] leading-8 text-on-surface/90">{children}</p>,
-        ul: ({ children }) => <ul className="mt-6 list-disc space-y-2 pl-6 text-[17px] leading-8 text-on-surface/90">{children}</ul>,
-        ol: ({ children }) => <ol className="mt-6 list-decimal space-y-2 pl-6 text-[17px] leading-8 text-on-surface/90">{children}</ol>,
-        li: ({ children }) => <li>{children}</li>,
-        blockquote: ({ children }) => (
-          <blockquote className="my-10 rounded-3xl border-l-4 border-[rgb(148_53_21)] bg-[#faf3ee] p-8 font-serif text-xl italic leading-9 text-on-surface">
+        h1: ({ children, ...props }) => <h1 {...props} className="mt-12 font-serif text-4xl text-on-surface">{children}</h1>,
+        h2: ({ children, ...props }) => <h2 {...props} className="mt-12 font-serif text-3xl text-on-surface">{children}</h2>,
+        h3: ({ children, ...props }) => <h3 {...props} className="mt-10 font-serif text-2xl text-[rgb(148_53_21)]">{children}</h3>,
+        p: ({ children, ...props }) => <p {...props} className="text-[17px] leading-8 text-on-surface/90">{children}</p>,
+        ul: ({ children, ...props }) => <ul {...props} className="mt-6 list-disc space-y-2 pl-6 text-[17px] leading-8 text-on-surface/90">{children}</ul>,
+        ol: ({ children, ...props }) => <ol {...props} className="mt-6 list-decimal space-y-2 pl-6 text-[17px] leading-8 text-on-surface/90">{children}</ol>,
+        li: ({ children, ...props }) => <li {...props}>{children}</li>,
+        blockquote: ({ children, ...props }) => (
+          <blockquote {...props} className="my-10 rounded-3xl border-l-4 border-[rgb(148_53_21)] bg-[#faf3ee] p-8 font-serif text-xl italic leading-9 text-on-surface">
             {children}
           </blockquote>
         ),
-        a: ({ href, children }) => (
+        a: ({ href, children, ...props }) => (
           <a
+            {...props}
             href={href}
             className="font-semibold text-[rgb(148_53_21)] underline decoration-[rgb(148_53_21)]/40 underline-offset-2 transition hover:decoration-[rgb(148_53_21)]"
             target="_blank"
@@ -105,9 +139,10 @@ function renderContent(content: string | null) {
             {children}
           </a>
         ),
-        strong: ({ children }) => <strong className="font-bold text-on-surface">{children}</strong>,
-        em: ({ children }) => <em className="italic">{children}</em>,
-        u: ({ children }) => <u className="underline decoration-1 underline-offset-3">{children}</u>,
+        strong: ({ children, ...props }) => <strong {...props} className="font-bold text-on-surface">{children}</strong>,
+        em: ({ children, ...props }) => <em {...props} className="italic">{children}</em>,
+        u: ({ children, ...props }) => <u {...props} className="underline decoration-1 underline-offset-3">{children}</u>,
+        span: ({ children, ...props }) => <span {...props}>{children}</span>,
       }}
     >
       {content}

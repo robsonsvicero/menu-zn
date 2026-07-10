@@ -15,6 +15,7 @@ import {
   Underline,
   Undo2,
 } from "lucide-react";
+import { sanitizeStyleAttribute } from "@/lib/html-style-sanitize";
 
 type BlogContentEditorProps = {
   name?: string;
@@ -26,6 +27,8 @@ const allowedTags = new Set([
   "B",
   "BLOCKQUOTE",
   "BR",
+  "CENTER",
+  "DEL",
   "DIV",
   "EM",
   "H2",
@@ -34,7 +37,11 @@ const allowedTags = new Set([
   "LI",
   "OL",
   "P",
+  "S",
+  "SPAN",
   "STRONG",
+  "SUB",
+  "SUP",
   "U",
   "UL",
 ]);
@@ -117,11 +124,24 @@ function sanitizeHtml(value: string) {
     Array.from(element.attributes).forEach((attribute) => {
       const name = attribute.name.toLowerCase();
       const isAllowedLink = element.tagName === "A" && ["href", "target", "rel"].includes(name);
+      const isAllowedStyle = name === "style";
 
-      if (!isAllowedLink) {
+      if (!isAllowedLink && !isAllowedStyle) {
         element.removeAttribute(attribute.name);
       }
     });
+
+    const style = element.getAttribute("style");
+
+    if (style) {
+      const sanitizedStyle = sanitizeStyleAttribute(style);
+
+      if (sanitizedStyle) {
+        element.setAttribute("style", sanitizedStyle);
+      } else {
+        element.removeAttribute("style");
+      }
+    }
 
     if (element.tagName === "A") {
       const href = element.getAttribute("href") ?? "";
@@ -201,6 +221,7 @@ function cleanWordHtml(value: string) {
     if (tagName === "H1") {
       const heading = document.createElement("h2");
       heading.replaceChildren(...Array.from(element.childNodes));
+      heading.setAttribute("style", element.getAttribute("style") ?? "");
       element.replaceWith(heading);
       return;
     }
@@ -208,11 +229,50 @@ function cleanWordHtml(value: string) {
     if (["H4", "H5", "H6"].includes(tagName)) {
       const heading = document.createElement("h3");
       heading.replaceChildren(...Array.from(element.childNodes));
+      heading.setAttribute("style", element.getAttribute("style") ?? "");
       element.replaceWith(heading);
       return;
     }
 
-    if (tagName === "SPAN" || tagName === "FONT" || tagName === "O:P") {
+    if (tagName === "FONT") {
+      const span = document.createElement("span");
+      const styles: string[] = [];
+      const color = element.getAttribute("color");
+      const size = element.getAttribute("size");
+
+      if (color) {
+        styles.push(`color: ${color}`);
+      }
+
+      if (size && /^\d+$/.test(size)) {
+        const sizeMap: Record<string, string> = {
+          "1": "10pt",
+          "2": "12pt",
+          "3": "14pt",
+          "4": "16pt",
+          "5": "18pt",
+          "6": "24pt",
+          "7": "32pt",
+        };
+
+        styles.push(`font-size: ${sizeMap[size] ?? "14pt"}`);
+      }
+
+      span.setAttribute("style", styles.join("; "));
+      span.replaceChildren(...Array.from(element.childNodes));
+      element.replaceWith(span);
+      return;
+    }
+
+    if (tagName === "CENTER") {
+      const div = document.createElement("div");
+      div.setAttribute("style", "text-align: center");
+      div.replaceChildren(...Array.from(element.childNodes));
+      element.replaceWith(div);
+      return;
+    }
+
+    if (tagName === "O:P") {
       unwrapElement(element);
       return;
     }
