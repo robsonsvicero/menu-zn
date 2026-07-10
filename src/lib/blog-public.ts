@@ -39,6 +39,15 @@ export type BlogDetailItem = {
   authors: BlogAuthor;
 };
 
+export type BlogTestimonial = {
+  id: string;
+  author_name: string;
+  author_role: string | null;
+  content: string;
+  rating: number | null;
+  created_at: string;
+};
+
 export async function fetchPublishedBlogPosts(options?: {
   search?: string;
   category?: string;
@@ -91,6 +100,23 @@ export async function fetchPublishedBlogPostBySlug(slug: string) {
   }
 
   return (data ?? null) as unknown as BlogDetailItem | null;
+}
+
+export async function fetchApprovedBlogTestimonials(blogPostId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("testimonials")
+    .select("id, author_name, author_role, content, rating, created_at")
+    .eq("blog_post_id", blogPostId)
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as BlogTestimonial[];
 }
 
 export async function fetchBlogCategoryOptions() {

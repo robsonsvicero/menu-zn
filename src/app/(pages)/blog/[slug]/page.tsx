@@ -10,6 +10,7 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { formatViewCount } from "@/lib/blog-format";
 import { sanitizeStyleAttribute } from "@/lib/html-style-sanitize";
 import {
+  fetchApprovedBlogTestimonials,
   fetchPublishedBlogPostBySlug,
   fetchPublishedBlogPosts,
   type BlogCategoryRelation,
@@ -211,7 +212,12 @@ export default async function BlogPostDetail({ params }: PageProps) {
     notFound();
   }
 
-  const relatedPosts = (await fetchPublishedBlogPosts({ limit: 4 }))
+  const [allRelatedPosts, testimonials] = await Promise.all([
+    fetchPublishedBlogPosts({ limit: 4 }),
+    fetchApprovedBlogTestimonials(post.id),
+  ]);
+
+  const relatedPosts = allRelatedPosts
     .filter((item) => item.slug !== post.slug)
     .slice(0, 3);
 
@@ -364,6 +370,48 @@ export default async function BlogPostDetail({ params }: PageProps) {
             </div>
 
             <BlogTestimonialForm postId={post.id} postSlug={post.slug} />
+
+            {testimonials.length > 0 ? (
+              <section className="mt-10" aria-labelledby="published-comments-heading">
+                <div className="mb-6 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-[rgb(148_53_21)]">
+                      Comentários publicados
+                    </p>
+                    <h2 id="published-comments-heading" className="mt-2 font-serif text-3xl text-on-surface">
+                      O que os leitores disseram
+                    </h2>
+                  </div>
+                  <span className="text-sm text-on-surface/60">
+                    {testimonials.length} {testimonials.length === 1 ? "comentário" : "comentários"}
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  {testimonials.map((testimonial) => (
+                    <article
+                      key={testimonial.id}
+                      className="rounded-[22px] border border-outline/25 bg-white p-6 shadow-sm md:p-7"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#faf3ee] font-serif text-lg text-[rgb(148_53_21)]">
+                          {testimonial.author_name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-on-surface">{testimonial.author_name}</h3>
+                          {testimonial.author_role ? (
+                            <p className="text-xs text-on-surface/55">{testimonial.author_role}</p>
+                          ) : null}
+                        </div>
+                      </div>
+                      <p className="mt-4 whitespace-pre-line text-[15px] leading-7 text-on-surface/80">
+                        {testimonial.content}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </div>
         </div>
       </section>
