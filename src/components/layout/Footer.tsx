@@ -66,7 +66,7 @@ export default function Footer() {
           {/* <div className="flex flex-col">
             <h3 className="font-serif text-xl font-bold mb-6">Para Empresas</h3>
             <div className="flex flex-col gap-4">
-              <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Anuncie Aqui</a>
+              <a href="https://wa.me/5511973237060" target="_blank" rel="noopener noreferrer" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Anuncie Aqui</a>
               <a href="/planos" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Planos e Preços</a>
               <a href="/parceiros" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Seja Parceiro</a>
               <a href="/faq" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">FAQ</a>
@@ -79,7 +79,7 @@ export default function Footer() {
             <div className="flex flex-col gap-5">
               <div className="flex items-center gap-4">
                 <Phone size={18} className="text-[#D69869]" strokeWidth={2} />
-                <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer"><span className="text-[#a8a8a8] text-sm">(11) 97323-7060</span></a>
+                <a href="https://wa.me/5511973237060" target="_blank" rel="noopener noreferrer"><span className="text-[#a8a8a8] text-sm">(11) 97323-7060</span></a>
               </div>
               <div className="flex items-center gap-4">
                 <Mail size={18} className="text-[#D69869]" strokeWidth={2} />

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Faça parte da rede oficial do Menu Zona Norte. Junte-se a nós como criador de conteúdo, fotógrafo, agência ou parceiro estratégico.",
 };
 
-const whatsappUrl = "https://w.app/xkvhoo";
+const whatsappUrl = "https://wa.me/5511973237060";
 
 export default function ParceirosPage() {
   return (

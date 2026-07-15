@@ -60,7 +60,7 @@ export default function Hero() {
                 Explorar Restaurantes
               </Button>
             </a>
-            <a href="https://w.app/xkvhoo" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+            <a href="https://wa.me/5511973237060" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
               <Button size="lg" variant="secondary" className="w-full px-7">
                 Anuncie seu negócio
               </Button>

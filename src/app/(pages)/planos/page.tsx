@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Descubra nossos planos para divulgar o seu estabelecimento na Zona Norte de São Paulo. Conecte-se com um público apaixonado por gastronomia.",
 };
 
-const whatsappUrl = "https://w.app/xkvhoo";
+const whatsappUrl = "https://wa.me/5511973237060";
 
 export default function PlanosPage() {
   return (

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Tire suas dúvidas sobre o Menu Zona Norte, planos de anúncio, curadoria e parcerias. Central de Ajuda oficial do maior guia gastronômico da ZN.",
 };
 
-const whatsappUrl = "https://w.app/xkvhoo";
+const whatsappUrl = "https://wa.me/5511973237060";
 
 const faqs = [
   {
