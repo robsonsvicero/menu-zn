@@ -39,6 +39,7 @@ export default async function EditorPicks() {
             alt={post.title}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
+            unoptimized
             className="object-cover"
           />
           {/* Badge */}
