@@ -48,6 +48,7 @@ export default async function Chronicles() {
                 alt={article.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
+                unoptimized={Boolean(article.cover_image_url)}
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </div>

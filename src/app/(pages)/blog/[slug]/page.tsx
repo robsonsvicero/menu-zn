@@ -266,6 +266,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
               src={post.cover_image_url ?? "/images/hero-blog-destaque.png"}
               alt={post.title}
               fill
+              unoptimized={Boolean(post.cover_image_url)}
               className="object-cover object-center md:object-cover md:object-[center_35%]"
               priority
             />
@@ -441,6 +442,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
                         src={item.cover_image_url ?? "/images/hero-blog-destaque.png"}
                         alt={item.title}
                         fill
+                        unoptimized={Boolean(item.cover_image_url)}
                         className="object-cover transition duration-500 group-hover:scale-105"
                       />
                     </div>
