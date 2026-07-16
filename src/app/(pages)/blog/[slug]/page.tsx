@@ -260,7 +260,7 @@ export default async function BlogPostDetail({ params }: PageProps) {
       />
       <main className="min-h-screen bg-white text-on-surface">
       <section className="relative overflow-hidden bg-black">
-        <div className="relative h-[72svh] min-h-130 md:mx-auto md:h-auto md:min-h-0 md:w-full md:max-w-480 md:aspect-video">
+        <div className="relative h-[70vh] md:mx-auto md:w-full md:max-w-480">
           <div className="absolute inset-0">
             <Image
               src={post.cover_image_url ?? "/images/hero-blog-destaque.png"}
