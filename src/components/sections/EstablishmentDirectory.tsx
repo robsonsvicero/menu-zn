@@ -98,7 +98,7 @@ export default async function EstablishmentDirectory({
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image src={heroImage} alt={heroAlt} fill className="object-cover object-center" priority />
-          <div className="absolute inset-0 bg-black/70" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         <div className="relative mx-auto flex min-h-160 max-w-300 items-end px-6 py-20 md:px-10 lg:px-12">
