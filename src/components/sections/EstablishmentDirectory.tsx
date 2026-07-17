@@ -187,6 +187,7 @@ export default async function EstablishmentDirectory({
                       src={item.image_cover_url ?? heroImage}
                       alt={item.name}
                       fill
+                      unoptimized={Boolean(item.image_cover_url)}
                       className="object-cover transition duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
@@ -239,7 +240,7 @@ export default async function EstablishmentDirectory({
             {items.map((item) => (
               <Link key={item.id} href={`/local/${item.slug}`} className="group overflow-hidden rounded-[28px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div className="relative aspect-4/3 overflow-hidden">
-                  <Image src={item.image_cover_url ?? heroImage} alt={item.name} fill className="object-cover transition duration-500 group-hover:scale-105" />
+                  <Image src={item.image_cover_url ?? heroImage} alt={item.name} fill unoptimized={Boolean(item.image_cover_url)} className="object-cover transition duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/0 to-transparent" />
                   {item.has_ifood ? (
                     <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">

@@ -136,6 +136,7 @@ export default async function EstablishmentShowcase({ searchParams }: Establishm
                       src={item.image_cover_url ?? fallbackImage}
                       alt={item.name}
                       fill
+                      unoptimized={Boolean(item.image_cover_url)}
                       className="object-cover transition duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/0 to-transparent" />

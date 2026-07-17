@@ -159,7 +159,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
       <main className="min-h-screen bg-[#faf8f5] text-on-surface">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <Image src={imageSrc} alt={establishment.name} fill className="object-cover object-center" priority />
+          <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover object-center" priority />
           <div className="absolute inset-0 bg-black/70" />
         </div>
 
@@ -217,7 +217,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
               <h2 className="font-serif text-2xl">Contato</h2>
               <div className="mt-5 grid gap-6 md:grid-cols-2">
                 <div className="relative aspect-4/3 overflow-hidden rounded-3xl">
-                  <Image src={imageSrc} alt={establishment.name} fill className="object-cover" />
+                  <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover" />
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-sm text-on-surface/75">
@@ -300,7 +300,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
               {related.map((item) => (
                 <Link key={item.id} href={`/local/${item.slug}`} className="group overflow-hidden rounded-[26px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                   <div className="relative aspect-4/3 overflow-hidden">
-                    <Image src={item.image_cover_url ?? imageSrc} alt={item.name} fill className="object-cover transition duration-500 group-hover:scale-105" />
+                    <Image src={item.image_cover_url ?? imageSrc} alt={item.name} fill unoptimized={Boolean(item.image_cover_url ?? establishment.image_cover_url)} className="object-cover transition duration-500 group-hover:scale-105" />
                   </div>
                   <div className="space-y-3 p-6">
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
