@@ -56,7 +56,7 @@ export default async function EditorPicks() {
 
           {/* Eyebrow */}
           <p className="text-primary text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase mb-6">
-            Descobertas do Editor
+            Saindo do Forno
           </p>
           <p className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface/55">
             <Eye size={14} aria-hidden="true" />

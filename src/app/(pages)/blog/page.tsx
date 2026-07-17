@@ -114,7 +114,7 @@ export default async function BlogPage({
         </div>
       </section>
 
-      <section className="sticky top-0 z-30 border-b border-outline/20 bg-[#faf8f5]/90 backdrop-blur-md">
+      <section className="border-b border-outline/20 bg-[#faf8f5]/90 backdrop-blur-md md:sticky md:top-0 md:z-30">
         <div className="mx-auto max-w-300 px-6 py-5 md:px-10 lg:px-12">
           <form method="get" className="grid gap-3 rounded-3xl border border-outline/40 bg-white p-4 shadow-sm md:grid-cols-[1fr_220px_180px_auto]">
             <label className="relative block">

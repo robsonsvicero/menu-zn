@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatViewCount } from '@/lib/blog-format'
 import { fetchPublishedBlogPosts, type BlogCategoryRelation } from '@/lib/blog-public'
+import EditorPicks from '@/components/sections/EditorPicks'
 
 function getCategoryName(value: BlogCategoryRelation) {
   return Array.isArray(value) ? value[0]?.name : value?.name
@@ -12,7 +13,8 @@ export default async function Chronicles() {
   let articles = [] as Awaited<ReturnType<typeof fetchPublishedBlogPosts>>
 
   try {
-    articles = await fetchPublishedBlogPosts({ limit: 3 })
+    const publishedArticles = await fetchPublishedBlogPosts({ limit: 4 })
+    articles = publishedArticles.slice(1)
   } catch (error) {
     if (typeof error === 'object' && error && 'digest' in error && (error as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE') {
       throw error
@@ -23,7 +25,7 @@ export default async function Chronicles() {
 
   if (articles.length === 0) return null
   return (
-    <section className="w-full bg-background py-16 px-6 md:px-16 lg:px-30">
+    <section className="w-full bg-on-surface/5 py-16 px-6 md:px-16 lg:px-30">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 md:gap-0">
         <h2 className="font-serif text-4xl md:text-[44px] text-on-surface font-bold">
@@ -34,8 +36,10 @@ export default async function Chronicles() {
           className="flex items-center gap-2 text-muted hover:text-on-surface transition-colors text-xs font-semibold tracking-wider uppercase"
         >
           Todos os Artigos <ArrowRight size={14} />
-        </Link>
+        </Link>        
       </div>
+
+      <EditorPicks />
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

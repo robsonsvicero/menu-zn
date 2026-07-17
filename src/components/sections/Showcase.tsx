@@ -13,9 +13,6 @@ export default async function Showcase() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 md:gap-0">
         <div>
-          <p className="text-primary text-[11px] font-bold tracking-widest uppercase mb-2">
-            Localizações Encontradas
-          </p>
           <h2 className="font-serif text-4xl md:text-[44px] text-on-surface font-bold">
             Indicações
           </h2>

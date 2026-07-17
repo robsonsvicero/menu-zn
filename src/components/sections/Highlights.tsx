@@ -13,7 +13,7 @@ export default async function Highlights() {
   let items = [] as Awaited<ReturnType<typeof fetchPublishedEstablishments>>
 
   try {
-    items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'featured', limit: 4 })
+    items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'featured', limit: 5 })
   } catch (error) {
     if (typeof error === 'object' && error && 'digest' in error && (error as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE') {
       throw error
@@ -29,9 +29,6 @@ export default async function Highlights() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 md:gap-0">
         <div>
-          <p className="text-primary text-[11px] font-bold tracking-widest uppercase mb-2">
-            Seleção Mensal
-          </p>
           <h2 className="font-serif text-4xl md:text-[44px] text-on-surface font-bold">
             Destaques da Semana
           </h2>
@@ -45,7 +42,7 @@ export default async function Highlights() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {items.map((item) => (
           <Link
             key={item.id}

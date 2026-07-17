@@ -4,7 +4,6 @@ import Highlights from '@/components/sections/Highlights'
 import Categories from '@/components/sections/Categories'
 import Showcase from '@/components/sections/Showcase'
 import CtaAdvertise from '@/components/sections/CtaAdvertise'
-import EditorPicks from '@/components/sections/EditorPicks'
 import Chronicles from '@/components/sections/Chronicles'
 // import Testimonials from '@/components/sections/Testimonials'
 import Newsletter from '@/components/sections/Newsletter'
@@ -19,8 +18,7 @@ export default function Home() {
       <Highlights />
       <Categories />
       <Showcase />
-      <CtaAdvertise />
-      <EditorPicks />
+      {/* <CtaAdvertise /> */}
       <Chronicles />
       {/* <Testimonials /> */}
       <Newsletter />
