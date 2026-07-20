@@ -1,13 +1,15 @@
 "use client";
 
-import { type ClipboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type ClipboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bold,
   Heading2,
   Heading3,
+  Image as ImageIcon,
   Italic,
   Link as LinkIcon,
   List,
+  LoaderCircle,
   ListOrdered,
   Pilcrow,
   Quote,
@@ -34,6 +36,7 @@ const allowedTags = new Set([
   "H2",
   "H3",
   "I",
+  "IMG",
   "LI",
   "OL",
   "P",
@@ -124,9 +127,12 @@ function sanitizeHtml(value: string) {
     Array.from(element.attributes).forEach((attribute) => {
       const name = attribute.name.toLowerCase();
       const isAllowedLink = element.tagName === "A" && ["href", "target", "rel"].includes(name);
+      const isAllowedImage = element.tagName === "IMG" &&
+        ["src", "alt", "title", "loading"].includes(name);
+
       const isAllowedStyle = name === "style";
 
-      if (!isAllowedLink && !isAllowedStyle) {
+      if (!isAllowedLink && !isAllowedImage && !isAllowedStyle) {
         element.removeAttribute(attribute.name);
       }
     });
@@ -153,6 +159,18 @@ function sanitizeHtml(value: string) {
 
       element.setAttribute("target", "_blank");
       element.setAttribute("rel", "noreferrer");
+    }
+
+    if (element.tagName === "IMG") {
+      const src = element.getAttribute("src") ?? "";
+
+      if (!/^https?:\/\//i.test(src)) {
+        element.remove();
+        return;
+      }
+
+      element.setAttribute("loading", "lazy");
+      element.setAttribute("alt", element.getAttribute("alt") ?? "");
     }
   });
 
@@ -347,6 +365,10 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
   const editorRef = useRef<HTMLDivElement>(null);
   const initialHtml = useMemo(() => prepareInitialHtml(defaultValue), [defaultValue]);
   const [html, setHtml] = useState(initialHtml);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const imageSelectionRef = useRef<Range | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   useEffect(() => {
     const editor = editorRef.current;
@@ -411,12 +433,80 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
     runCommand("createLink", normalizedUrl);
   }
 
+  function rememberImagePosition() {
+    const editor = editorRef.current;
+    const selection = window.getSelection();
+    const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+
+    imageSelectionRef.current = range && editor?.contains(range.commonAncestorContainer)
+      ? range.cloneRange()
+      : null;
+  }
+
+  async function uploadImage(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setImageError("Selecione um arquivo de imagem v?lido.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setImageError("A imagem deve ter no m?ximo 5 MB.");
+      return;
+    }
+
+    setImageError("");
+    setIsUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch("/api/admin/blog/images", { method: "POST", body: formData });
+      const result = (await response.json()) as { url?: string; error?: string };
+
+      if (!response.ok || !result.url) {
+        throw new Error(result.error ?? "N?o foi poss?vel enviar a imagem.");
+      }
+
+      const selection = window.getSelection();
+      const savedRange = imageSelectionRef.current;
+      if (selection && savedRange) {
+        selection.removeAllRanges();
+        selection.addRange(savedRange);
+      }
+
+      const alt = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ");
+      const editor = editorRef.current;
+      if (editor) {
+        insertHtmlAtSelection(editor, `<img src="${escapeHtml(result.url)}" alt="${escapeHtml(alt)}" loading="lazy"><p><br></p>`);
+        syncEditor();
+      }
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : "N?o foi poss?vel enviar a imagem.");
+    } finally {
+      setIsUploadingImage(false);
+      imageSelectionRef.current = null;
+    }
+  }
   const buttonClass =
     "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-outline/20 bg-white text-on-surface/75 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
 
   return (
     <div className="rounded-2xl border border-outline/20 bg-[#faf8f5] p-2">
       <input type="hidden" name={name} value={html} />
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+        className="sr-only"
+        tabIndex={-1}
+        onChange={uploadImage}
+      />
       <div className="flex flex-wrap items-center gap-1.5 border-b border-outline/10 px-1 pb-2">
         <button type="button" title="Parágrafo" className={buttonClass} onClick={() => setBlock("p")}>
           <Pilcrow size={16} aria-hidden="true" />
@@ -440,6 +530,17 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         <button type="button" title="Link" className={buttonClass} onClick={addLink}>
           <LinkIcon size={16} aria-hidden="true" />
         </button>
+        <button
+          type="button"
+          title="Enviar e inserir imagem"
+          aria-label="Enviar e inserir imagem"
+          className={buttonClass}
+          disabled={isUploadingImage}
+          onMouseDown={rememberImagePosition}
+          onClick={() => imageInputRef.current?.click()}
+        >
+          {isUploadingImage ? <LoaderCircle size={16} className="animate-spin" aria-hidden="true" /> : <ImageIcon size={16} aria-hidden="true" />}
+        </button>
         <span className="mx-1 h-6 w-px bg-outline/15" />
         <button type="button" title="Lista" className={buttonClass} onClick={() => runCommand("insertUnorderedList")}>
           <List size={16} aria-hidden="true" />
@@ -458,6 +559,10 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
           <Redo2 size={16} aria-hidden="true" />
         </button>
       </div>
+
+      <p className={`px-2 pt-2 text-xs ${imageError ? "text-red-700" : "text-on-surface/55"}`} aria-live="polite">
+        {imageError || (isUploadingImage ? "Enviando imagem..." : "Imagens: JPG, PNG, WebP, GIF ou AVIF, at? 5 MB.")}
+      </p>
 
       <div
         ref={editorRef}

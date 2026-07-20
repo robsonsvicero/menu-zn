@@ -17,6 +17,7 @@ import {
 } from "@/lib/blog-public";
 import { BlogTestimonialForm } from "./BlogTestimonialForm";
 import { BlogViewTracker } from "./BlogViewTracker";
+import { BlogShareBar } from "./BlogShareBar";
 
 export const dynamic = "force-dynamic";
 
@@ -139,6 +140,15 @@ function renderContent(content: string | null) {
           >
             {children}
           </a>
+        ),
+        img: ({ src, alt, ...props }) => (
+          <img
+            {...props}
+            src={src}
+            alt={alt ?? ""}
+            loading="lazy"
+            className="my-10 w-full rounded-3xl object-cover shadow-sm"
+          />
         ),
         strong: ({ children, ...props }) => <strong {...props} className="font-bold text-on-surface">{children}</strong>,
         em: ({ children, ...props }) => <em {...props} className="italic">{children}</em>,
@@ -340,6 +350,11 @@ export default async function BlogPostDetail({ params }: PageProps) {
                 </p>
               )}
             </article>
+
+            <BlogShareBar
+              title={post.title}
+              url={`https://www.menuzonanorte.com.br/blog/${post.slug}`}
+            />
 
             <div className="mt-16 rounded-[28px] border border-outline/20 bg-[#faf8f5] p-8 md:p-10">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
