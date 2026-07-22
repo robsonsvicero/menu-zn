@@ -537,37 +537,6 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
     syncEditor();
   }
 
-  function setImageSize(size: "small" | "medium" | "large") {
-    const widthBySize: Record<typeof size, string> = {
-      small: "48%",
-      medium: "72%",
-      large: "100%",
-    };
-
-    applyImageStyles((image) => {
-      image.style.width = widthBySize[size];
-      image.style.maxWidth = "100%";
-      image.style.height = "auto";
-    });
-  }
-
-  function setImageAlign(align: "left" | "center" | "right") {
-    applyImageStyles((image) => {
-      image.style.marginLeft = align === "left" ? "0" : "auto";
-      image.style.marginRight = align === "right" ? "0" : "auto";
-    });
-  }
-
-  function resetImageStyles() {
-    applyImageStyles((image) => {
-      image.style.width = "100%";
-      image.style.maxWidth = "100%";
-      image.style.height = "auto";
-      image.style.marginLeft = "auto";
-      image.style.marginRight = "auto";
-    });
-  }
-
   function deleteSelectedImage() {
     const image = getSelectedImage();
 
@@ -628,7 +597,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       const alt = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ");
       const editor = editorRef.current;
       if (editor) {
-        insertHtmlAtSelection(editor, `<img src="${escapeHtml(result.url)}" alt="${escapeHtml(alt)}" loading="lazy" style="width: 100%; max-width: 100%; height: auto; margin-left: auto; margin-right: auto;"><p><br></p>`);
+        insertHtmlAtSelection(editor, `<img src="${escapeHtml(result.url)}" alt="${escapeHtml(alt)}" loading="lazy"><p><br></p>`);
         syncEditor();
         const insertedImages = editor.querySelectorAll("img");
         const insertedImage = insertedImages.item(insertedImages.length - 1);
@@ -710,34 +679,13 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         </button>
         <span className="mx-1 h-6 w-px bg-outline/15" />
         <span className="px-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-on-surface/45">Imagem</span>
-        <button type="button" title="Imagem pequena" className={imageActionButtonClass} onClick={() => setImageSize("small")}>
-          P
-        </button>
-        <button type="button" title="Imagem média" className={imageActionButtonClass} onClick={() => setImageSize("medium")}>
-          M
-        </button>
-        <button type="button" title="Imagem grande" className={imageActionButtonClass} onClick={() => setImageSize("large")}>
-          G
-        </button>
-        <button type="button" title="Alinhar imagem à esquerda" className={imageActionButtonClass} onClick={() => setImageAlign("left")}>
-          Esq
-        </button>
-        <button type="button" title="Alinhar imagem ao centro" className={imageActionButtonClass} onClick={() => setImageAlign("center")}>
-          Ctr
-        </button>
-        <button type="button" title="Alinhar imagem à direita" className={imageActionButtonClass} onClick={() => setImageAlign("right")}>
-          Dir
-        </button>
-        <button type="button" title="Resetar imagem" className={imageActionButtonClass} onClick={resetImageStyles}>
-          Reset
-        </button>
         <button type="button" title="Deletar imagem" className={imageActionButtonClass} onClick={deleteSelectedImage}>
           Del
         </button>
       </div>
 
       <p className={`px-2 pt-2 text-xs ${imageError ? "text-red-700" : "text-on-surface/55"}`} aria-live="polite">
-        {imageError || (isUploadingImage ? "Enviando imagem..." : "Imagens: JPG, PNG, WebP, GIF ou AVIF, at? 5 MB.")}
+        {imageError || (isUploadingImage ? "Enviando imagem..." : "Imagens: JPG, PNG, WebP, GIF ou AVIF, at? 5 MB. Todas as imagens do artigo usam tamanho padronizado.")}
       </p>
 
       <div

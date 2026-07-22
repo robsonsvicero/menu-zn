@@ -219,14 +219,16 @@ function renderContent(content: string | null) {
             {children}
           </a>
         ),
-        img: ({ src, alt, ...props }) => (
-          <img
-            {...props}
-            src={src}
-            alt={alt ?? ""}
-            loading="lazy"
-            className="my-10 block h-auto max-h-[75vh] w-auto max-w-full rounded-3xl shadow-sm"
-          />
+        img: ({ src, alt, title }) => (
+          <figure className="my-10 overflow-hidden rounded-3xl shadow-sm">
+            <img
+              src={src}
+              alt={alt ?? ""}
+              title={title}
+              loading="lazy"
+              className="h-56 w-full object-cover sm:h-72 lg:h-96"
+            />
+          </figure>
         ),
         strong: ({ children, ...props }) => <strong {...props} className="font-bold text-on-surface">{children}</strong>,
         em: ({ children, ...props }) => <em {...props} className="italic">{children}</em>,

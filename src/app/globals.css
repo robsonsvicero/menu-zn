@@ -277,10 +277,17 @@ img {
 .blog-rich-editor img {
   cursor: pointer;
   display: block;
-  width: 100%;
-  max-height: 520px;
+  width: 100% !important;
+  height: 320px !important;
+  max-height: none !important;
   border-radius: 18px;
   object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .blog-rich-editor img {
+    height: 220px !important;
+  }
 }
 
 .blog-rich-editor img[data-editor-selected="true"] {
