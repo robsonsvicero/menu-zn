@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Hero from '@/components/sections/Hero'
 import StatsBar from '@/components/sections/StatsBar'
 import Highlights from '@/components/sections/Highlights'
@@ -9,6 +10,12 @@ import Chronicles from '@/components/sections/Chronicles'
 import Newsletter from '@/components/sections/Newsletter'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  verification: {
+    google: '73v2l6hFjaAyRm-SSSsw4g72yMvmyS5x1Xkze8paeHs',
+  },
+}
 
 export default function Home() {
   return (
