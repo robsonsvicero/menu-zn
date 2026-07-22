@@ -1,6 +1,6 @@
 "use client";
 
-import { type ChangeEvent, type ClipboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type ClipboardEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bold,
   Heading2,
@@ -367,8 +367,24 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
   const [html, setHtml] = useState(initialHtml);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const imageSelectionRef = useRef<Range | null>(null);
+  const selectedImageRef = useRef<HTMLImageElement | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageError, setImageError] = useState("");
+
+  function setSelectedImage(image: HTMLImageElement | null) {
+    const previous = selectedImageRef.current;
+    if (previous && previous !== image) {
+      previous.removeAttribute("data-editor-selected");
+    }
+
+    if (image) {
+      image.setAttribute("data-editor-selected", "true");
+      selectedImageRef.current = image;
+      return;
+    }
+
+    selectedImageRef.current = null;
+  }
 
   useEffect(() => {
     const editor = editorRef.current;
@@ -378,6 +394,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
     }
 
     editor.innerHTML = initialHtml;
+    setSelectedImage(null);
     setHtml(normalizeEditorHtml(initialHtml));
   }, [initialHtml]);
 
@@ -451,6 +468,11 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       return null;
     }
 
+    const selectedImage = selectedImageRef.current;
+    if (selectedImage && editor.contains(selectedImage)) {
+      return selectedImage;
+    }
+
     const findImage = (node: Node | null): HTMLImageElement | null => {
       if (!node) {
         return null;
@@ -476,7 +498,22 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       findImage(selection.focusNode) ??
       (selection.rangeCount ? findImage(selection.getRangeAt(0).commonAncestorContainer) : null);
 
-    return image && editor.contains(image) ? image : null;
+    const finalImage = image && editor.contains(image) ? image : null;
+
+    setSelectedImage(finalImage);
+    return finalImage;
+  }
+
+  function handleEditorMouseDown(event: MouseEvent<HTMLDivElement>) {
+    const target = event.target;
+
+    if (target instanceof HTMLImageElement) {
+      setSelectedImage(target);
+      setImageError("");
+      return;
+    }
+
+    setSelectedImage(null);
   }
 
   function applyImageStyles(updateStyles: (image: HTMLImageElement) => void) {
@@ -563,6 +600,9 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       if (editor) {
         insertHtmlAtSelection(editor, `<img src="${escapeHtml(result.url)}" alt="${escapeHtml(alt)}" loading="lazy" style="width: 100%; max-width: 100%; height: auto; margin-left: auto; margin-right: auto;"><p><br></p>`);
         syncEditor();
+        const insertedImages = editor.querySelectorAll("img");
+        const insertedImage = insertedImages.item(insertedImages.length - 1);
+        setSelectedImage(insertedImage instanceof HTMLImageElement ? insertedImage : null);
       }
     } catch (error) {
       setImageError(error instanceof Error ? error.message : "N?o foi poss?vel enviar a imagem.");
@@ -673,6 +713,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         onInput={syncEditor}
         onBlur={syncEditor}
         onPaste={handlePaste}
+        onMouseDown={handleEditorMouseDown}
       />
     </div>
   );

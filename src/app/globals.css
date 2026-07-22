@@ -272,12 +272,18 @@ img {
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
 
 .blog-rich-editor img {
+  cursor: pointer;
   display: block;
   width: 100%;
   max-height: 520px;
   border-radius: 18px;
   object-fit: cover;
 }
+
+.blog-rich-editor img[data-editor-selected="true"] {
+  outline: 2px solid rgb(148 53 21 / 65%);
+  outline-offset: 3px;
 }
