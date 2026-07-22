@@ -226,7 +226,7 @@ function renderContent(content: string | null) {
               alt={alt ?? ""}
               title={title}
               loading="lazy"
-              className="h-56 w-full object-cover sm:h-72 lg:h-96"
+              className="h-56 max-h-[800px] w-full object-cover sm:h-72 lg:h-96"
             />
           </figure>
         ),

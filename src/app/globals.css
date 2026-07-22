@@ -279,7 +279,7 @@ img {
   display: block;
   width: 100% !important;
   height: 320px !important;
-  max-height: none !important;
+  max-height: 800px !important;
   border-radius: 18px;
   object-fit: cover;
 }
