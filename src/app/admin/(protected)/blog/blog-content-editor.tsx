@@ -558,6 +558,36 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
     });
   }
 
+  function resetImageStyles() {
+    applyImageStyles((image) => {
+      image.style.width = "100%";
+      image.style.maxWidth = "100%";
+      image.style.height = "auto";
+      image.style.marginLeft = "auto";
+      image.style.marginRight = "auto";
+    });
+  }
+
+  function deleteSelectedImage() {
+    const image = getSelectedImage();
+
+    if (!image) {
+      setImageError("Selecione uma imagem no editor para excluir.");
+      return;
+    }
+
+    const paragraph = image.parentElement?.tagName === "P" ? image.parentElement : null;
+    image.remove();
+
+    if (paragraph && paragraph.textContent?.trim() === "" && paragraph.querySelector("img") === null) {
+      paragraph.remove();
+    }
+
+    setSelectedImage(null);
+    setImageError("");
+    syncEditor();
+  }
+
   async function uploadImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -697,6 +727,12 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         </button>
         <button type="button" title="Alinhar imagem à direita" className={imageActionButtonClass} onClick={() => setImageAlign("right")}>
           Dir
+        </button>
+        <button type="button" title="Resetar imagem" className={imageActionButtonClass} onClick={resetImageStyles}>
+          Reset
+        </button>
+        <button type="button" title="Deletar imagem" className={imageActionButtonClass} onClick={deleteSelectedImage}>
+          Del
         </button>
       </div>
 

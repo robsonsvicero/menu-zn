@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createBlogPreviewToken } from "@/lib/blog-preview-token";
 import { createBlogPostAction, updateBlogPostStatusAction } from "../actions";
 import { BlogContentEditor } from "../blog-content-editor";
 import { BlogSlugGenerator } from "../blog-slug-generator";
@@ -160,7 +161,16 @@ export default async function NovoBlogPostPage({
         <h3 className="text-sm font-bold text-on-surface mb-6">Artigos Cadastrados ({posts.length})</h3>
         
         <div className="space-y-4">
-          {posts.map((post) => (
+          {posts.map((post) => {
+            const previewToken = createBlogPreviewToken(post.slug);
+            const previewHref =
+              post.status === "published"
+                ? `/blog/${post.slug}`
+                : previewToken
+                  ? `/blog/${post.slug}?preview=${encodeURIComponent(previewToken)}`
+                  : `/blog/${post.slug}?preview=1`;
+
+            return (
             <div key={post.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-outline/5 last:border-0">
               <div className="flex items-center gap-4">
                 {post.cover_image_url ? (
@@ -196,7 +206,7 @@ export default async function NovoBlogPostPage({
                 </Link>
 
                 <Link
-                  href={post.status === "published" ? `/blog/${post.slug}` : `/blog/${post.slug}?preview=1`}
+                  href={previewHref}
                   target="_blank"
                   rel="noreferrer"
                   className="rounded-full border border-outline/30 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition"
@@ -213,7 +223,8 @@ export default async function NovoBlogPostPage({
                 </form>
               </div>
             </div>
-          ))}
+            );
+          })}
           
           {posts.length === 0 && (
             <p className="text-sm text-on-surface/50 italic py-4">Nenhum artigo cadastrado.</p>

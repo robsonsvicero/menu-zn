@@ -34,3 +34,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Preview compartilhável de artigos não publicados
+
+Para habilitar links de preview que podem ser enviados para pessoas fora do admin, configure:
+
+```env
+BLOG_PREVIEW_TOKEN_SECRET=coloque-um-segredo-longo-e-unico
+BLOG_PREVIEW_TOKEN_TTL_HOURS=72
+```
+
+- `BLOG_PREVIEW_TOKEN_SECRET`: segredo usado para assinar e validar o token.
+- `BLOG_PREVIEW_TOKEN_TTL_HOURS`: validade do token em horas (opcional, padrão 72).
+
+Se o segredo não estiver configurado, o botão Visualizar continua funcionando apenas no modo interno do admin (`?preview=1`).

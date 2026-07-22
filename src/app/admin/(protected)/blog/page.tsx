@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createBlogPreviewToken } from "@/lib/blog-preview-token";
 import { updateBlogPostStatusAction } from "./actions";
 import { SortableHeader } from "@/components/admin/SortableHeader";
 
@@ -103,7 +104,16 @@ export default async function AdminBlogPage({
             </tr>
           </thead>
           <tbody>
-            {posts.map((post) => (
+            {posts.map((post) => {
+              const previewToken = createBlogPreviewToken(post.slug);
+              const previewHref =
+                post.status === "published"
+                  ? `/blog/${post.slug}`
+                  : previewToken
+                    ? `/blog/${post.slug}?preview=${encodeURIComponent(previewToken)}`
+                    : `/blog/${post.slug}?preview=1`;
+
+              return (
               <tr key={post.id} className="border-t border-outline/60">
                 <td className="px-4 py-3">{post.title}</td>
                 <td className="px-4 py-3">
@@ -123,7 +133,7 @@ export default async function AdminBlogPage({
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
                     <Link
-                      href={post.status === "published" ? `/blog/${post.slug}` : `/blog/${post.slug}?preview=1`}
+                      href={previewHref}
                       target="_blank"
                       rel="noreferrer"
                       className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background"
@@ -170,7 +180,8 @@ export default async function AdminBlogPage({
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
             {posts.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-on-surface/70">

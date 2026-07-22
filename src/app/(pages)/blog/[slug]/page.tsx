@@ -8,6 +8,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { createClient } from "@/lib/supabase/server";
+import { verifyBlogPreviewToken } from "@/lib/blog-preview-token";
 import { formatViewCount } from "@/lib/blog-format";
 import { sanitizeStyleAttribute } from "@/lib/html-style-sanitize";
 import {
@@ -68,6 +69,38 @@ async function fetchBlogPostForRequest(slug: string, previewMode: boolean) {
   }
 
   return fetchBlogPostBySlugForAdminPreview(slug);
+}
+
+async function fetchBlogPostForPreviewQuery(slug: string, previewQueryValue: string | undefined) {
+  const previewValue = previewQueryValue?.trim();
+
+  if (!previewValue) {
+    return {
+      post: await fetchPublishedBlogPostBySlug(slug),
+      isPreview: false,
+    };
+  }
+
+  if (previewValue === "1") {
+    return {
+      post: await fetchBlogPostForRequest(slug, true),
+      isPreview: true,
+    };
+  }
+
+  const isValidPreviewToken = verifyBlogPreviewToken(previewValue, slug);
+
+  if (!isValidPreviewToken) {
+    return {
+      post: await fetchPublishedBlogPostBySlug(slug),
+      isPreview: false,
+    };
+  }
+
+  return {
+    post: await fetchBlogPostBySlugForAdminPreview(slug),
+    isPreview: true,
+  };
 }
 
 function formatDate(value: string | null) {
@@ -209,7 +242,7 @@ function renderContent(content: string | null) {
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const { preview } = await searchParams;
-  const post = await fetchBlogPostForRequest(slug, preview === "1");
+  const { post } = await fetchBlogPostForPreviewQuery(slug, preview);
 
   if (!post) {
     return {
@@ -263,8 +296,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
 export default async function BlogPostDetail({ params, searchParams }: PageProps) {
   const { slug } = await params;
   const { preview } = await searchParams;
-  const isPreviewMode = preview === "1";
-  const post = await fetchBlogPostForRequest(slug, isPreviewMode);
+  const { post, isPreview } = await fetchBlogPostForPreviewQuery(slug, preview);
 
   if (!post) {
     notFound();
@@ -368,7 +400,7 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
               <span>{formatDate(post.published_at)}</span>
               <span className="opacity-50">•</span>
               <span>{estimateReadTime(post.content_md)}</span>
-              {isPreviewMode ? (
+              {isPreview ? (
                 <>
                   <span className="opacity-50">•</span>
                   <span className="rounded-full border border-white/35 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/90">

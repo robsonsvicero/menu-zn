@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createBlogPreviewToken } from "@/lib/blog-preview-token";
 import { updateBlogPostAction } from "../../actions";
 import { BlogContentEditor } from "../../blog-content-editor";
 import { ImagePreviewInput } from "../../image-preview-input";
@@ -53,14 +54,31 @@ export default async function EditarBlogPostPage({
   const blogPost = post as BlogPost;
   const categoryOptions = (categories ?? []) as OptionRow[];
   const authorOptions = (authorsData ?? []) as OptionRow[];
+  const previewToken = createBlogPreviewToken(blogPost.slug);
+  const previewHref =
+    blogPost.status === "published"
+      ? `/blog/${blogPost.slug}`
+      : previewToken
+        ? `/blog/${blogPost.slug}?preview=${encodeURIComponent(previewToken)}`
+        : `/blog/${blogPost.slug}?preview=1`;
 
   return (
     <section className="max-w-[900px] mx-auto bg-white p-6 md:p-10 rounded-3xl mb-10">
       <div className="flex items-center justify-between mb-10">
         <h2 className="text-2xl font-serif text-on-surface font-bold">Blog</h2>
-        <Link href="/admin/blog" className="rounded-full border border-outline/30 px-6 py-2 text-xs font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition">
-          Voltar
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={previewHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full border border-outline/30 px-6 py-2 text-xs font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition"
+          >
+            Visualizar
+          </Link>
+          <Link href="/admin/blog" className="rounded-full border border-outline/30 px-6 py-2 text-xs font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition">
+            Voltar
+          </Link>
+        </div>
       </div>
 
       {error && (
