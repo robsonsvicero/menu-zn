@@ -194,6 +194,15 @@ export default async function NovoBlogPostPage({
                 <Link href={`/admin/blog/${post.id}/editar`} className="rounded-full border border-outline/30 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition">
                   Editar
                 </Link>
+
+                <Link
+                  href={post.status === "published" ? `/blog/${post.slug}` : `/blog/${post.slug}?preview=1`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-outline/30 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition"
+                >
+                  Visualizar
+                </Link>
                 
                 <form action={updateBlogPostStatusAction}>
                   <input type="hidden" name="id" value={post.id} />

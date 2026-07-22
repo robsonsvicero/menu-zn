@@ -443,6 +443,84 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       : null;
   }
 
+  function getSelectedImage() {
+    const editor = editorRef.current;
+    const selection = window.getSelection();
+
+    if (!editor || !selection) {
+      return null;
+    }
+
+    const findImage = (node: Node | null): HTMLImageElement | null => {
+      if (!node) {
+        return null;
+      }
+
+      if (node instanceof HTMLImageElement) {
+        return node;
+      }
+
+      if (node instanceof Element) {
+        if (node.tagName === "IMG") {
+          return node as HTMLImageElement;
+        }
+
+        return node.closest("img");
+      }
+
+      return node.parentElement?.closest("img") ?? null;
+    };
+
+    const image =
+      findImage(selection.anchorNode) ??
+      findImage(selection.focusNode) ??
+      (selection.rangeCount ? findImage(selection.getRangeAt(0).commonAncestorContainer) : null);
+
+    return image && editor.contains(image) ? image : null;
+  }
+
+  function applyImageStyles(updateStyles: (image: HTMLImageElement) => void) {
+    const image = getSelectedImage();
+
+    if (!image) {
+      setImageError("Selecione uma imagem no editor para ajustar tamanho/alinhamento.");
+      return;
+    }
+
+    updateStyles(image);
+
+    const sanitizedStyle = sanitizeStyleAttribute(image.getAttribute("style") ?? "");
+    if (sanitizedStyle) {
+      image.setAttribute("style", sanitizedStyle);
+    } else {
+      image.removeAttribute("style");
+    }
+
+    setImageError("");
+    syncEditor();
+  }
+
+  function setImageSize(size: "small" | "medium" | "large") {
+    const widthBySize: Record<typeof size, string> = {
+      small: "48%",
+      medium: "72%",
+      large: "100%",
+    };
+
+    applyImageStyles((image) => {
+      image.style.width = widthBySize[size];
+      image.style.maxWidth = "100%";
+      image.style.height = "auto";
+    });
+  }
+
+  function setImageAlign(align: "left" | "center" | "right") {
+    applyImageStyles((image) => {
+      image.style.marginLeft = align === "left" ? "0" : "auto";
+      image.style.marginRight = align === "right" ? "0" : "auto";
+    });
+  }
+
   async function uploadImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -483,7 +561,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       const alt = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ");
       const editor = editorRef.current;
       if (editor) {
-        insertHtmlAtSelection(editor, `<img src="${escapeHtml(result.url)}" alt="${escapeHtml(alt)}" loading="lazy"><p><br></p>`);
+        insertHtmlAtSelection(editor, `<img src="${escapeHtml(result.url)}" alt="${escapeHtml(alt)}" loading="lazy" style="width: 100%; max-width: 100%; height: auto; margin-left: auto; margin-right: auto;"><p><br></p>`);
         syncEditor();
       }
     } catch (error) {
@@ -495,6 +573,8 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
   }
   const buttonClass =
     "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-outline/20 bg-white text-on-surface/75 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
+  const imageActionButtonClass =
+    "inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-outline/20 bg-white px-2 text-xs font-semibold text-on-surface/75 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
 
   return (
     <div className="rounded-2xl border border-outline/20 bg-[#faf8f5] p-2">
@@ -557,6 +637,26 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         </button>
         <button type="button" title="Refazer" className={buttonClass} onClick={() => runCommand("redo")}>
           <Redo2 size={16} aria-hidden="true" />
+        </button>
+        <span className="mx-1 h-6 w-px bg-outline/15" />
+        <span className="px-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-on-surface/45">Imagem</span>
+        <button type="button" title="Imagem pequena" className={imageActionButtonClass} onClick={() => setImageSize("small")}>
+          P
+        </button>
+        <button type="button" title="Imagem média" className={imageActionButtonClass} onClick={() => setImageSize("medium")}>
+          M
+        </button>
+        <button type="button" title="Imagem grande" className={imageActionButtonClass} onClick={() => setImageSize("large")}>
+          G
+        </button>
+        <button type="button" title="Alinhar imagem à esquerda" className={imageActionButtonClass} onClick={() => setImageAlign("left")}>
+          Esq
+        </button>
+        <button type="button" title="Alinhar imagem ao centro" className={imageActionButtonClass} onClick={() => setImageAlign("center")}>
+          Ctr
+        </button>
+        <button type="button" title="Alinhar imagem à direita" className={imageActionButtonClass} onClick={() => setImageAlign("right")}>
+          Dir
         </button>
       </div>
 

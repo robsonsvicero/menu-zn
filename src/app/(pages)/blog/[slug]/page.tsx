@@ -7,10 +7,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import { createClient } from "@/lib/supabase/server";
 import { formatViewCount } from "@/lib/blog-format";
 import { sanitizeStyleAttribute } from "@/lib/html-style-sanitize";
 import {
   fetchApprovedBlogTestimonials,
+  fetchBlogPostBySlugForAdminPreview,
   fetchPublishedBlogPostBySlug,
   fetchPublishedBlogPosts,
   type BlogCategoryRelation,
@@ -23,7 +25,50 @@ export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
 };
+
+const allowedAdminRoles = new Set(["super_admin", "admin", "editor"]);
+
+async function canPreviewUnpublishedPost() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  const { data: roleRows, error } = await supabase
+    .from("user_roles")
+    .select("roles(code)")
+    .eq("user_id", user.id);
+
+  if (error) {
+    return false;
+  }
+
+  const roleCodes = (roleRows ?? [])
+    .map((row) => (row as { roles?: { code?: string } | null }).roles?.code)
+    .filter((code): code is string => Boolean(code));
+
+  return roleCodes.some((code) => allowedAdminRoles.has(code));
+}
+
+async function fetchBlogPostForRequest(slug: string, previewMode: boolean) {
+  if (!previewMode) {
+    return fetchPublishedBlogPostBySlug(slug);
+  }
+
+  const hasAccess = await canPreviewUnpublishedPost();
+
+  if (!hasAccess) {
+    return null;
+  }
+
+  return fetchBlogPostBySlugForAdminPreview(slug);
+}
 
 function formatDate(value: string | null) {
   if (!value) {
@@ -147,7 +192,7 @@ function renderContent(content: string | null) {
             src={src}
             alt={alt ?? ""}
             loading="lazy"
-            className="my-10 w-full rounded-3xl object-cover shadow-sm"
+            className="my-10 block h-auto max-h-[75vh] w-auto max-w-full rounded-3xl shadow-sm"
           />
         ),
         strong: ({ children, ...props }) => <strong {...props} className="font-bold text-on-surface">{children}</strong>,
@@ -161,9 +206,10 @@ function renderContent(content: string | null) {
   );
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await fetchPublishedBlogPostBySlug(slug);
+  const { preview } = await searchParams;
+  const post = await fetchBlogPostForRequest(slug, preview === "1");
 
   if (!post) {
     return {
@@ -214,9 +260,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 
-export default async function BlogPostDetail({ params }: PageProps) {
+export default async function BlogPostDetail({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const post = await fetchPublishedBlogPostBySlug(slug);
+  const { preview } = await searchParams;
+  const isPreviewMode = preview === "1";
+  const post = await fetchBlogPostForRequest(slug, isPreviewMode);
 
   if (!post) {
     notFound();
@@ -320,8 +368,19 @@ export default async function BlogPostDetail({ params }: PageProps) {
               <span>{formatDate(post.published_at)}</span>
               <span className="opacity-50">•</span>
               <span>{estimateReadTime(post.content_md)}</span>
-              <span className="opacity-50">•</span>
-              <BlogViewTracker slug={post.slug} initialViewCount={post.view_count} />
+              {isPreviewMode ? (
+                <>
+                  <span className="opacity-50">•</span>
+                  <span className="rounded-full border border-white/35 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/90">
+                    Pré-visualização
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="opacity-50">•</span>
+                  <BlogViewTracker slug={post.slug} initialViewCount={post.view_count} />
+                </>
+              )}
             </div>
             </div>
           </div>

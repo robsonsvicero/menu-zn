@@ -123,6 +123,15 @@ export default async function AdminBlogPage({
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
                     <Link
+                      href={post.status === "published" ? `/blog/${post.slug}` : `/blog/${post.slug}?preview=1`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background"
+                    >
+                      Visualizar
+                    </Link>
+
+                    <Link
                       href={`/admin/blog/${post.id}/editar`}
                       className="rounded-lg border border-outline px-2.5 py-1 text-xs hover:bg-background"
                     >

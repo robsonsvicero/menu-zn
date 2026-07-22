@@ -102,6 +102,22 @@ export async function fetchPublishedBlogPostBySlug(slug: string) {
   return (data ?? null) as unknown as BlogDetailItem | null;
 }
 
+export async function fetchBlogPostBySlugForAdminPreview(slug: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? null) as unknown as BlogDetailItem | null;
+}
+
 export async function fetchApprovedBlogTestimonials(blogPostId: string) {
   const supabase = await createClient();
 

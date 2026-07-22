@@ -4,10 +4,15 @@ const allowedStyleProperties = new Set([
   "font-size",
   "font-style",
   "font-weight",
+  "height",
   "margin-left",
+  "margin-right",
+  "max-height",
+  "max-width",
   "text-align",
   "text-decoration",
   "vertical-align",
+  "width",
 ]);
 
 const allowedTextAlignValues = new Set(["left", "right", "center", "justify"]);
@@ -28,6 +33,11 @@ function isSafeCssLength(value: string) {
   return /^-?(?:\d+|\d*\.\d+)(?:px|pt|rem|em|%)$/i.test(value);
 }
 
+function isSafeCssDimension(value: string) {
+  const normalized = value.trim().toLowerCase();
+  return normalized === "auto" || isSafeCssLength(normalized);
+}
+
 function isSafeStyleValue(property: string, value: string) {
   const normalized = value.trim().toLowerCase();
 
@@ -39,8 +49,16 @@ function isSafeStyleValue(property: string, value: string) {
     return isSafeCssColor(normalized);
   }
 
-  if (property === "font-size" || property === "margin-left") {
+  if (property === "font-size") {
     return isSafeCssLength(normalized);
+  }
+
+  if (property === "margin-left" || property === "margin-right") {
+    return isSafeCssDimension(normalized);
+  }
+
+  if (property === "width" || property === "max-width" || property === "height" || property === "max-height") {
+    return isSafeCssDimension(normalized);
   }
 
   if (property === "font-style") {
