@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Check, Star, Trophy, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Check, Star, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -10,6 +9,10 @@ export const metadata: Metadata = {
 };
 
 const whatsappUrl = "https://wa.me/5511973237060";
+const planoWhatsappUrl = (plano: string, valor: string) =>
+  `${whatsappUrl}?text=${encodeURIComponent(
+    `Olá! Tenho interesse no ${plano}, no valor de ${valor}/mês.`
+  )}`;
 
 export default function PlanosPage() {
   return (
@@ -45,6 +48,7 @@ export default function PlanosPage() {
               <p className="text-sm text-on-surface/60 mt-2 h-10">
                 O essencial para marcar sua presença digital.
               </p>
+              <p className="mt-4 font-serif text-2xl font-bold text-on-surface">R$ 147/mês</p>
             </div>
             
             <div className="space-y-4 mb-8 min-h-[220px]">
@@ -72,9 +76,9 @@ export default function PlanosPage() {
               </ul>
             </div>
             
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block">
+            <a href={planoWhatsappUrl("Plano Bronze", "R$ 147")} target="_blank" rel="noopener noreferrer" className="block">
               <Button variant="outline" className="w-full rounded-2xl h-14 text-sm uppercase tracking-wider font-bold text-on-surface border-outline/40 hover:bg-[#faf8f5] hover:text-[rgb(148_53_21)] transition-colors">
-                Consultar Valor
+                Falar com consultor
               </Button>
             </a>
           </div>
@@ -91,6 +95,7 @@ export default function PlanosPage() {
               <p className="text-sm text-on-surface/70 mt-2 h-10">
                 A melhor estratégia de visibilidade e custo-benefício.
               </p>
+              <p className="mt-4 font-serif text-2xl font-bold text-[rgb(148_53_21)]">R$ 297/mês</p>
             </div>
             
             <div className="space-y-4 mb-8 min-h-[220px]">
@@ -122,53 +127,51 @@ export default function PlanosPage() {
               </ul>
             </div>
             
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block">
+            <a href={planoWhatsappUrl("Plano Prata", "R$ 297")} target="_blank" rel="noopener noreferrer" className="block">
               <Button className="w-full rounded-2xl h-14 bg-[rgb(148_53_21)] hover:bg-[rgb(148_53_21)]/90 text-sm uppercase tracking-wider font-bold text-white shadow-lg shadow-[rgb(148_53_21)]/20 transition-all">
-                Falar com Consultor
+                Falar com consultor
               </Button>
             </a>
           </div>
 
           {/* PLANO OURO */}
-          <div className="rounded-[32px] border border-outline/20 bg-[#121212] p-8 md:p-10 shadow-lg text-white transition-transform hover:-translate-y-1">
+          <div className="rounded-[32px] border border-outline/20 bg-white p-8 md:p-10 shadow-sm transition-transform hover:-translate-y-1">
             <div className="mb-6">
-              <div className="flex items-center gap-2 mb-2">
-                <Trophy size={16} className="text-[#D69869]" />
-                <h3 className="font-serif text-2xl font-bold text-white">Plano Ouro</h3>
-              </div>
-              <p className="text-sm text-white/60 h-10">
+              <h3 className="font-serif text-2xl font-bold text-on-surface">Plano Ouro</h3>
+              <p className="text-sm text-on-surface/60 mt-2 h-10">
                 Poder máximo. Domine o radar gastronômico da região.
               </p>
+              <p className="mt-4 font-serif text-2xl font-bold text-on-surface">R$ 697/mês</p>
             </div>
             
             <div className="space-y-4 mb-8 min-h-[220px]">
-              <ul className="space-y-4 text-sm text-white/80">
-                <li className="flex items-start gap-3 font-semibold text-[#D69869]">
-                  <Check size={18} className="text-[#D69869] shrink-0 mt-0.5" />
+              <ul className="space-y-4 text-sm text-on-surface/80">
+                <li className="flex items-start gap-3 font-semibold text-on-surface/80">
+                  <Check size={18} className="text-[#a8a8a8] shrink-0 mt-0.5" />
                   <span>Tudo do Plano Prata, absoluto:</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-white/60 shrink-0 mt-0.5" />
+                  <Check size={18} className="text-[#a8a8a8] shrink-0 mt-0.5" />
                   <span>Super Destaque na Home do site</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-white/60 shrink-0 mt-0.5" />
+                  <Check size={18} className="text-[#a8a8a8] shrink-0 mt-0.5" />
                   <span>Matéria exclusiva no nosso editorial</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-white/60 shrink-0 mt-0.5" />
+                  <Check size={18} className="text-[#a8a8a8] shrink-0 mt-0.5" />
                   <span>Produção de 1 Reel profissional</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-white/60 shrink-0 mt-0.5" />
+                  <Check size={18} className="text-[#a8a8a8] shrink-0 mt-0.5" />
                   <span>Divulgação maciça em todas as redes</span>
                 </li>
               </ul>
             </div>
             
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block">
-              <Button className="w-full rounded-2xl h-14 bg-white hover:bg-white/90 text-[#121212] text-sm uppercase tracking-wider font-bold transition-colors">
-                Descobrir Condições
+            <a href={planoWhatsappUrl("Plano Ouro", "R$ 697")} target="_blank" rel="noopener noreferrer" className="block">
+              <Button variant="outline" className="w-full rounded-2xl h-14 text-sm uppercase tracking-wider font-bold text-on-surface border-outline/40 hover:bg-[#faf8f5] hover:text-[rgb(148_53_21)] transition-colors">
+                Falar com consultor
               </Button>
             </a>
           </div>
