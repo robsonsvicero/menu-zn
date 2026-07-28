@@ -14,13 +14,9 @@ const faqs = [
   {
     question: "Como faço para incluir meu restaurante no guia?",
     answer:
-      "A inclusão no Menu Zona Norte pode ser feita através de nossa avaliação editorial ou através da contratação de um dos nossos planos comerciais. Para mais detalhes, acesse a página de 'Planos e Preços' ou entre em contato pelo nosso WhatsApp.",
+      "A inclusão no Menu Zona Norte pode ser feita através da contratação de um dos nossos planos comerciais. Para mais detalhes, acesse a página de 'Planos e Preços' ou entre em contato pelo nosso WhatsApp.",
   },
-  {
-    question: "O Menu Zona Norte avalia restaurantes?",
-    answer:
-      "Sim! Nossa equipe editorial visita periodicamente estabelecimentos na região para manter a curadoria ativa. Restaurantes que recebem o 'Selo de Curadoria' foram testados e aprovados pela nossa equipe de forma independente.",
-  },
+  
   {
     question: "Qual é a diferença entre o Plano Bronze e o Prata?",
     answer:
@@ -31,15 +27,11 @@ const faqs = [
     answer:
       "Nossos planos funcionam no modelo de assinatura com períodos de fidelidade de 3, 6 ou 12 meses, dependendo da negociação. Após esse período, o cancelamento pode ser feito sem multas, mediante aviso prévio.",
   },
-  {
-    question: "Sou influenciador(a). Como faço para fechar parceria?",
-    answer:
-      "Nós amamos colaborar com criadores de conteúdo locais! Temos a página 'Seja Parceiro' dedicada a isso. Mande-nos uma mensagem com seu media kit e suas ideias pelo WhatsApp e retornaremos o mais breve possível.",
-  },
+  
   {
     question: "Como funciona o destaque na Home (Plano Ouro)?",
     answer:
-      "O Plano Ouro reserva espaços premium na página inicial do site, garantindo que seu estabelecimento seja uma das primeiras coisas que os usuários vêem ao acessar o Menu ZN. Além disso, incluímos matérias exclusivas e produção de conteúdo em vídeo (Reels).",
+      "O Plano Ouro reserva espaços premium na página inicial do site, garantindo que seu estabelecimento seja uma das primeiras coisas que os usuários vêem ao acessar o Menu Zona Norte. Além disso, incluímos matérias exclusivas e produção de conteúdo em vídeo (Reels).",
   },
 ];
 

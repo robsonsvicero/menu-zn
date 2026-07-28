@@ -63,15 +63,15 @@ export default function Footer() {
           </div>
 
           {/* For Business */}
-          {/* <div className="flex flex-col">
+          <div className="flex flex-col">
             <h3 className="font-serif text-xl font-bold mb-6">Para Empresas</h3>
             <div className="flex flex-col gap-4">
               <a href="https://wa.me/5511973237060" target="_blank" rel="noopener noreferrer" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Anuncie Aqui</a>
               <a href="/planos" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Planos e Preços</a>
-              <a href="/parceiros" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Seja Parceiro</a>
+              {/* <a href="/parceiros" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Seja Parceiro</a> */}
               <a href="/faq" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">FAQ</a>
             </div>
-          </div> */}
+          </div>
 
           {/* Contact */}
           <div className="flex flex-col">
