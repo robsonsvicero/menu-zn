@@ -26,6 +26,18 @@ type BlogPost = {
   status: "draft" | "published" | "archived";
 };
 
+function isScheduled(post: Pick<BlogPost, "status" | "published_at">) {
+  return post.status === "published" && Boolean(post.published_at) && new Date(post.published_at!).getTime() > Date.now();
+}
+
+function toDateTimeLocal(value: string | null) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
 export default async function EditarBlogPostPage({
   params,
   searchParams,
@@ -55,8 +67,9 @@ export default async function EditarBlogPostPage({
   const categoryOptions = (categories ?? []) as OptionRow[];
   const authorOptions = (authorsData ?? []) as OptionRow[];
   const previewToken = createBlogPreviewToken(blogPost.slug);
+  const scheduled = isScheduled(blogPost);
   const previewHref =
-    blogPost.status === "published"
+    blogPost.status === "published" && !scheduled
       ? `/blog/${blogPost.slug}`
       : previewToken
         ? `/blog/${blogPost.slug}?preview=${encodeURIComponent(previewToken)}`
@@ -134,11 +147,12 @@ export default async function EditarBlogPostPage({
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Data de publicação</label>
               <input
-                type="date"
+                type="datetime-local"
                 name="published_at"
-                defaultValue={blogPost.published_at ? blogPost.published_at.substring(0, 10) : ""}
+                defaultValue={toDateTimeLocal(blogPost.published_at)}
                 className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition"
               />
+              <p className="mt-1 text-[10px] text-on-surface/50">Um horário futuro mantém o artigo agendado e disponível somente na prévia até a publicação.</p>
             </div>
           </div>
         </div>
@@ -199,7 +213,7 @@ export default async function EditarBlogPostPage({
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <label className="flex flex-1 items-center justify-between md:justify-start gap-4 rounded-2xl bg-[#faf8f5] px-6 py-4 cursor-pointer">
-              <span className="text-sm text-on-surface font-medium">Publicar artigo imediatamente</span>
+              <span className="text-sm text-on-surface font-medium">Deixar artigo pronto para publicação</span>
               <div className="relative inline-block w-10 h-6">
                 <input type="checkbox" name="status" value="published" defaultChecked={blogPost.status === "published"} className="peer sr-only" />
                 <div className="w-10 h-6 bg-outline/30 rounded-full peer peer-checked:bg-primary transition-colors"></div>

@@ -26,6 +26,25 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Erro inesperado.";
 }
 
+function getPublicationDate(input: string, shouldPublish: boolean) {
+  if (!shouldPublish) return null;
+  if (!input) return new Date().toISOString();
+
+  const date = new Date(input);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error("Informe uma data e hora de publicação válidas.");
+  }
+
+  return date.toISOString();
+}
+
+function revalidateBlogPaths(slug: string) {
+  revalidatePath("/admin/blog");
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/sitemap.xml");
+}
+
 async function uploadCoverImage(file: File, slug: string) {
   const adminClient = createAdminClient();
   const bucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
@@ -115,10 +134,8 @@ export async function createBlogPostAction(formData: FormData) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
     }
 
-    // Use the date provided by the user, or fallback to now if published without a date
-    const publishedAt = status === "published"
-      ? (publishedAtInput ? new Date(publishedAtInput).toISOString() : new Date().toISOString())
-      : null;
+    const shouldPublish = status === "published";
+    const publishedAt = getPublicationDate(publishedAtInput, shouldPublish);
 
     const { error } = await supabase.from("blog_posts").insert({
       title,
@@ -127,7 +144,7 @@ export async function createBlogPostAction(formData: FormData) {
       content_md: contentMd || null,
       cover_image_url: coverImageUrl,
       category_id: categoryId || null,
-      status: status === "published" || status === "archived" ? status : "draft",
+      status: shouldPublish ? "published" : "draft",
       published_at: publishedAt,
       seo_title: seoTitle || null,
       seo_description: seoDescription || null,
@@ -147,7 +164,7 @@ export async function createBlogPostAction(formData: FormData) {
     redirect(`/admin/blog/novo?error=${encodeURIComponent(getErrorMessage(error))}`);
   }
 
-  revalidatePath("/admin/blog");
+  revalidateBlogPaths(slugify(String(formData.get("slug") ?? "") || String(formData.get("title") ?? "")));
   redirect("/admin/blog");
 }
 
@@ -175,6 +192,8 @@ export async function updateBlogPostStatusAction(formData: FormData) {
   }
 
   revalidatePath("/admin/blog");
+  revalidatePath("/blog");
+  revalidatePath("/sitemap.xml");
 }
 
 export async function updateBlogPostAction(formData: FormData) {
@@ -206,10 +225,8 @@ export async function updateBlogPostAction(formData: FormData) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
     }
 
-    // Use the date provided by the user, or fallback to now if published without a date
-    const publishedAt = status === "published"
-      ? (publishedAtInput ? new Date(publishedAtInput).toISOString() : new Date().toISOString())
-      : null;
+    const shouldPublish = status === "published";
+    const publishedAt = getPublicationDate(publishedAtInput, shouldPublish);
 
     const { error } = await supabase
       .from("blog_posts")
@@ -220,7 +237,7 @@ export async function updateBlogPostAction(formData: FormData) {
         content_md: contentMd || null,
         cover_image_url: coverImageUrl,
         category_id: categoryId || null,
-        status: status === "published" || status === "archived" ? status : "draft",
+        status: shouldPublish ? "published" : "draft",
         published_at: publishedAt,
         seo_title: seoTitle || null,
         seo_description: seoDescription || null,
@@ -239,6 +256,6 @@ export async function updateBlogPostAction(formData: FormData) {
     redirect(`/admin/blog/${id}/editar?error=${encodeURIComponent(getErrorMessage(error))}`);
   }
 
-  revalidatePath("/admin/blog");
+  revalidateBlogPaths(slugify(String(formData.get("slug") ?? "") || String(formData.get("title") ?? "")));
   redirect("/admin/blog");
 }

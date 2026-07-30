@@ -22,6 +22,10 @@ type SearchParams = {
 
 const sortableColumns = new Set(["created_at", "title", "status", "published_at", "slug"]);
 
+function isScheduled(post: Pick<BlogPostRow, "status" | "published_at">) {
+  return post.status === "published" && Boolean(post.published_at) && new Date(post.published_at!).getTime() > Date.now();
+}
+
 export default async function AdminBlogPage({
   searchParams,
 }: {
@@ -105,9 +109,10 @@ export default async function AdminBlogPage({
           </thead>
           <tbody>
             {posts.map((post) => {
+              const scheduled = isScheduled(post);
               const previewToken = createBlogPreviewToken(post.slug);
               const previewHref =
-                post.status === "published"
+                post.status === "published" && !scheduled
                   ? `/blog/${post.slug}`
                   : previewToken
                     ? `/blog/${post.slug}?preview=${encodeURIComponent(previewToken)}`
@@ -123,11 +128,11 @@ export default async function AdminBlogPage({
                 </td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-background px-2.5 py-1 text-xs uppercase tracking-wide">
-                    {post.status}
+                    {scheduled ? "agendado" : post.status}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-on-surface/70">
-                  {post.published_at ? new Date(post.published_at).toLocaleDateString("pt-BR") : "-"}
+                  {post.published_at ? new Date(post.published_at).toLocaleString("pt-BR") : "-"}
                 </td>
                 <td className="px-4 py-3 text-on-surface/70">{post.slug}</td>
                 <td className="px-4 py-3">

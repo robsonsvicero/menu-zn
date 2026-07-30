@@ -48,3 +48,7 @@ BLOG_PREVIEW_TOKEN_TTL_HOURS=72
 - `BLOG_PREVIEW_TOKEN_TTL_HOURS`: validade do token em horas (opcional, padrão 72).
 
 Se o segredo não estiver configurado, o botão Visualizar continua funcionando apenas no modo interno do admin (`?preview=1`).
+
+## Agendamento de artigos
+
+Execute a migração `supabase/sql/09_schedule_blog_posts.sql` no Supabase. No painel, marque o artigo como pronto para publicação e informe uma data e hora futura. Ele continuará disponível em **Visualizar** até o horário definido e será exibido publicamente automaticamente quando esse horário chegar.

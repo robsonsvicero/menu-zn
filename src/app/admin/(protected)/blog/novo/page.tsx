@@ -20,6 +20,10 @@ type BlogPostRow = {
   blog_categories: { name: string }[] | null;
 };
 
+function isScheduled(post: Pick<BlogPostRow, "status" | "published_at">) {
+  return post.status === "published" && Boolean(post.published_at) && new Date(post.published_at!).getTime() > Date.now();
+}
+
 export default async function NovoBlogPostPage({
   searchParams,
 }: {
@@ -94,7 +98,8 @@ export default async function NovoBlogPostPage({
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Data de publicação</label>
-              <input type="date" name="published_at" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+              <input type="datetime-local" name="published_at" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+              <p className="mt-1 text-[10px] text-on-surface/50">Escolha um horário futuro para agendar. Sem data, o artigo será publicado agora.</p>
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Tags</label>
@@ -140,7 +145,7 @@ export default async function NovoBlogPostPage({
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <label className="flex flex-1 items-center justify-between md:justify-start gap-4 rounded-2xl bg-[#faf8f5] px-6 py-4 cursor-pointer">
-              <span className="text-sm text-on-surface font-medium">Publicar artigo imediatamente</span>
+              <span className="text-sm text-on-surface font-medium">Deixar artigo pronto para publicação</span>
               <div className="relative inline-block w-10 h-6">
                 <input type="checkbox" name="status" value="published" defaultChecked className="peer sr-only" />
                 <div className="w-10 h-6 bg-outline/30 rounded-full peer peer-checked:bg-primary transition-colors"></div>
@@ -162,9 +167,10 @@ export default async function NovoBlogPostPage({
         
         <div className="space-y-4">
           {posts.map((post) => {
+            const scheduled = isScheduled(post);
             const previewToken = createBlogPreviewToken(post.slug);
             const previewHref =
-              post.status === "published"
+              post.status === "published" && !scheduled
                 ? `/blog/${post.slug}`
                 : previewToken
                   ? `/blog/${post.slug}?preview=${encodeURIComponent(previewToken)}`
@@ -192,7 +198,7 @@ export default async function NovoBlogPostPage({
               <div className="flex flex-wrap items-center gap-3">
                 {post.status === "published" && (
                   <span className="px-3 py-1 bg-[#e8f8ec] text-[#2c9f45] rounded-full text-[10px] font-bold uppercase tracking-wider mr-2">
-                    Publicado
+                    {scheduled ? "Agendado" : "Publicado"}
                   </span>
                 )}
                 {post.status === "draft" && (
