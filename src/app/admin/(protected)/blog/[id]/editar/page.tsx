@@ -34,8 +34,9 @@ function toDateTimeLocal(value: string | null) {
   if (!value) return "";
 
   const date = new Date(value);
-  const offset = date.getTimezoneOffset() * 60_000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+  // America/Sao_Paulo offset is -3 hours (-180 minutes)
+  const offsetMs = -3 * 60 * 60 * 1000;
+  return new Date(date.getTime() + offsetMs).toISOString().slice(0, 16);
 }
 
 export default async function EditarBlogPostPage({

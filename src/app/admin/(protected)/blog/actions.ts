@@ -27,10 +27,16 @@ function getErrorMessage(error: unknown) {
 }
 
 function getPublicationDate(input: string, shouldPublish: boolean) {
-  if (!shouldPublish) return null;
-  if (!input) return new Date().toISOString();
+  if (!input) {
+    return shouldPublish ? new Date().toISOString() : null;
+  }
 
-  const date = new Date(input);
+  let dateStr = input;
+  if (input.includes("T") && !input.includes("Z") && !input.includes("-", 10) && !input.includes("+")) {
+    dateStr = `${input}-03:00`;
+  }
+
+  const date = new Date(dateStr);
   if (Number.isNaN(date.getTime())) {
     throw new Error("Informe uma data e hora de publicação válidas.");
   }
