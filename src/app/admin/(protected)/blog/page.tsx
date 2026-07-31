@@ -132,7 +132,7 @@ export default async function AdminBlogPage({
                   </span>
                 </td>
                 <td className="px-4 py-3 text-on-surface/70">
-                  {post.published_at ? new Date(post.published_at).toLocaleString("pt-BR") : "-"}
+                  {post.published_at ? new Date(post.published_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }) : "-"}
                 </td>
                 <td className="px-4 py-3 text-on-surface/70">{post.slug}</td>
                 <td className="px-4 py-3">

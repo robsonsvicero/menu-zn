@@ -191,7 +191,7 @@ export default async function NovoBlogPostPage({
                 
                 <div>
                   <h4 className="text-sm font-medium text-on-surface">{post.title}</h4>
-                  <p className="text-[10px] text-on-surface/50 mt-1">Robson Svicero • {post.published_at ? new Date(post.published_at).toLocaleDateString("pt-BR") : "Rascunho"}</p>
+                  <p className="text-[10px] text-on-surface/50 mt-1">Robson Svicero • {post.published_at ? new Date(post.published_at).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" }) : "Rascunho"}</p>
                 </div>
               </div>
 
