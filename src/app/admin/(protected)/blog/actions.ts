@@ -140,7 +140,7 @@ export async function createBlogPostAction(formData: FormData) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
     }
 
-    const shouldPublish = status === "published";
+    const shouldPublish = status === "published" || Boolean(publishedAtInput);
     const publishedAt = getPublicationDate(publishedAtInput, shouldPublish);
 
     const { error } = await supabase.from("blog_posts").insert({
@@ -231,7 +231,7 @@ export async function updateBlogPostAction(formData: FormData) {
       coverImageUrl = await uploadCoverImage(imageFile, slug);
     }
 
-    const shouldPublish = status === "published";
+    const shouldPublish = status === "published" || Boolean(publishedAtInput);
     const publishedAt = getPublicationDate(publishedAtInput, shouldPublish);
 
     const { error } = await supabase
