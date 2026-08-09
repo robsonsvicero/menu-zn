@@ -28,17 +28,15 @@ export default function Footer() {
             </p>
             {/* Social Icons */}
             <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-[#a8a8a8] hover:text-white hover:border-white transition-all">
-                <Globe size={16} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-[#a8a8a8] hover:text-white hover:border-white transition-all">
+              
+              <a href="https://www.instagram.com/menuzonanorte" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-[#a8a8a8] hover:text-white hover:border-white transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                 </svg>
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-[#a8a8a8] hover:text-white hover:border-white transition-all">
+              <a href="https://www.youtube.com/@menuzonanorte" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-[#a8a8a8] hover:text-white hover:border-white transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path>
                   <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
@@ -66,7 +64,7 @@ export default function Footer() {
           <div className="flex flex-col">
             <h3 className="font-serif text-xl font-bold mb-6">Para Empresas</h3>
             <div className="flex flex-col gap-4">
-              <a href="https://wa.me/5511973237060" target="_blank" rel="noopener noreferrer" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Anuncie Aqui</a>
+              
               <a href="/planos" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Planos e Preços</a>
               {/* <a href="/parceiros" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">Seja Parceiro</a> */}
               <a href="/faq" className="text-[#a8a8a8] hover:text-white text-sm transition-colors">FAQ</a>
