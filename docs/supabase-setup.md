@@ -7,6 +7,8 @@ Este guia define a ordem de execucao para habilitar banco de dados real, auth e 
 1. Execute [supabase/sql/01_schema.sql](../supabase/sql/01_schema.sql)
 2. Execute [supabase/sql/02_rls.sql](../supabase/sql/02_rls.sql)
 3. Execute [supabase/sql/03_seed.sql](../supabase/sql/03_seed.sql)
+4. Execute [supabase/sql/create_newsletter_subscribers.sql](../supabase/sql/create_newsletter_subscribers.sql)
+5. Execute [supabase/sql/10_newsletter_subscribers_rls.sql](../supabase/sql/10_newsletter_subscribers_rls.sql)
 
 ## 2. Variaveis de ambiente (Next.js)
 

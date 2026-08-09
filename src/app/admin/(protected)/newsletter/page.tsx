@@ -47,6 +47,10 @@ export default async function AdminNewsletterPage({
   const { data, error } = await query;
 
   const subscribers = (data ?? []) as SubscriberRow[];
+  const errorMessage =
+    error?.code === "42501"
+      ? "Sem permissão para ler newsletter_subscribers. Verifique as policies de RLS da tabela."
+      : error?.message;
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -104,7 +108,7 @@ export default async function AdminNewsletterPage({
 
       {error ? (
         <div className="rounded-xl border border-error/30 bg-error/10 p-4 text-sm text-error">
-          Erro ao carregar inscritos: {error.message}
+          Erro ao carregar inscritos: {errorMessage}
         </div>
       ) : null}
 
