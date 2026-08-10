@@ -159,6 +159,30 @@ async function ensureAdminAccess() {
 
   return { supabase, user };
 }
+function formatInstagramUrl(input: string) {
+  const value = input.trim();
+
+  if (!value) {
+    return null;
+  }
+
+  if (value.startsWith("@")) {
+    const handle = value.slice(1).trim().replace(/^\/+|\/+$/g, "");
+    return handle ? `https://www.instagram.com/${handle}` : null;
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  const handle = value
+    .replace(/^instagram\.com\//i, "")
+    .replace(/^www\.instagram\.com\//i, "")
+    .replace(/^\/+|\/+$/g, "");
+
+  return handle ? `https://www.instagram.com/${handle}` : null;
+}
+
 
 export async function createEstablishmentAction(formData: FormData) {
   const { supabase, user } = await ensureAdminAccess();
@@ -173,7 +197,7 @@ export async function createEstablishmentAction(formData: FormData) {
   const phone = String(formData.get("phone") ?? "").trim();
   const whatsapp = String(formData.get("whatsapp") ?? "").trim();
   const websiteUrl = String(formData.get("website_url") ?? "").trim();
-  const instagramUrl = String(formData.get("instagram_url") ?? "").trim();
+  const instagramUrl = formatInstagramUrl(String(formData.get("instagram_url") ?? ""));
   const imageCoverUrl = String(formData.get("image_cover_url") ?? "").trim();
   const priceRange = String(formData.get("price_range") ?? "").trim();
   const ratingInput = String(formData.get("rating") ?? "").replace(",", ".");
@@ -284,7 +308,7 @@ export async function updateEstablishmentAction(formData: FormData) {
   const phone = String(formData.get("phone") ?? "").trim();
   const whatsapp = String(formData.get("whatsapp") ?? "").trim();
   const websiteUrl = String(formData.get("website_url") ?? "").trim();
-  const instagramUrl = String(formData.get("instagram_url") ?? "").trim();
+  const instagramUrl = formatInstagramUrl(String(formData.get("instagram_url") ?? ""));
   const imageCoverUrl = String(formData.get("image_cover_url") ?? "").trim();
   const priceRange = String(formData.get("price_range") ?? "").trim();
   const ratingInput = String(formData.get("rating") ?? "").replace(",", ".");
