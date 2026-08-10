@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, DollarSign, MapPin, Phone, Star, Globe, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { fetchPublishedEstablishmentBySlug, fetchPublishedEstablishments } from "@/lib/establishments-public";
+import { Gallery } from "@/components/ui/Gallery";
+import { MapEmbed } from "@/components/ui/MapEmbed";
 
 export const dynamic = "force-dynamic";
 
@@ -211,19 +213,6 @@ export default async function LocalDetailPage({ params }: PageProps) {
                 {establishment.description ?? establishment.short_description ?? "Conteúdo em atualização."}
               </p>
             </article>
-
-            {establishment.images && establishment.images.length > 0 && (
-              <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
-                <h2 className="font-serif text-2xl mb-5">Galeria de Fotos</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {establishment.images.map((url, i) => (
-                    <div key={i} className="relative aspect-square overflow-hidden rounded-2xl border border-outline/10">
-                      <Image src={url} alt={`Foto ${i + 1} de ${establishment.name}`} fill className="object-cover hover:scale-105 transition duration-300" unoptimized />
-                    </div>
-                  ))}
-                </div>
-              </article>
-            )}
           </div>
 
           <aside className="space-y-6">
@@ -295,6 +284,18 @@ export default async function LocalDetailPage({ params }: PageProps) {
               </dl>
             </div>
           </aside>
+
+          {establishment.images && establishment.images.length > 0 && (
+            <div className="lg:col-span-2">
+              <Gallery images={establishment.images} establishmentName={establishment.name} />
+            </div>
+          )}
+
+          {establishment.address && (
+            <div className="lg:col-span-2">
+              <MapEmbed address={establishment.address} establishmentName={establishment.name} />
+            </div>
+          )}
         </div>
       </section>
 

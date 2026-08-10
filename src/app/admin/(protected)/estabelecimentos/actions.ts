@@ -364,10 +364,31 @@ export async function updateEstablishmentAction(formData: FormData) {
     }
   }
 
-  const existingImages = formData.getAll("existing_images") as string[];
+  // Process gallery images using the serialized order from SortableGallery
+  const imageOrderRaw = String(formData.get("image_order") ?? "[]");
   const galleryFiles = formData.getAll("gallery_files") as File[];
   const newGalleryUrls = await uploadGalleryImages(galleryFiles, slug);
-  const finalGalleryUrls = [...existingImages, ...newGalleryUrls].slice(0, 6);
+
+  let finalGalleryUrls: string[] = [];
+  try {
+    const imageOrder = JSON.parse(imageOrderRaw) as Array<
+      { type: "existing"; url: string } | { type: "new"; fileIndex: number }
+    >;
+    finalGalleryUrls = imageOrder
+      .map((entry) => {
+        if (entry.type === "existing") return entry.url;
+        if (entry.type === "new" && newGalleryUrls[entry.fileIndex]) {
+          return newGalleryUrls[entry.fileIndex];
+        }
+        return null;
+      })
+      .filter((url): url is string => url !== null)
+      .slice(0, 6);
+  } catch {
+    // Fallback: existing_images + new uploads (backwards-compatible)
+    const existingImages = formData.getAll("existing_images") as string[];
+    finalGalleryUrls = [...existingImages, ...newGalleryUrls].slice(0, 6);
+  }
 
   const { error } = await supabase
     .from("establishments")

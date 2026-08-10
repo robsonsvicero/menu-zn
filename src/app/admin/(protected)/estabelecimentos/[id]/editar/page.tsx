@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { updateEstablishmentAction } from "../../actions";
 import { NeighborhoodDialog } from "../../neighborhood-dialog";
 import { PhoneMaskedInput } from "../../phone-masked-input";
+import { SortableGallery } from "../../sortable-gallery";
 
 export const dynamic = "force-dynamic";
 
@@ -193,33 +194,7 @@ export default async function EditarEstabelecimentoPage({
         </div>
 
         <div>
-          <label className="block text-sm mb-2 font-medium">Imagens da Galeria (Máximo 6)</label>
-          
-          {establishment.images && (establishment.images as string[]).length > 0 && (
-            <div className="flex flex-wrap gap-4 mb-3">
-              {(establishment.images as string[]).map((url, index) => (
-                <div key={url} className="relative flex flex-col items-center gap-2 border border-outline/25 p-2 rounded-xl bg-white shadow-sm">
-                  <img src={url} alt={`Galeria ${index}`} className="w-24 h-24 object-cover rounded-lg" />
-                  <label className="inline-flex items-center gap-1 text-xs cursor-pointer">
-                    <input type="checkbox" name="existing_images" value={url} defaultChecked className="rounded border-outline" />
-                    Manter
-                  </label>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <input
-            type="file"
-            name="gallery_files"
-            accept="image/*"
-            multiple
-            className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5"
-          />
-          <p className="mt-1 text-xs text-on-surface/60">
-            Selecione novas imagens para adicionar à galeria. O total (mantidas + novas) é limitado a 6.
-          </p>
-        </div>
+        <SortableGallery existingImages={(establishment.images as string[]) ?? []} />
 
         <div className="grid gap-4 md:grid-cols-4 items-end">
           <div>
