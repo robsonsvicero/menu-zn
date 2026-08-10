@@ -211,10 +211,12 @@ export default async function LocalDetailPage({ params }: PageProps) {
                 {establishment.description ?? establishment.short_description ?? "Conteúdo em atualização."}
               </p>
             </article>
+          </div>
 
+          <aside className="space-y-6">
             <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
-              <h2 className="font-serif text-2xl">Contato</h2>
-              <div className="mt-5 grid gap-6 md:grid-cols-2">
+              <h3 className="font-serif text-2xl">Contato</h3>
+              <div className="mt-5 grid gap-6">
                 <div className="relative aspect-4/3 overflow-hidden rounded-3xl">
                   <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover" />
                 </div>
@@ -257,9 +259,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                 </div>
               </div>
             </article>
-          </div>
 
-          <aside className="space-y-6">
             <div className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
               <h3 className="font-serif text-2xl">Resumo</h3>
               <dl className="mt-5 space-y-4 text-sm text-on-surface/75">
