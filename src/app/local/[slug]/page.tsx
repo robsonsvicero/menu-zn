@@ -136,17 +136,17 @@ export default async function LocalDetailPage({ params }: PageProps) {
     geo:
       establishment.latitude && establishment.longitude
         ? {
-            "@type": "GeoCoordinates",
-            latitude: establishment.latitude,
-            longitude: establishment.longitude,
-          }
+          "@type": "GeoCoordinates",
+          latitude: establishment.latitude,
+          longitude: establishment.longitude,
+        }
         : undefined,
     aggregateRating: establishment.rating
       ? {
-          "@type": "AggregateRating",
-          ratingValue: establishment.rating,
-          ratingCount: 1,
-        }
+        "@type": "AggregateRating",
+        ratingValue: establishment.rating,
+        ratingCount: 1,
+      }
       : undefined,
     servesCuisine: category?.name || undefined,
     priceRange: establishment.price_range || undefined,
@@ -159,180 +159,184 @@ export default async function LocalDetailPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="min-h-screen bg-[#faf8f5] text-on-surface">
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover object-center" priority />
-        </div>
-
-        <div className="relative mx-auto flex min-h-160 max-w-300 flex-col justify-between px-6 py-20 md:px-10 lg:px-12">
-          <div className="mt-16 max-w-4xl text-white">
-            <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white">
-              {category?.name ?? "Estabelecimento"}
-            </span>
-
-            <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl">
-              {establishment.name}
-            </h1>
-            <p className="mt-6 max-w-3xl text-sm leading-7 text-white/85 md:text-base">
-              {establishment.short_description ?? establishment.description ?? "Estabelecimento publicado pelo painel administrativo do Menu ZN."}
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-white/85">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                <MapPin size={16} />
-                {neighborhood?.name ?? "Bairro não informado"}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                <Star size={16} />
-                {formatRating(establishment.rating)}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-                {establishment.price_range ? (
-                  <>
-                    <DollarSign size={16} />
-                    {establishment.price_range}
-                  </>
-                ) : (
-                  <>
-                    <DollarSign size={16} />
-                    Sob consulta
-                  </>
-                )}
-              </span>
-            </div>
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover object-center" priority />
           </div>
-        </div>
-      </section>
 
-      <section className="mx-auto max-w-300 px-6 py-14 md:px-10 lg:px-12 lg:py-18">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-8">
-            <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
-              <h2 className="font-serif text-2xl">Sobre o local</h2>
-              <p className="mt-4 text-[17px] leading-8 text-on-surface/90 whitespace-pre-line">
-                {establishment.description ?? establishment.short_description ?? "Conteúdo em atualização."}
+          <div className="relative mx-auto flex min-h-160 max-w-300 flex-col justify-between px-6 py-20 md:px-10 lg:px-12">
+            <div className="mt-16 max-w-4xl text-white">
+              <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white">
+                {category?.name ?? "Estabelecimento"}
+              </span>
+
+              <h1 className="mt-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl">
+                {establishment.name}
+              </h1>
+              <p className="mt-6 max-w-3xl text-sm leading-7 text-white/85 md:text-base">
+                {establishment.short_description ?? establishment.description ?? "Estabelecimento publicado pelo painel administrativo do Menu ZN."}
               </p>
-            </article>
-          </div>
 
-          <aside className="space-y-6">
-            <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
-              <h3 className="font-serif text-2xl">Contato</h3>
-              <div className="mt-5 grid gap-6">
-                <div className="relative aspect-4/3 overflow-hidden rounded-3xl">
-                  <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover" />
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 text-sm text-on-surface/75">
-                    <MapPin size={16} />
-                    <span>{establishment.address ?? "Endereço não informado"}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-on-surface/75">
-                    <Phone size={16} />
-                    <span>{formatDynamicPhone(establishment.phone)}</span>
-                  </div>
-                  {establishment.price_range && (
-                    <div className="flex items-center gap-3 text-sm text-on-surface/75">
+              <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-white/85">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                  <MapPin size={16} />
+                  {neighborhood?.name ?? "Bairro não informado"}
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                  <Star size={16} />
+                  {formatRating(establishment.rating)}
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                  {establishment.price_range ? (
+                    <>
                       <DollarSign size={16} />
-                      <span>Faixa de preço: {establishment.price_range}</span>
-                    </div>
+                      {establishment.price_range}
+                    </>
+                  ) : (
+                    <>
+                      <DollarSign size={16} />
+                      Sob consulta
+                    </>
                   )}
-
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    {establishment.website_url ? (
-                      <a href={establishment.website_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
-                        <Globe size={14} />
-                        Site
-                      </a>
-                    ) : null}
-                    {establishment.instagram_url ? (
-                      <a href={establishment.instagram_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
-                        <Globe size={14} />
-                        Instagram
-                      </a>
-                    ) : null}
-                    {establishment.whatsapp ? (
-                      <a href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent("Olá! Encontrei vocês no Menu ZN")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
-                        <MessageCircle size={14} />
-                        WhatsApp
-                      </a>
-                    ) : null}
-                  </div>
-                </div>
+                </span>
               </div>
-            </article>
-
-            <div className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
-              <h3 className="font-serif text-2xl">Resumo</h3>
-              <dl className="mt-5 space-y-4 text-sm text-on-surface/75">
-                <div className="flex items-center justify-between gap-4">
-                  <dt className="text-on-surface/55">Categoria</dt>
-                  <dd className="font-medium">{category?.name ?? "-"}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <dt className="text-on-surface/55">Bairro</dt>
-                  <dd className="font-medium">{neighborhood?.name ?? "-"}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <dt className="text-on-surface/55">Avaliação</dt>
-                  <dd className="font-medium">{formatRating(establishment.rating)}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <dt className="text-on-surface/55">iFood</dt>
-                  <dd className="font-medium">{establishment.has_ifood ? "Sim" : "Não"}</dd>
-                </div>
-              </dl>
-            </div>
-          </aside>
-
-          {establishment.images && establishment.images.length > 0 && (
-            <div className="lg:col-span-2">
-              <Gallery images={establishment.images} establishmentName={establishment.name} />
-            </div>
-          )}
-
-          {establishment.address && (
-            <div className="lg:col-span-2">
-              <MapEmbed address={establishment.address} establishmentName={establishment.name} />
-            </div>
-          )}
-        </div>
-      </section>
-
-      {related.length > 0 ? (
-        <section className="bg-[#f6f2eb] py-16 md:py-20">
-          <div className="mx-auto max-w-300 px-6 md:px-10 lg:px-12">
-            <div className="mb-8 flex items-end justify-between gap-4">
-              <div>
-                <h2 className="font-serif text-2xl md:text-3xl">Mais da mesma categoria</h2>
-                <p className="mt-1 text-sm text-on-surface/65">Outros locais publicados no painel administrativo.</p>
-              </div>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              {related.map((item) => (
-                <Link key={item.id} href={`/local/${item.slug}`} className="group overflow-hidden rounded-[26px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                  <div className="relative aspect-4/3 overflow-hidden">
-                    <Image src={item.image_cover_url ?? imageSrc} alt={item.name} fill unoptimized={Boolean(item.image_cover_url ?? establishment.image_cover_url)} className="object-cover transition duration-500 group-hover:scale-105" />
-                  </div>
-                  <div className="space-y-3 p-6">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
-                      {getRelation(item.categories)?.name ?? "Estabelecimento"}
-                    </p>
-                    <h3 className="font-serif text-xl leading-snug text-on-surface transition group-hover:text-[rgb(148_53_21)]">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm leading-7 text-on-surface/70 line-clamp-3">
-                      {item.short_description ?? "Conteúdo do Menu ZN."}
-                    </p>
-                  </div>
-                </Link>
-              ))}
             </div>
           </div>
         </section>
-      ) : null}
-    </main>
+
+        <section className="mx-auto max-w-300 px-6 py-14 md:px-10 lg:px-12 lg:py-18">
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-8">
+              <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
+                <h2 className="font-serif text-2xl">Sobre o local</h2>
+                <p className="mt-4 text-[17px] leading-8 text-on-surface/90 whitespace-pre-line">
+                  {establishment.description ?? establishment.short_description ?? "Conteúdo em atualização."}
+                </p>
+              </article>
+            </div>
+
+            <aside className="space-y-6">
+              <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
+                <h3 className="font-serif text-2xl">Contato</h3>
+                <div className="mt-5 grid gap-6">
+                  {/* <div className="relative aspect-4/3 overflow-hidden rounded-3xl">
+                  <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover" />
+                </div> */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-sm text-on-surface/75">
+                      <MapPin size={16} />
+                      <span>{establishment.address ?? "Endereço não informado"}</span>
+                    </div>
+                    <a
+                      href={`tel:${establishment.phone}`}
+                      className="flex items-center gap-3 text-sm text-on-surface/75 hover:text-primary transition-colors"
+                    >
+                      <Phone size={16} />
+                      <span>{formatDynamicPhone(establishment.phone)}</span>
+                    </a>
+                    {establishment.price_range && (
+                      <div className="flex items-center gap-3 text-sm text-on-surface/75">
+                        <DollarSign size={16} />
+                        <span>Faixa de preço: {establishment.price_range}</span>
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      {establishment.website_url ? (
+                        <a href={establishment.website_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
+                          <Globe size={14} />
+                          Site
+                        </a>
+                      ) : null}
+                      {establishment.whatsapp ? (
+                        <a href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent("Olá! Encontrei vocês no Menu ZN e gostaria de obter mais informações.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full text-white bg-primary px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:opacity-90">
+                          <MessageCircle size={14} />
+                          WhatsApp
+                        </a>
+                      ) : null}
+                      {establishment.instagram_url ? (
+                        <a href={establishment.instagram_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
+                          <Globe size={14} />
+                          Instagram
+                        </a>
+                      ) : null}
+                      
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <div className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
+                <h3 className="font-serif text-2xl">Resumo</h3>
+                <dl className="mt-5 space-y-4 text-sm text-on-surface/75">
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="text-on-surface/55">Categoria</dt>
+                    <dd className="font-medium">{category?.name ?? "-"}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="text-on-surface/55">Bairro</dt>
+                    <dd className="font-medium">{neighborhood?.name ?? "-"}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="text-on-surface/55">Avaliação</dt>
+                    <dd className="font-medium">{formatRating(establishment.rating)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <dt className="text-on-surface/55">iFood</dt>
+                    <dd className="font-medium">{establishment.has_ifood ? "Sim" : "Não"}</dd>
+                  </div>
+                </dl>
+              </div>
+            </aside>
+
+            {establishment.images && establishment.images.length > 0 && (
+              <div className="lg:col-span-2">
+                <Gallery images={establishment.images} establishmentName={establishment.name} />
+              </div>
+            )}
+
+            {establishment.address && (
+              <div className="lg:col-span-2">
+                <MapEmbed address={establishment.address} establishmentName={establishment.name} />
+              </div>
+            )}
+          </div>
+        </section>
+
+        {related.length > 0 ? (
+          <section className="bg-[#f6f2eb] py-16 md:py-20">
+            <div className="mx-auto max-w-300 px-6 md:px-10 lg:px-12">
+              <div className="mb-8 flex items-end justify-between gap-4">
+                <div>
+                  <h2 className="font-serif text-2xl md:text-3xl">Mais da mesma categoria</h2>
+                  <p className="mt-1 text-sm text-on-surface/65">Outros locais publicados no painel administrativo.</p>
+                </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-3">
+                {related.map((item) => (
+                  <Link key={item.id} href={`/local/${item.slug}`} className="group overflow-hidden rounded-[26px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                    <div className="relative aspect-4/3 overflow-hidden">
+                      <Image src={item.image_cover_url ?? imageSrc} alt={item.name} fill unoptimized={Boolean(item.image_cover_url ?? establishment.image_cover_url)} className="object-cover transition duration-500 group-hover:scale-105" />
+                    </div>
+                    <div className="space-y-3 p-6">
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
+                        {getRelation(item.categories)?.name ?? "Estabelecimento"}
+                      </p>
+                      <h3 className="font-serif text-xl leading-snug text-on-surface transition group-hover:text-[rgb(148_53_21)]">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm leading-7 text-on-surface/70 line-clamp-3">
+                        {item.short_description ?? "Conteúdo do Menu ZN."}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+      </main>
     </>
   );
 }
