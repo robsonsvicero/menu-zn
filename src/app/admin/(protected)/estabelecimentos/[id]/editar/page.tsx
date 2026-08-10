@@ -193,7 +193,6 @@ export default async function EditarEstabelecimentoPage({
           </p>
         </div>
 
-        <div>
         <SortableGallery existingImages={(establishment.images as string[]) ?? []} />
 
         <div className="grid gap-4 md:grid-cols-4 items-end">
