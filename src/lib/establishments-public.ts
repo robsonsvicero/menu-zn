@@ -37,6 +37,7 @@ export type EstablishmentDetailItem = EstablishmentListItem & {
   average_ticket: number | null;
   latitude: number | null;
   longitude: number | null;
+  images?: string[] | null;
 };
 
 type PublishedEstablishmentOptions = {
@@ -262,7 +263,7 @@ export async function fetchPublishedEstablishmentBySlug(slug: string) {
   const { data, error } = await supabase
     .from("establishments")
     .select(
-      "id, name, slug, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, is_indicated, price_range, average_ticket, rating, latitude, longitude, categories(name, slug), neighborhoods(name, slug)"
+      "id, name, slug, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, has_ifood, is_indicated, price_range, average_ticket, rating, latitude, longitude, images, categories(name, slug), neighborhoods(name, slug)"
     )
     .eq("status", "published")
     .eq("slug", slug)

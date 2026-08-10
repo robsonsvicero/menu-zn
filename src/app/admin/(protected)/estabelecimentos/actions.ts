@@ -127,6 +127,19 @@ async function uploadCoverImage(file: File, slug: string) {
   return data.publicUrl;
 }
 
+async function uploadGalleryImages(files: File[], slug: string): Promise<string[]> {
+  const urls: string[] = [];
+  for (const file of files) {
+    if (file && file instanceof File && file.size > 0) {
+      const url = await uploadCoverImage(file, slug);
+      if (url) {
+        urls.push(url);
+      }
+    }
+  }
+  return urls;
+}
+
 async function ensureAdminAccess() {
   const supabase = await createClient();
 
@@ -235,6 +248,9 @@ export async function createEstablishmentAction(formData: FormData) {
     }
   }
 
+  const galleryFiles = formData.getAll("gallery_files") as File[];
+  const galleryUrls = await uploadGalleryImages(galleryFiles, slug);
+
   const { error } = await supabase.from("establishments").insert({
     name,
     slug,
@@ -248,6 +264,7 @@ export async function createEstablishmentAction(formData: FormData) {
     website_url: websiteUrl || null,
     instagram_url: instagramUrl || null,
     image_cover_url: finalImageCoverUrl,
+    images: galleryUrls,
     price_range: priceRange || null,
     rating,
     has_ifood: hasIfood,
@@ -347,6 +364,11 @@ export async function updateEstablishmentAction(formData: FormData) {
     }
   }
 
+  const existingImages = formData.getAll("existing_images") as string[];
+  const galleryFiles = formData.getAll("gallery_files") as File[];
+  const newGalleryUrls = await uploadGalleryImages(galleryFiles, slug);
+  const finalGalleryUrls = [...existingImages, ...newGalleryUrls].slice(0, 6);
+
   const { error } = await supabase
     .from("establishments")
     .update({
@@ -362,6 +384,7 @@ export async function updateEstablishmentAction(formData: FormData) {
       website_url: websiteUrl || null,
       instagram_url: instagramUrl || null,
       image_cover_url: finalImageCoverUrl,
+      images: finalGalleryUrls,
       price_range: priceRange || null,
       rating,
       has_ifood: hasIfood,

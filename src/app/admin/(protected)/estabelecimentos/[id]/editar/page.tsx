@@ -30,6 +30,7 @@ type Establishment = {
   is_indicated: boolean;
   status: "draft" | "published" | "archived";
   rating: number | null;
+  images?: string[] | null;
 };
 
 export default async function EditarEstabelecimentoPage({
@@ -47,7 +48,7 @@ export default async function EditarEstabelecimentoPage({
     supabase
       .from("establishments")
       .select(
-        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, is_featured, is_category_featured, is_indicated, status, rating"
+        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, is_featured, is_category_featured, is_indicated, status, rating, images"
       )
       .eq("id", id)
       .single(),
@@ -188,6 +189,35 @@ export default async function EditarEstabelecimentoPage({
           />
           <p className="mt-1 text-xs text-on-surface/60">
             Se enviar arquivo, ele substituirá a imagem atual.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-2 font-medium">Imagens da Galeria (Máximo 6)</label>
+          
+          {establishment.images && (establishment.images as string[]).length > 0 && (
+            <div className="flex flex-wrap gap-4 mb-3">
+              {(establishment.images as string[]).map((url, index) => (
+                <div key={url} className="relative flex flex-col items-center gap-2 border border-outline/25 p-2 rounded-xl bg-white shadow-sm">
+                  <img src={url} alt={`Galeria ${index}`} className="w-24 h-24 object-cover rounded-lg" />
+                  <label className="inline-flex items-center gap-1 text-xs cursor-pointer">
+                    <input type="checkbox" name="existing_images" value={url} defaultChecked className="rounded border-outline" />
+                    Manter
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <input
+            type="file"
+            name="gallery_files"
+            accept="image/*"
+            multiple
+            className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5"
+          />
+          <p className="mt-1 text-xs text-on-surface/60">
+            Selecione novas imagens para adicionar à galeria. O total (mantidas + novas) é limitado a 6.
           </p>
         </div>
 

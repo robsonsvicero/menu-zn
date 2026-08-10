@@ -149,6 +149,20 @@ export default async function NovoEstabelecimentoPage({
           </p>
         </div>
 
+        <div>
+          <label className="block text-sm mb-1">Upload das imagens da galeria (máximo 6 imagens)</label>
+          <input
+            type="file"
+            name="gallery_files"
+            accept="image/*"
+            multiple
+            className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5"
+          />
+          <p className="mt-1 text-xs text-on-surface/60">
+            Você pode selecionar até 6 imagens para a galeria.
+          </p>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-4 items-end">
           <div>
             <label className="block text-sm mb-1">Status</label>
