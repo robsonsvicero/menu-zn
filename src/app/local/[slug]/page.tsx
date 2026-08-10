@@ -252,7 +252,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                       </a>
                     ) : null}
                     {establishment.whatsapp ? (
-                      <a href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
+                      <a href={`https://wa.me/${establishment.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent("Olá! Encontrei vocês no Menu ZN")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
                         <MessageCircle size={14} />
                         WhatsApp
                       </a>
