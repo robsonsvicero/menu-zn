@@ -161,8 +161,20 @@ export default async function LocalDetailPage({ params }: PageProps) {
       <main className="min-h-screen bg-[#faf8f5] text-on-surface">
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
-            <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover object-center" priority />
+            <Image
+              src={imageSrc}
+              alt={establishment.name}
+              fill
+              unoptimized={Boolean(establishment.image_cover_url)}
+              className="object-cover object-center"
+              priority
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
           </div>
+          {/* <div className="absolute inset-0">
+            <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover object-center" priority />
+          </div> */}
 
           <div className="relative mx-auto flex min-h-160 max-w-300 flex-col justify-between px-6 py-20 md:px-10 lg:px-12">
             <div className="mt-16 max-w-4xl text-white">
@@ -219,9 +231,6 @@ export default async function LocalDetailPage({ params }: PageProps) {
               <article className="rounded-[28px] border border-outline/20 bg-white p-8 shadow-sm">
                 <h3 className="font-serif text-2xl">Contato</h3>
                 <div className="mt-5 grid gap-6">
-                  {/* <div className="relative aspect-4/3 overflow-hidden rounded-3xl">
-                  <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover" />
-                </div> */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-sm text-on-surface/75">
                       <MapPin size={16} />
@@ -241,7 +250,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                       </div>
                     )}
 
-                    <div className="flex flex-wrap gap-3 pt-2">
+                    <div className="flex flex-wrap gap-4 pt-2">
                       {establishment.website_url ? (
                         <a href={establishment.website_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
                           <Globe size={14} />
@@ -260,7 +269,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                           Instagram
                         </a>
                       ) : null}
-                      
+
                     </div>
                   </div>
                 </div>
