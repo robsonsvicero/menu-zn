@@ -170,11 +170,8 @@ export default async function LocalDetailPage({ params }: PageProps) {
               priority
             />
 
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
           </div>
-          {/* <div className="absolute inset-0">
-            <Image src={imageSrc} alt={establishment.name} fill unoptimized={Boolean(establishment.image_cover_url)} className="object-cover object-center" priority />
-          </div> */}
 
           <div className="relative mx-auto flex min-h-160 max-w-300 flex-col justify-between px-6 py-20 md:px-10 lg:px-12">
             <div className="mt-16 max-w-4xl text-white">
