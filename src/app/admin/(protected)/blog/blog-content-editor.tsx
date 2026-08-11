@@ -568,8 +568,8 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setImageError("A imagem deve ter no m?ximo 5 MB.");
+    if (file.size > 4 * 1024 * 1024) {
+      setImageError("A imagem deve ter no m?ximo 4 MB.");
       return;
     }
 
@@ -685,7 +685,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
       </div>
 
       <p className={`px-2 pt-2 text-xs ${imageError ? "text-red-700" : "text-on-surface/55"}`} aria-live="polite">
-        {imageError || (isUploadingImage ? "Enviando imagem..." : "Imagens: JPG, PNG, WebP, GIF ou AVIF, at? 5 MB. Todas as imagens do artigo usam tamanho padronizado.")}
+        {imageError || (isUploadingImage ? "Enviando imagem..." : "Imagens: JPG, PNG, WebP, GIF ou AVIF, at? 4 MB. Todas as imagens do artigo usam tamanho padronizado.")}
       </p>
 
       <div

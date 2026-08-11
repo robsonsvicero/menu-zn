@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 const allowedAdminRoles = new Set(["super_admin", "admin", "editor"]);
 const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"]);
-const maxFileSize = 5 * 1024 * 1024;
+const maxFileSize = 4 * 1024 * 1024;
 
 function safeFileName(value: string) {
   return value
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   }
 
   if (file.size > maxFileSize) {
-    return Response.json({ error: "A imagem deve ter no m?ximo 5 MB." }, { status: 400 });
+    return Response.json({ error: "A imagem deve ter no m?ximo 4 MB." }, { status: 400 });
   }
 
   const extension = file.name.split(".").pop()?.toLowerCase() || file.type.split("/").pop() || "jpg";

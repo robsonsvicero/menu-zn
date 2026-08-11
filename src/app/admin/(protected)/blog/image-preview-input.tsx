@@ -16,6 +16,12 @@ export function ImagePreviewInput({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 4 * 1024 * 1024) {
+        alert("A imagem de capa não pode ser maior que 4 MB.");
+        e.target.value = "";
+        setPreviewUrl(defaultImageUrl || null);
+        return;
+      }
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     } else {
