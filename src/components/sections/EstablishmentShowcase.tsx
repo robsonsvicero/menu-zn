@@ -74,7 +74,7 @@ export default async function EstablishmentShowcase({ searchParams }: Establishm
       search: searchTerm,
       neighborhoodSlug: neighborhoodFilter,
       ifoodOnly,
-      sort: sortFilter === "rating" || sortFilter === "name" ? sortFilter : "featured",
+      sort: sortFilter === "rating" || sortFilter === "name" ? sortFilter : "random",
       limit: 30,
     }),
     fetchPublishedEstablishmentsCount({

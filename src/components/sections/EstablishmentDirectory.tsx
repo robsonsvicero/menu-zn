@@ -82,7 +82,7 @@ export default async function EstablishmentDirectory({
       search: searchTerm,
       neighborhoodSlug: neighborhoodFilter,
       ifoodOnly,
-      sort: sortFilter === "rating" || sortFilter === "name" ? sortFilter : "featured",
+      sort: sortFilter === "rating" || sortFilter === "name" ? sortFilter : "random",
       limit: 24,
     }),
     fetchPublicNeighborhoods(),

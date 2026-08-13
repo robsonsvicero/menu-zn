@@ -13,7 +13,7 @@ export default async function Highlights() {
   let items = [] as Awaited<ReturnType<typeof fetchPublishedEstablishments>>
 
   try {
-    items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'featured', limit: 5 })
+    items = await fetchPublishedEstablishments({ featuredOnly: true, sort: 'random', limit: 5 })
   } catch (error) {
     if (typeof error === 'object' && error && 'digest' in error && (error as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE') {
       throw error
