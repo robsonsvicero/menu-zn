@@ -26,6 +26,7 @@ type Establishment = {
   image_cover_url: string | null;
   price_range: string | null;
   has_ifood: boolean;
+  has_plan: boolean;
   is_featured: boolean;
   is_category_featured: boolean;
   is_indicated: boolean;
@@ -49,7 +50,7 @@ export default async function EditarEstabelecimentoPage({
     supabase
       .from("establishments")
       .select(
-        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, is_featured, is_category_featured, is_indicated, status, rating, images"
+        "id, name, slug, category_id, neighborhood_id, short_description, description, address, phone, whatsapp, website_url, instagram_url, image_cover_url, price_range, has_ifood, has_plan, is_featured, is_category_featured, is_indicated, status, rating, images"
       )
       .eq("id", id)
       .single(),
@@ -195,7 +196,7 @@ export default async function EditarEstabelecimentoPage({
 
         <SortableGallery existingImages={(establishment.images as string[]) ?? []} />
 
-        <div className="grid gap-4 md:grid-cols-4 items-end">
+        <div className="grid gap-4 md:grid-cols-5 items-end">
           <div>
             <label className="block text-sm mb-1">Status</label>
             <select name="status" defaultValue={establishment.status} className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
@@ -208,6 +209,11 @@ export default async function EditarEstabelecimentoPage({
           <label className="inline-flex items-center gap-2 text-sm">
             <input type="checkbox" name="has_ifood" defaultChecked={establishment.has_ifood} className="rounded border-outline" />
             Possui iFood
+          </label>
+
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input type="checkbox" name="has_plan" defaultChecked={establishment.has_plan} className="rounded border-outline" />
+            Plano
           </label>
 
           <label className="inline-flex items-center gap-2 text-sm">

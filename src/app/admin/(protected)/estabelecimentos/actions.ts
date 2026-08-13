@@ -218,6 +218,7 @@ export async function createEstablishmentAction(formData: FormData) {
   const rating = parsedRating !== null && !isNaN(parsedRating) ? parsedRating : null;
   const imageFile = formData.get("image_file");
   const hasIfood = formData.get("has_ifood") === "on";
+  const hasPlan = formData.get("has_plan") === "on";
   const isFeatured = formData.get("is_featured") === "on";
   const isCategoryFeatured = formData.get("is_category_featured") === "on";
   const isIndicated = formData.get("is_indicated") === "on";
@@ -268,6 +269,7 @@ export async function createEstablishmentAction(formData: FormData) {
     price_range: priceRange || null,
     rating,
     has_ifood: hasIfood,
+    has_plan: hasPlan,
     is_featured: isFeatured,
     is_category_featured: isCategoryFeatured,
     is_indicated: isIndicated,
@@ -334,6 +336,7 @@ export async function updateEstablishmentAction(formData: FormData) {
   const imageFile = formData.get("image_file");
   const currentImageCoverUrl = String(formData.get("current_image_cover_url") ?? "").trim();
   const hasIfood = formData.get("has_ifood") === "on";
+  const hasPlan = formData.get("has_plan") === "on";
   const isFeatured = formData.get("is_featured") === "on";
   const isCategoryFeatured = formData.get("is_category_featured") === "on";
   const isIndicated = formData.get("is_indicated") === "on";
@@ -409,6 +412,7 @@ export async function updateEstablishmentAction(formData: FormData) {
       price_range: priceRange || null,
       rating,
       has_ifood: hasIfood,
+      has_plan: hasPlan,
       is_featured: isFeatured,
       is_category_featured: isCategoryFeatured,
       is_indicated: isIndicated,

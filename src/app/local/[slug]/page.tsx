@@ -301,7 +301,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
               </div>
             )}
 
-            {establishment.address && (
+            {establishment.has_plan && establishment.address && (
               <div className="lg:col-span-2">
                 <MapEmbed address={establishment.address} establishmentName={establishment.name} />
               </div>

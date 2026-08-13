@@ -163,7 +163,7 @@ export default async function NovoEstabelecimentoPage({
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4 items-end">
+        <div className="grid gap-4 md:grid-cols-5 items-end">
           <div>
             <label className="block text-sm mb-1">Status</label>
             <select name="status" defaultValue="draft" className="w-full rounded-xl border border-outline px-3 py-2 text-sm bg-white">
@@ -176,6 +176,11 @@ export default async function NovoEstabelecimentoPage({
           <label className="inline-flex items-center gap-2 text-sm">
             <input type="checkbox" name="has_ifood" className="rounded border-outline" />
             Possui iFood
+          </label>
+
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input type="checkbox" name="has_plan" className="rounded border-outline" />
+            Plano
           </label>
 
           <div className="flex items-center gap-2">

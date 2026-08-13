@@ -95,6 +95,7 @@ create table if not exists public.establishments (
   instagram_url text,
   image_cover_url text,
   has_ifood boolean not null default false,
+  has_plan boolean not null default false,
   price_range text,
   average_ticket numeric(10,2),
   rating numeric(2,1),
@@ -113,6 +114,7 @@ create index if not exists idx_establishments_category on public.establishments(
 create index if not exists idx_establishments_neighborhood on public.establishments(neighborhood_id);
 create index if not exists idx_establishments_status on public.establishments(status);
 create index if not exists idx_establishments_featured on public.establishments(is_featured);
+create index if not exists idx_establishments_plan on public.establishments(has_plan);
 
 create table if not exists public.establishment_tags (
   establishment_id uuid not null references public.establishments(id) on delete cascade,
