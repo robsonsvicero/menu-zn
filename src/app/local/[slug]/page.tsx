@@ -325,7 +325,13 @@ export default async function LocalDetailPage({ params }: PageProps) {
                 {related.map((item) => (
                   <Link key={item.id} href={`/local/${item.slug}`} className="group overflow-hidden rounded-[26px] border border-outline/20 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                     <div className="relative aspect-4/3 overflow-hidden">
-                      <Image src={item.image_cover_url ?? imageSrc} alt={item.name} fill unoptimized={Boolean(item.image_cover_url ?? establishment.image_cover_url)} className="object-cover transition duration-500 group-hover:scale-105" />
+                      <Image
+                        src={item.image_cover_url ?? "/images/hero-restaurantes.png"}
+                        alt={item.name}
+                        fill
+                        unoptimized={Boolean(item.image_cover_url)}
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                      />
                     </div>
                     <div className="space-y-3 p-6">
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-[rgb(148_53_21)]">
