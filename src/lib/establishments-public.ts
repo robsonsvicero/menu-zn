@@ -190,7 +190,7 @@ export async function fetchPublishedEstablishments(options?: {
   ifoodOnly?: boolean;
   featuredOnly?: boolean;
   indicatedOnly?: boolean;
-  sort?: "featured" | "rating" | "name";
+  sort?: "featured" | "rating" | "name" | "random";
   limit?: number;
 }) {
   const supabase = await createClient();
@@ -214,6 +214,9 @@ export async function fetchPublishedEstablishments(options?: {
       break;
     case "name":
       query = query.order("name");
+      break;
+    case "random":
+      query = query.order("random()");
       break;
     case "featured":
     default:

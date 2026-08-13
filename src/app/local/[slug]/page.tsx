@@ -112,9 +112,11 @@ export default async function LocalDetailPage({ params }: PageProps) {
   const categorySlug = category?.slug ?? "restaurantes";
   const related = (await fetchPublishedEstablishments({
     categorySlug,
-    limit: 3,
-    sort: "featured",
-  })).filter((item) => item.slug !== establishment.slug);
+    limit: 24,
+    sort: "random",
+  }))
+    .filter((item) => item.slug !== establishment.slug)
+    .slice(0, 3);
 
   const imageSrc = establishment.image_cover_url ?? "/images/hero-restaurantes.png";
 
