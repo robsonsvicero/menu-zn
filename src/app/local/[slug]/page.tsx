@@ -112,7 +112,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
   const categorySlug = category?.slug ?? "restaurantes";
   const related = (await fetchPublishedEstablishments({
     categorySlug,
-    limit: 4,
+    limit: 3,
     sort: "featured",
   })).filter((item) => item.slug !== establishment.slug);
 
