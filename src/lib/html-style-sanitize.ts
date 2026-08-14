@@ -5,6 +5,7 @@ const allowedStyleProperties = new Set([
   "font-style",
   "font-weight",
   "height",
+  "line-height",
   "margin-left",
   "margin-right",
   "max-height",
@@ -59,6 +60,10 @@ function isSafeStyleValue(property: string, value: string) {
 
   if (property === "width" || property === "max-width" || property === "height" || property === "max-height") {
     return isSafeCssDimension(normalized);
+  }
+
+  if (property === "line-height") {
+    return /^(?:normal|inherit|calc\([^)]+\)|\d+(?:\.\d+)?(?:px|pt|rem|em|%)?)$/i.test(normalized);
   }
 
   if (property === "font-style") {

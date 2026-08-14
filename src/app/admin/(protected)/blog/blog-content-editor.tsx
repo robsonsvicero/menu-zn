@@ -439,6 +439,48 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
     runCommand("formatBlock", tagName);
   }
 
+  function setLineHeight(value: string) {
+    const editor = editorRef.current;
+    const selection = window.getSelection();
+
+    if (!editor || !selection || !selection.rangeCount) {
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+
+    if (!editor.contains(range.commonAncestorContainer)) {
+      return;
+    }
+
+    const blocks = Array.from(editor.querySelectorAll("p, h2, h3, h4, h5, h6, blockquote, li")).filter(
+      (block) => selection.containsNode(block, true)
+    );
+
+    if (blocks.length === 0) {
+      let node = range.commonAncestorContainer;
+      if (node.nodeType === Node.TEXT_NODE) {
+        node = node.parentNode as Node;
+      }
+      const closestBlock = (node as Element).closest("p, h2, h3, h4, h5, h6, blockquote, li");
+      if (closestBlock && editor.contains(closestBlock)) {
+        blocks.push(closestBlock);
+      }
+    }
+
+    blocks.forEach((block) => {
+      if (value) {
+        (block as HTMLElement).style.lineHeight = value;
+      } else {
+        (block as HTMLElement).style.lineHeight = "";
+      }
+    });
+
+    if (blocks.length > 0) {
+      syncEditor();
+    }
+  }
+
   function addLink() {
     const url = window.prompt("Cole a URL do link");
 
@@ -626,7 +668,7 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         tabIndex={-1}
         onChange={uploadImage}
       />
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-outline/10 px-1 pb-2">
+      <div className="sticky top-16 md:top-4 z-30 -mt-2 mb-2 flex flex-wrap items-center gap-1.5 border-b border-outline/10 bg-[#faf8f5] px-1 pb-2 pt-2">
         <button type="button" title="Parágrafo" className={buttonClass} onClick={() => setBlock("p")}>
           <Pilcrow size={16} aria-hidden="true" />
         </button>
@@ -646,6 +688,19 @@ export function BlogContentEditor({ name = "content_md", defaultValue = "" }: Bl
         <button type="button" title="Sublinhado" className={buttonClass} onClick={() => runCommand("underline")}>
           <Underline size={16} aria-hidden="true" />
         </button>
+        <span className="mx-1 h-6 w-px bg-outline/15" />
+        <select
+          title="Espaçamento entre linhas"
+          className="h-9 rounded-lg border border-outline/20 bg-white px-2 text-xs font-medium text-on-surface/75 outline-none transition hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/25"
+          onChange={(e) => setLineHeight(e.target.value)}
+        >
+          <option value="">Linha (Padrão)</option>
+          <option value="1">1.0</option>
+          <option value="1.5">1.5</option>
+          <option value="2">2.0</option>
+          <option value="calc(var(--spacing) * 8)">Espaçoso</option>
+        </select>
+        <span className="mx-1 h-6 w-px bg-outline/15" />
         <button type="button" title="Link" className={buttonClass} onClick={addLink}>
           <LinkIcon size={16} aria-hidden="true" />
         </button>
