@@ -437,7 +437,7 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
           </aside> */}
 
           <div>
-            <article className="space-y-6">
+            <article className="space-y-6 blog-article-content">
               {renderContent(post.content_md) ?? (
                 <p className="text-[17px] leading-8 text-on-surface/90 whitespace-pre-line">
                   {post.excerpt ?? "Conteúdo em atualização."}

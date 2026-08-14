@@ -234,12 +234,16 @@ img {
 }
 
 .blog-rich-editor h2,
-.blog-rich-editor h2 * {
+.blog-rich-editor h2 *,
+.blog-article-content h2,
+.blog-article-content h2 * {
   font-size: 30px !important;
 }
 
 .blog-rich-editor h3,
-.blog-rich-editor h3 * {
+.blog-rich-editor h3 *,
+.blog-article-content h3,
+.blog-article-content h3 * {
   color: rgb(148 53 21);
   font-size: 24px !important;
 }
