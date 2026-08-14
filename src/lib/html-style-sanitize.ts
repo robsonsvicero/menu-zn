@@ -63,7 +63,7 @@ function isSafeStyleValue(property: string, value: string) {
   }
 
   if (property === "line-height") {
-    return /^(?:normal|inherit|calc\([^)]+\)|\d+(?:\.\d+)?(?:px|pt|rem|em|%)?)$/i.test(normalized);
+    return /^(?:normal|inherit|calc\(.*\)|\d+(?:\.\d+)?(?:px|pt|rem|em|%)?)$/i.test(normalized);
   }
 
   if (property === "font-style") {

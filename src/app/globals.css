@@ -233,13 +233,15 @@ img {
   line-height: 1.25;
 }
 
-.blog-rich-editor h2 {
-  font-size: 30px;
+.blog-rich-editor h2,
+.blog-rich-editor h2 * {
+  font-size: 30px !important;
 }
 
-.blog-rich-editor h3 {
+.blog-rich-editor h3,
+.blog-rich-editor h3 * {
   color: rgb(148 53 21);
-  font-size: 24px;
+  font-size: 24px !important;
 }
 
 .blog-rich-editor ul,
