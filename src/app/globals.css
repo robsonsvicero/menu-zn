@@ -227,7 +227,6 @@ img {
 
 .blog-rich-editor h2,
 .blog-rich-editor h3 {
-  color: #2f2e2e;
   font-family: var(--font-caslon), Georgia, serif;
   font-weight: 700;
   line-height: 1.25;
@@ -237,6 +236,7 @@ img {
 .blog-rich-editor h2 *,
 .blog-article-content h2,
 .blog-article-content h2 * {
+  color: #2f2e2e !important;
   font-size: 30px !important;
 }
 
@@ -244,7 +244,7 @@ img {
 .blog-rich-editor h3 *,
 .blog-article-content h3,
 .blog-article-content h3 * {
-  color: rgb(148 53 21);
+  color: rgb(148 53 21) !important;
   font-size: 24px !important;
 }
 
