@@ -196,6 +196,7 @@ function renderContent(content: string | null) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw, sanitizeInlineStyles, [rehypeSanitize, markdownSanitizeSchema]]}
+      components={{
         a: ({ href, children, ...props }) => (
           <a {...props} href={href} target="_blank" rel="noreferrer">
             {children}
