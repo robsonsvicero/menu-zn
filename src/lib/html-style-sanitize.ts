@@ -1,5 +1,4 @@
 const allowedStyleProperties = new Set([
-  "background-color",
   "color",
   "font-size",
   "font-style",
@@ -46,7 +45,7 @@ function isSafeStyleValue(property: string, value: string) {
     return false;
   }
 
-  if (property === "color" || property === "background-color") {
+  if (property === "color") {
     return isSafeCssColor(normalized);
   }
 
