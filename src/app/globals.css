@@ -283,16 +283,19 @@ img {
 .blog-rich-editor img {
   cursor: pointer;
   display: block;
-  width: 100% !important;
-  height: 320px !important;
-  max-height: 520px !important;
+  width: 100%;
+  max-width: 806px;
+  height: 450px;
   border-radius: 18px;
   object-fit: cover;
+  object-position: center;
+  margin-inline: auto;
+  background: #f3f1ee;
 }
 
 @media (max-width: 768px) {
   .blog-rich-editor img {
-    height: 220px !important;
+    height: 260px;
   }
 }
 
