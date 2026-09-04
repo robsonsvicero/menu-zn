@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { InstagramIcon } from "@hugeicons/core-free-icons";
 import { ArrowLeft, DollarSign, MapPin, Phone, Star, Globe, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { fetchPublishedEstablishmentBySlug, fetchPublishedEstablishments } from "@/lib/establishments-public";
@@ -255,7 +257,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
                   ) : null}
                   {establishment.instagram_url ? (
                     <a href={establishment.instagram_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-outline/40 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:bg-[#f3efe8]">
-                      <Globe size={14} />
+                      <HugeiconsIcon icon={InstagramIcon} size={14} />
                       Instagram
                     </a>
                   ) : null}
