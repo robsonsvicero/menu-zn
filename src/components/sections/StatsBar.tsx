@@ -22,12 +22,12 @@ export default async function StatsBar() {
   const stats: StatItem[] = [
     {
       icon: <Search size={18} strokeWidth={1.5} />,
-      value: '+28 MIL',
+      value: '+36 MIL',
       label: 'Impressões mensais\nno Google',
     },
     {
       icon: <MousePointerClick size={18} strokeWidth={1.5} />,
-      value: '+300',
+      value: '+400',
       label: 'Cliques qualificados\npor mês',
     },
     {
@@ -37,7 +37,7 @@ export default async function StatsBar() {
     },
     {
       icon: <TrendingUp size={18} strokeWidth={1.5} />,
-      value: '8,6',
+      value: '8,9',
       label: 'Posição média\nno Google',
     },
     {
