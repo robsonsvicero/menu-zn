@@ -85,7 +85,7 @@ export default async function Showcase() {
               {/* Footer */}
               <div className="flex items-center justify-between border-t border-outline/40 pt-4 mt-4">
                 <span className="text-[10px] font-bold tracking-widest text-on-surface uppercase">
-                  GUIA ZN
+                  MENU ZONA NORTE
                 </span>
                 {item.price_range && (
                   <span className="text-primary font-bold text-xs tracking-wider">
