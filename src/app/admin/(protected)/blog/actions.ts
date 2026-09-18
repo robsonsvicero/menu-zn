@@ -113,6 +113,24 @@ async function ensureAdminAccess() {
   return { supabase, user };
 }
 
+export async function saveBlogDraftAction(id: string, contentMd: string) {
+  const { supabase, user } = await ensureAdminAccess();
+  const postId = id.trim();
+
+  if (!postId) {
+    throw new Error("Post inválido para autosave.");
+  }
+
+  const { error } = await supabase
+    .from("blog_posts")
+    .update({ content_md: contentMd.trim() || null, updated_by: user.id })
+    .eq("id", postId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
 export async function createBlogPostAction(formData: FormData) {
   try {
     const { supabase, user } = await ensureAdminAccess();

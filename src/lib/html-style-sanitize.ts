@@ -13,6 +13,7 @@ const allowedStyleProperties = new Set([
   "text-decoration",
   "vertical-align",
   "width",
+    "background-color",
 ]);
 
 const allowedTextAlignValues = new Set(["left", "right", "center", "justify"]);
@@ -45,7 +46,7 @@ function isSafeStyleValue(property: string, value: string) {
     return false;
   }
 
-  if (property === "color") {
+  if (property === "color" || property === "background-color") {
     return isSafeCssColor(normalized);
   }
 

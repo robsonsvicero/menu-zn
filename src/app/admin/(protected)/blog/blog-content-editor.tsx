@@ -1,759 +1,227 @@
 "use client";
 
-import { type ChangeEvent, type ClipboardEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import { TextStyle } from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
+import Highlight from "@tiptap/extension-highlight";
+import TextAlign from "@tiptap/extension-text-align";
+import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
+import Placeholder from "@tiptap/extension-placeholder";
+import Paragraph from "@tiptap/extension-paragraph";
+import { saveBlogDraftAction } from "./actions";
 import {
-  Bold,
-  Heading2,
-  Heading3,
-  Image as ImageIcon,
-  Italic,
-  Link as LinkIcon,
-  List,
-  LoaderCircle,
-  ListOrdered,
-  Pilcrow,
-  Quote,
-  Redo2,
-  Underline,
-  Undo2,
+  AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Code2, Eraser, Highlighter,
+  Image as ImageIcon, Italic, Link as LinkIcon, List, ListOrdered, Palette,
+  Quote, Redo2, Strikethrough, Underline as UnderlineIcon, Undo2,
 } from "lucide-react";
-import { sanitizeStyleAttribute } from "@/lib/html-style-sanitize";
 
 type BlogContentEditorProps = {
   name?: string;
   defaultValue?: string;
+  postId?: string;
 };
 
-const allowedTags = new Set([
-  "A",
-  "B",
-  "BLOCKQUOTE",
-  "BR",
-  "CENTER",
-  "DEL",
-  "DIV",
-  "EM",
-  "H2",
-  "H3",
-  "I",
-  "IMG",
-  "LI",
-  "OL",
-  "P",
-  "S",
-  "SPAN",
-  "STRONG",
-  "SUB",
-  "SUP",
-  "U",
-  "UL",
-]);
+const editorImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      width: { default: null },
+    };
+  },
+});
 
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function formatInlineMarkdown(value: string) {
-  return escapeHtml(value)
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|mailto:[^)\s]+)\)/g, '<a href="$2">$1</a>')
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/__([^_]+)__/g, "<strong>$1</strong>")
-    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
-    .replace(/_([^_]+)_/g, "<em>$1</em>");
-}
+const editorParagraph = Paragraph.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      style: { default: null },
+    };
+  },
+});
 
 function markdownToHtml(value: string) {
-  const blocks = value
+  const escape = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return value
     .replace(/\r\n/g, "\n")
     .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean);
-
-  if (blocks.length === 0) {
-    return "";
-  }
-
-  return blocks
     .map((block) => {
-      if (block.startsWith("### ")) {
-        return `<h3>${formatInlineMarkdown(block.slice(4))}</h3>`;
-      }
-
-      if (block.startsWith("## ")) {
-        return `<h2>${formatInlineMarkdown(block.slice(3))}</h2>`;
-      }
-
-      if (block.startsWith("> ")) {
-        return `<blockquote>${formatInlineMarkdown(block.replace(/^>\s?/gm, ""))}</blockquote>`;
-      }
-
-      const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
+      const lines = block.trim().split("\n").filter(Boolean);
+      if (!lines.length) return "";
+      const heading = lines[0].match(/^(#{1,3})\s+(.+)$/);
+      if (heading) return `<h${heading[1].length}>${escape(heading[2])}</h${heading[1].length}>`;
       if (lines.every((line) => /^[-*]\s+/.test(line))) {
-        return `<ul>${lines
-          .map((line) => `<li>${formatInlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`)
-          .join("")}</ul>`;
+        return `<ul>${lines.map((line) => `<li><p>${escape(line.replace(/^[-*]\s+/, ""))}</p></li>`).join("")}</ul>`;
       }
-
       if (lines.every((line) => /^\d+\.\s+/.test(line))) {
-        return `<ol>${lines
-          .map((line) => `<li>${formatInlineMarkdown(line.replace(/^\d+\.\s+/, ""))}</li>`)
-          .join("")}</ol>`;
+        return `<ol>${lines.map((line) => `<li><p>${escape(line.replace(/^\d+\.\s+/, ""))}</p></li>`).join("")}</ol>`;
       }
-
-      return `<p>${lines.map(formatInlineMarkdown).join("<br>")}</p>`;
+      return `<p>${lines.map(escape).join("<br>")}</p>`;
     })
     .join("");
 }
 
-function sanitizeHtml(value: string) {
-  if (typeof window === "undefined" || !value.trim()) {
-    return value;
-  }
-
-  const template = document.createElement("template");
-  template.innerHTML = value;
-
-  template.content.querySelectorAll("*").forEach((element) => {
-    if (!allowedTags.has(element.tagName)) {
-      element.replaceWith(...Array.from(element.childNodes));
-      return;
-    }
-
-    Array.from(element.attributes).forEach((attribute) => {
-      const name = attribute.name.toLowerCase();
-      const isAllowedLink = element.tagName === "A" && ["href", "target", "rel"].includes(name);
-      const isAllowedImage = element.tagName === "IMG" &&
-        ["src", "alt", "title", "loading"].includes(name);
-
-      const isAllowedStyle = name === "style";
-
-      if (!isAllowedLink && !isAllowedImage && !isAllowedStyle) {
-        element.removeAttribute(attribute.name);
-      }
-    });
-
-    const style = element.getAttribute("style");
-
-    if (style) {
-      const sanitizedStyle = sanitizeStyleAttribute(style);
-
-      if (sanitizedStyle) {
-        element.setAttribute("style", sanitizedStyle);
-      } else {
-        element.removeAttribute("style");
-      }
-    }
-
-    if (element.tagName === "A") {
-      const href = element.getAttribute("href") ?? "";
-      const isSafeHref = /^(https?:\/\/|mailto:)/i.test(href);
-
-      if (!isSafeHref) {
-        element.removeAttribute("href");
-      }
-
-      element.setAttribute("target", "_blank");
-      element.setAttribute("rel", "noreferrer");
-    }
-
-    if (element.tagName === "IMG") {
-      const src = element.getAttribute("src") ?? "";
-
-      if (!/^https?:\/\//i.test(src)) {
-        element.remove();
-        return;
-      }
-
-      element.setAttribute("loading", "lazy");
-      element.setAttribute("alt", element.getAttribute("alt") ?? "");
-    }
-  });
-
-  return template.innerHTML;
-}
-
-function normalizeEditorHtml(value: string) {
-  const sanitized = sanitizeHtml(value);
-
-  if (typeof window === "undefined" || !sanitized.trim()) {
-    return sanitized.trim();
-  }
-
-  const template = document.createElement("template");
-  template.innerHTML = sanitized;
-  const hasMeaningfulElement = template.content.querySelector("img, iframe, video, audio, table, hr");
-  const text = template.content.textContent?.replace(/\u00a0/g, " ").trim() ?? "";
-
-  return text || hasMeaningfulElement ? sanitized : "";
-}
-
-function unwrapElement(element: Element) {
-  element.replaceWith(...Array.from(element.childNodes));
-}
-
-function wrapRootListItems(template: HTMLTemplateElement) {
-  const nodes = Array.from(template.content.childNodes);
-  const wrappedNodes: ChildNode[] = [];
-  let list: HTMLUListElement | null = null;
-
-  nodes.forEach((node) => {
-    if (node.nodeType === Node.ELEMENT_NODE && (node as Element).tagName === "LI") {
-      if (!list) {
-        list = document.createElement("ul");
-        wrappedNodes.push(list);
-      }
-
-      list.appendChild(node);
-      return;
-    }
-
-    list = null;
-    wrappedNodes.push(node);
-  });
-
-  template.content.replaceChildren(...wrappedNodes);
-}
-
-function cleanWordHtml(value: string) {
-  if (typeof window === "undefined" || !value.trim()) {
-    return value;
-  }
-
-  const template = document.createElement("template");
-  template.innerHTML = value
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/<\?xml[\s\S]*?>/gi, "");
-
-  template.content.querySelectorAll("style, script, meta, link, xml").forEach((element) => {
-    element.remove();
-  });
-
-  template.content.querySelectorAll("*").forEach((element) => {
-    const tagName = element.tagName;
-
-    if (tagName === "H1") {
-      const heading = document.createElement("h2");
-      heading.replaceChildren(...Array.from(element.childNodes));
-      heading.setAttribute("style", element.getAttribute("style") ?? "");
-      element.replaceWith(heading);
-      return;
-    }
-
-    if (["H4", "H5", "H6"].includes(tagName)) {
-      const heading = document.createElement("h3");
-      heading.replaceChildren(...Array.from(element.childNodes));
-      heading.setAttribute("style", element.getAttribute("style") ?? "");
-      element.replaceWith(heading);
-      return;
-    }
-
-    if (tagName === "FONT") {
-      const span = document.createElement("span");
-      const styles: string[] = [];
-      const color = element.getAttribute("color");
-      const size = element.getAttribute("size");
-
-      if (color) {
-        styles.push(`color: ${color}`);
-      }
-
-      if (size && /^\d+$/.test(size)) {
-        const sizeMap: Record<string, string> = {
-          "1": "10pt",
-          "2": "12pt",
-          "3": "14pt",
-          "4": "16pt",
-          "5": "18pt",
-          "6": "24pt",
-          "7": "32pt",
-        };
-
-        styles.push(`font-size: ${sizeMap[size] ?? "14pt"}`);
-      }
-
-      span.setAttribute("style", styles.join("; "));
-      span.replaceChildren(...Array.from(element.childNodes));
-      element.replaceWith(span);
-      return;
-    }
-
-    if (tagName === "CENTER") {
-      const div = document.createElement("div");
-      div.setAttribute("style", "text-align: center");
-      div.replaceChildren(...Array.from(element.childNodes));
-      element.replaceWith(div);
-      return;
-    }
-
-    if (tagName === "O:P") {
-      unwrapElement(element);
-      return;
-    }
-
-    const className = element.getAttribute("class") ?? "";
-    const style = element.getAttribute("style") ?? "";
-    const looksLikeWordList = /\bMsoListParagraph\b/i.test(className) || /mso-list:/i.test(style);
-
-    if (looksLikeWordList && tagName === "P") {
-      const item = document.createElement("li");
-      item.innerHTML = element.innerHTML.replace(/^(\s|&nbsp;|[\u00b7\u2022\-o]|\d+[.)])+/, "");
-      element.replaceWith(item);
-    }
-  });
-
-  const nodes = Array.from(template.content.childNodes);
-  const wrappedNodes = nodes.map((node) => {
-    if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-      const paragraph = document.createElement("p");
-      paragraph.textContent = node.textContent;
-      return paragraph;
-    }
-
-    return node;
-  });
-
-  template.content.replaceChildren(...wrappedNodes);
-  wrapRootListItems(template);
-  return sanitizeHtml(template.innerHTML);
-}
-
-function prepareInitialHtml(value: string) {
+function initialContent(value: string) {
   const trimmed = value.trim();
-
-  if (!trimmed) {
-    return "";
-  }
-
-  const looksLikeHtml = /<\/?[a-z][\s\S]*>/i.test(trimmed);
-  return sanitizeHtml(looksLikeHtml ? trimmed : markdownToHtml(trimmed));
+  return !trimmed ? "" : /<\/?[a-z][\s\S]*>/i.test(trimmed) ? trimmed : markdownToHtml(trimmed);
 }
 
-function insertHtmlAtSelection(editor: HTMLElement, value: string) {
-  editor.focus();
-
-  const selection = window.getSelection();
-  const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
-
-  if (!selection || !range || !editor.contains(range.commonAncestorContainer)) {
-    editor.insertAdjacentHTML("beforeend", value);
-    return;
-  }
-
-  range.deleteContents();
-
-  const template = document.createElement("template");
-  template.innerHTML = value;
-  const fragment = template.content;
-  const lastNode = fragment.lastChild;
-
-  range.insertNode(fragment);
-
-  if (lastNode) {
-    range.setStartAfter(lastNode);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
-}
-
-export function BlogContentEditor({ name = "content_md", defaultValue = "" }: BlogContentEditorProps) {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const initialHtml = useMemo(() => prepareInitialHtml(defaultValue), [defaultValue]);
-  const [html, setHtml] = useState(initialHtml);
+export function BlogContentEditor({ name = "content_md", defaultValue = "", postId }: BlogContentEditorProps) {
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const imageSelectionRef = useRef<Range | null>(null);
-  const selectedImageRef = useRef<HTMLImageElement | null>(null);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [html, setHtml] = useState(() => initialContent(defaultValue));
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [imageError, setImageError] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function setSelectedImage(image: HTMLImageElement | null) {
-    const previous = selectedImageRef.current;
-    if (previous && previous !== image) {
-      previous.removeAttribute("data-editor-selected");
-    }
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [
+      StarterKit.configure({ heading: { levels: [1, 2, 3] }, paragraph: false }),
+      editorParagraph,
+      Underline,
+      TextStyle,
+      Color,
+      Highlight.configure({ multicolor: true }),
+      TextAlign.configure({ types: ["heading", "paragraph", "blockquote", "listItem"] }),
+      Link.configure({ openOnClick: false, autolink: true, linkOnPaste: true }),
+      editorImage.configure({ allowBase64: false }),
+      Placeholder.configure({ placeholder: "Escreva o artigo aqui..." }),
+    ],
+    content: initialContent(defaultValue),
+    editorProps: {
+      attributes: {
+        class: "blog-rich-editor min-h-80 rounded-xl px-4 py-4 text-sm text-on-surface outline-none",
+        role: "textbox",
+        "aria-multiline": "true",
+        "aria-label": "Conteúdo do artigo",
+      },
+      handleDoubleClick: (_view, _pos, event) => {
+        const target = event.target;
+        if (target instanceof HTMLAnchorElement) {
+          const nextUrl = window.prompt("Editar URL do link", target.href);
+          if (nextUrl) editor?.chain().focus().setLink({ href: nextUrl }).run();
+          return true;
+        }
+        return false;
+      },
+    },
+    onUpdate: ({ editor: nextEditor }) => {
+      const nextHtml = nextEditor.getHTML();
+      setHtml(nextHtml === "<p></p>" ? "" : nextHtml);
+      setSaveState("idle");
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        void autosave(nextHtml === "<p></p>" ? "" : nextHtml);
+      }, 1500);
+    },
+  });
 
-    if (image) {
-      image.setAttribute("data-editor-selected", "true");
-      selectedImageRef.current = image;
+  async function autosave(value: string) {
+    const key = `menu-zn-blog-draft:${postId ?? "new"}`;
+    if (!postId) {
+      localStorage.setItem(key, value);
+      setSaveState("saved");
       return;
     }
-
-    selectedImageRef.current = null;
+    setSaveState("saving");
+    try {
+      await saveBlogDraftAction(postId, value);
+      setSaveState("saved");
+    } catch {
+      setSaveState("error");
+    }
   }
+
+  useEffect(() => () => { if (saveTimer.current) clearTimeout(saveTimer.current); }, []);
 
   useEffect(() => {
-    const editor = editorRef.current;
+    if (!editor || postId) return;
+    const draft = localStorage.getItem("menu-zn-blog-draft:new");
+    if (draft && !defaultValue.trim()) {
+      editor.commands.setContent(draft);
+    }
+  }, [editor, postId, defaultValue]);
 
-    if (!editor) {
+  async function uploadImage(file: File) {
+    if (!file.type.startsWith("image/") || file.size > 4 * 1024 * 1024) {
+      setImageError("Use uma imagem válida de até 4 MB.");
       return;
     }
-
-    editor.innerHTML = initialHtml;
-    setSelectedImage(null);
-    setHtml(normalizeEditorHtml(initialHtml));
-  }, [initialHtml]);
-
-  function syncEditor() {
-    const editor = editorRef.current;
-    const nextHtml = normalizeEditorHtml(editor?.innerHTML ?? "");
-
-    if (editor && !nextHtml && editor.innerHTML) {
-      editor.replaceChildren();
+    setIsUploadingImage(true);
+    setImageError("");
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const response = await fetch("/api/admin/blog/images", { method: "POST", body: formData });
+      const result = await response.json() as { url?: string; error?: string };
+      if (!response.ok || !result.url) throw new Error(result.error ?? "Não foi possível enviar a imagem.");
+      editor?.chain().focus().setImage({ src: result.url, alt: file.name.replace(/\.[^/.]+$/, "") }).run();
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : "Não foi possível enviar a imagem.");
+    } finally {
+      setIsUploadingImage(false);
     }
-
-    setHtml(nextHtml);
   }
 
-  function handlePaste(event: ClipboardEvent<HTMLDivElement>) {
-    const editor = editorRef.current;
-
-    if (!editor) {
-      return;
-    }
-
-    const clipboardHtml = event.clipboardData.getData("text/html");
-    const clipboardText = event.clipboardData.getData("text/plain");
-    const pastedHtml = clipboardHtml ? cleanWordHtml(clipboardHtml) : markdownToHtml(clipboardText);
-
-    if (!pastedHtml.trim()) {
-      return;
-    }
-
-    event.preventDefault();
-    insertHtmlAtSelection(editor, pastedHtml);
-    syncEditor();
-  }
-
-  function runCommand(command: string, value?: string) {
-    editorRef.current?.focus();
-    document.execCommand(command, false, value);
-    syncEditor();
-  }
-
-  function setBlock(tagName: "p" | "h2" | "h3" | "blockquote") {
-    runCommand("formatBlock", tagName);
-  }
-
-  function setLineHeight(value: string) {
-    const editor = editorRef.current;
-    const selection = window.getSelection();
-
-    if (!editor || !selection || !selection.rangeCount) {
-      return;
-    }
-
-    const range = selection.getRangeAt(0);
-
-    if (!editor.contains(range.commonAncestorContainer)) {
-      return;
-    }
-
-    const blocks = Array.from(editor.querySelectorAll("p, h2, h3, h4, h5, h6, blockquote, li")).filter(
-      (block) => selection.containsNode(block, true)
-    );
-
-    if (blocks.length === 0) {
-      let node = range.commonAncestorContainer;
-      if (node.nodeType === Node.TEXT_NODE) {
-        node = node.parentNode as Node;
-      }
-      const closestBlock = (node as Element).closest("p, h2, h3, h4, h5, h6, blockquote, li");
-      if (closestBlock && editor.contains(closestBlock)) {
-        blocks.push(closestBlock);
-      }
-    }
-
-    blocks.forEach((block) => {
-      if (value) {
-        (block as HTMLElement).style.lineHeight = value;
-      } else {
-        (block as HTMLElement).style.lineHeight = "";
-      }
-    });
-
-    if (blocks.length > 0) {
-      syncEditor();
-    }
+  function addImageByUrl() {
+    const url = window.prompt("Cole a URL da imagem");
+    if (url) editor?.chain().focus().setImage({ src: url }).run();
   }
 
   function addLink() {
     const url = window.prompt("Cole a URL do link");
-
-    if (!url) {
-      return;
-    }
-
-    const normalizedUrl = /^(https?:\/\/|mailto:)/i.test(url) ? url : `https://${url}`;
-    runCommand("createLink", normalizedUrl);
+    if (url) editor?.chain().focus().extendMarkRange("link").setLink({ href: /^https?:\/\//i.test(url) ? url : `https://${url}` }).run();
   }
 
-  function rememberImagePosition() {
-    const editor = editorRef.current;
-    const selection = window.getSelection();
-    const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
-
-    imageSelectionRef.current = range && editor?.contains(range.commonAncestorContainer)
-      ? range.cloneRange()
-      : null;
+  function updateBlockStyle(style: Record<string, string>) {
+    editor?.chain().focus().updateAttributes("paragraph", { style: Object.entries(style).map(([key, value]) => `${key}: ${value}`).join("; ") }).run();
   }
 
-  function getSelectedImage() {
-    const editor = editorRef.current;
-    const selection = window.getSelection();
-
-    if (!editor || !selection) {
-      return null;
-    }
-
-    const selectedImage = selectedImageRef.current;
-    if (selectedImage && editor.contains(selectedImage)) {
-      return selectedImage;
-    }
-
-    const findImage = (node: Node | null): HTMLImageElement | null => {
-      if (!node) {
-        return null;
-      }
-
-      if (node instanceof HTMLImageElement) {
-        return node;
-      }
-
-      if (node instanceof Element) {
-        if (node.tagName === "IMG") {
-          return node as HTMLImageElement;
-        }
-
-        return node.closest("img");
-      }
-
-      return node.parentElement?.closest("img") ?? null;
-    };
-
-    const image =
-      findImage(selection.anchorNode) ??
-      findImage(selection.focusNode) ??
-      (selection.rangeCount ? findImage(selection.getRangeAt(0).commonAncestorContainer) : null);
-
-    const finalImage = image && editor.contains(image) ? image : null;
-
-    setSelectedImage(finalImage);
-    return finalImage;
-  }
-
-  function handleEditorMouseDown(event: MouseEvent<HTMLDivElement>) {
-    const target = event.target;
-
-    if (target instanceof HTMLImageElement) {
-      setSelectedImage(target);
-      setImageError("");
-      return;
-    }
-
-    setSelectedImage(null);
-  }
-
-  function applyImageStyles(updateStyles: (image: HTMLImageElement) => void) {
-    const image = getSelectedImage();
-
-    if (!image) {
-      setImageError("Selecione uma imagem no editor para ajustar tamanho/alinhamento.");
-      return;
-    }
-
-    updateStyles(image);
-
-    const sanitizedStyle = sanitizeStyleAttribute(image.getAttribute("style") ?? "");
-    if (sanitizedStyle) {
-      image.setAttribute("style", sanitizedStyle);
-    } else {
-      image.removeAttribute("style");
-    }
-
-    setImageError("");
-    syncEditor();
-  }
-
-  function deleteSelectedImage() {
-    const image = getSelectedImage();
-
-    if (!image) {
-      setImageError("Selecione uma imagem no editor para excluir.");
-      return;
-    }
-
-    const paragraph = image.parentElement?.tagName === "P" ? image.parentElement : null;
-    image.remove();
-
-    if (paragraph && paragraph.textContent?.trim() === "" && paragraph.querySelector("img") === null) {
-      paragraph.remove();
-    }
-
-    setSelectedImage(null);
-    setImageError("");
-    syncEditor();
-  }
-
-  async function uploadImage(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setImageError("Selecione um arquivo de imagem v?lido.");
-      return;
-    }
-
-    if (file.size > 4 * 1024 * 1024) {
-      setImageError("A imagem deve ter no m?ximo 4 MB.");
-      return;
-    }
-
-    setImageError("");
-    setIsUploadingImage(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const response = await fetch("/api/admin/blog/images", { method: "POST", body: formData });
-      const result = (await response.json()) as { url?: string; error?: string };
-
-      if (!response.ok || !result.url) {
-        throw new Error(result.error ?? "N?o foi poss?vel enviar a imagem.");
-      }
-
-      const selection = window.getSelection();
-      const savedRange = imageSelectionRef.current;
-      if (selection && savedRange) {
-        selection.removeAllRanges();
-        selection.addRange(savedRange);
-      }
-
-      const alt = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ");
-      const editor = editorRef.current;
-      if (editor) {
-        insertHtmlAtSelection(editor, `<img src="${escapeHtml(result.url)}" alt="${escapeHtml(alt)}" loading="lazy"><p><br></p>`);
-        syncEditor();
-        const insertedImages = editor.querySelectorAll("img");
-        const insertedImage = insertedImages.item(insertedImages.length - 1);
-        setSelectedImage(insertedImage instanceof HTMLImageElement ? insertedImage : null);
-      }
-    } catch (error) {
-      setImageError(error instanceof Error ? error.message : "N?o foi poss?vel enviar a imagem.");
-    } finally {
-      setIsUploadingImage(false);
-      imageSelectionRef.current = null;
-    }
-  }
-  const buttonClass =
-    "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-outline/20 bg-white text-on-surface/75 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
-  const imageActionButtonClass =
-    "inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-outline/20 bg-white px-2 text-xs font-semibold text-on-surface/75 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
+  const buttonClass = "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-outline/20 bg-white text-on-surface/75 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 disabled:opacity-40";
+  const selectClass = "h-9 rounded-lg border border-outline/20 bg-white px-2 text-xs font-medium text-on-surface/75 outline-none focus-visible:ring-2 focus-visible:ring-primary/25";
+  const iconProps = { size: 16, "aria-hidden": true } as const;
 
   return (
-    <div className="rounded-2xl border border-outline/20 bg-[#faf8f5] p-2">
+    <div className="rounded-2xl border border-outline/20 bg-[#faf8f5] p-2" onSubmitCapture={() => { if (!postId) localStorage.removeItem("menu-zn-blog-draft:new"); }}>
       <input type="hidden" name={name} value={html} />
-      <input
-        ref={imageInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-        className="sr-only"
-        tabIndex={-1}
-        onChange={uploadImage}
-      />
-      <div className="sticky top-16 md:top-4 z-30 -mt-2 mb-2 flex flex-wrap items-center gap-1.5 border-b border-outline/10 bg-[#faf8f5] px-1 pb-2 pt-2">
-        <button type="button" title="Parágrafo" className={buttonClass} onClick={() => setBlock("p")}>
-          <Pilcrow size={16} aria-hidden="true" />
-        </button>
-        <button type="button" title="Título médio" className={buttonClass} onClick={() => setBlock("h2")}>
-          <Heading2 size={16} aria-hidden="true" />
-        </button>
-        <button type="button" title="Título pequeno" className={buttonClass} onClick={() => setBlock("h3")}>
-          <Heading3 size={16} aria-hidden="true" />
-        </button>
-        <span className="mx-1 h-6 w-px bg-outline/15" />
-        <button type="button" title="Negrito" className={buttonClass} onClick={() => runCommand("bold")}>
-          <Bold size={16} aria-hidden="true" />
-        </button>
-        <button type="button" title="Itálico" className={buttonClass} onClick={() => runCommand("italic")}>
-          <Italic size={16} aria-hidden="true" />
-        </button>
-        <button type="button" title="Sublinhado" className={buttonClass} onClick={() => runCommand("underline")}>
-          <Underline size={16} aria-hidden="true" />
-        </button>
-        <span className="mx-1 h-6 w-px bg-outline/15" />
-        <select
-          title="Espaçamento entre linhas"
-          className="h-9 rounded-lg border border-outline/20 bg-white px-2 text-xs font-medium text-on-surface/75 outline-none transition hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/25"
-          onChange={(e) => setLineHeight(e.target.value)}
-        >
-          <option value="">Linha (Padrão)</option>
-          <option value="1">1.0</option>
-          <option value="1.5">1.5</option>
-          <option value="2">2.0</option>
-          <option value="calc(var(--spacing) * 8)">Espaçoso</option>
+      <input ref={imageInputRef} type="file" accept="image/*" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void uploadImage(file); }} />
+      <div className="sticky top-16 z-30 -mt-2 mb-2 flex flex-wrap items-center gap-1.5 border-b border-outline/10 bg-[#faf8f5] px-1 pb-2 pt-2" role="toolbar" aria-label="Formatação do texto">
+        <select className={selectClass} aria-label="Estilo do bloco" defaultValue="p" onChange={(event) => { const level = event.target.value; if (level === "p") editor?.chain().focus().setParagraph().run(); else editor?.chain().focus().toggleHeading({ level: Number(level) as 1 | 2 | 3 }).run(); }}>
+          <option value="p">Parágrafo</option><option value="1">Título 1</option><option value="2">Título 2</option><option value="3">Título 3</option>
         </select>
+        <button type="button" title="Negrito (Ctrl+B)" aria-label="Negrito" className={buttonClass} onClick={() => editor?.chain().focus().toggleBold().run()}><Bold {...iconProps} /></button>
+        <button type="button" title="Itálico (Ctrl+I)" aria-label="Itálico" className={buttonClass} onClick={() => editor?.chain().focus().toggleItalic().run()}><Italic {...iconProps} /></button>
+        <button type="button" title="Sublinhado (Ctrl+U)" aria-label="Sublinhado" className={buttonClass} onClick={() => editor?.chain().focus().toggleUnderline().run()}><UnderlineIcon {...iconProps} /></button>
+        <button type="button" title="Tachado" aria-label="Tachado" className={buttonClass} onClick={() => editor?.chain().focus().toggleStrike().run()}><Strikethrough {...iconProps} /></button>
+        <label title="Cor do texto" className={`${buttonClass} cursor-pointer`}><Palette {...iconProps} /><input type="color" className="sr-only" defaultValue="#943515" onChange={(event) => editor?.chain().focus().setColor(event.target.value).run()} /></label>
+        <label title="Destaque" className={`${buttonClass} cursor-pointer`}><Highlighter {...iconProps} /><input type="color" className="sr-only" defaultValue="#ffe08a" onChange={(event) => editor?.chain().focus().toggleHighlight({ color: event.target.value }).run()} /></label>
         <span className="mx-1 h-6 w-px bg-outline/15" />
-        <button type="button" title="Link" className={buttonClass} onClick={addLink}>
-          <LinkIcon size={16} aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          title="Enviar e inserir imagem"
-          aria-label="Enviar e inserir imagem"
-          className={buttonClass}
-          disabled={isUploadingImage}
-          onMouseDown={rememberImagePosition}
-          onClick={() => imageInputRef.current?.click()}
-        >
-          {isUploadingImage ? <LoaderCircle size={16} className="animate-spin" aria-hidden="true" /> : <ImageIcon size={16} aria-hidden="true" />}
-        </button>
+        <button type="button" title="Alinhar à esquerda" aria-label="Alinhar à esquerda" className={buttonClass} onClick={() => editor?.chain().focus().setTextAlign("left").run()}><AlignLeft {...iconProps} /></button>
+        <button type="button" title="Centralizar" aria-label="Centralizar" className={buttonClass} onClick={() => editor?.chain().focus().setTextAlign("center").run()}><AlignCenter {...iconProps} /></button>
+        <button type="button" title="Alinhar à direita" aria-label="Alinhar à direita" className={buttonClass} onClick={() => editor?.chain().focus().setTextAlign("right").run()}><AlignRight {...iconProps} /></button>
+        <button type="button" title="Justificar" aria-label="Justificar" className={buttonClass} onClick={() => editor?.chain().focus().setTextAlign("justify").run()}><AlignJustify {...iconProps} /></button>
+        <select className={selectClass} aria-label="Espaçamento" defaultValue="1.8" onChange={(event) => updateBlockStyle({ "line-height": event.target.value })}><option value="1.4">Linha 1.4</option><option value="1.8">Linha 1.8</option><option value="2">Linha 2.0</option></select>
+        <select className={selectClass} aria-label="Recuo" defaultValue="0" onChange={(event) => updateBlockStyle({ "margin-left": `${event.target.value}rem` })}><option value="0">Sem recuo</option><option value="2">Recuo 1</option><option value="4">Recuo 2</option><option value="6">Recuo 3</option></select>
         <span className="mx-1 h-6 w-px bg-outline/15" />
-        <button type="button" title="Lista" className={buttonClass} onClick={() => runCommand("insertUnorderedList")}>
-          <List size={16} aria-hidden="true" />
-        </button>
-        <button type="button" title="Lista numerada" className={buttonClass} onClick={() => runCommand("insertOrderedList")}>
-          <ListOrdered size={16} aria-hidden="true" />
-        </button>
-        <button type="button" title="Citação" className={buttonClass} onClick={() => setBlock("blockquote")}>
-          <Quote size={16} aria-hidden="true" />
-        </button>
+        <button type="button" title="Lista com marcadores" aria-label="Lista com marcadores" className={buttonClass} onClick={() => editor?.chain().focus().toggleBulletList().run()}><List {...iconProps} /></button>
+        <button type="button" title="Lista numerada" aria-label="Lista numerada" className={buttonClass} onClick={() => editor?.chain().focus().toggleOrderedList().run()}><ListOrdered {...iconProps} /></button>
+        <button type="button" title="Citação" aria-label="Citação" className={buttonClass} onClick={() => editor?.chain().focus().toggleBlockquote().run()}><Quote {...iconProps} /></button>
+        <button type="button" title="Código" aria-label="Código" className={buttonClass} onClick={() => editor?.chain().focus().toggleCode().run()}><Code2 {...iconProps} /></button>
+        <button type="button" title="Link" aria-label="Link" className={buttonClass} onClick={addLink}><LinkIcon {...iconProps} /></button>
+        <button type="button" title="Imagem por URL" aria-label="Imagem por URL" className={buttonClass} onClick={addImageByUrl}><LinkIcon {...iconProps} /></button>
+        <button type="button" title="Enviar imagem" aria-label="Enviar imagem" className={buttonClass} disabled={isUploadingImage} onClick={() => imageInputRef.current?.click()}><ImageIcon {...iconProps} /></button>
+        <select className={selectClass} aria-label="Largura da imagem" defaultValue="" onChange={(event) => { if (event.target.value) editor?.chain().focus().updateAttributes("image", { width: event.target.value }).run(); }}><option value="">Imagem</option><option value="100%">100%</option><option value="75%">75%</option><option value="50%">50%</option></select>
+        <button type="button" title="Limpar formatação" aria-label="Limpar formatação" className={buttonClass} onClick={() => editor?.chain().focus().clearNodes().unsetAllMarks().run()}><Eraser {...iconProps} /></button>
         <span className="mx-1 h-6 w-px bg-outline/15" />
-        <button type="button" title="Desfazer" className={buttonClass} onClick={() => runCommand("undo")}>
-          <Undo2 size={16} aria-hidden="true" />
-        </button>
-        <button type="button" title="Refazer" className={buttonClass} onClick={() => runCommand("redo")}>
-          <Redo2 size={16} aria-hidden="true" />
-        </button>
-        <span className="mx-1 h-6 w-px bg-outline/15" />
-        <span className="px-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-on-surface/45">Imagem</span>
-        <button type="button" title="Deletar imagem" className={imageActionButtonClass} onClick={deleteSelectedImage}>
-          Del
-        </button>
+        <button type="button" title="Desfazer" aria-label="Desfazer" className={buttonClass} onClick={() => editor?.chain().focus().undo().run()}><Undo2 {...iconProps} /></button>
+        <button type="button" title="Refazer" aria-label="Refazer" className={buttonClass} onClick={() => editor?.chain().focus().redo().run()}><Redo2 {...iconProps} /></button>
       </div>
-
-      <p className={`px-2 pt-2 text-xs ${imageError ? "text-red-700" : "text-on-surface/55"}`} aria-live="polite">
-        {imageError || (isUploadingImage ? "Enviando imagem..." : "Imagens: JPG, PNG, WebP, GIF ou AVIF, at? 4 MB. Todas as imagens do artigo usam tamanho padronizado.")}
-      </p>
-
-      <div
-        ref={editorRef}
-        contentEditable
-        suppressContentEditableWarning
-        className="blog-rich-editor min-h-80 rounded-xl px-4 py-4 text-sm text-on-surface outline-none"
-        data-placeholder="Escreva o artigo aqui..."
-        onInput={syncEditor}
-        onBlur={syncEditor}
-        onPaste={handlePaste}
-        onMouseDown={handleEditorMouseDown}
-      />
+      <p className={`px-2 pt-2 text-xs ${imageError ? "text-red-700" : "text-on-surface/55"}`} aria-live="polite">{imageError || (isUploadingImage ? "Enviando imagem..." : saveState === "saving" ? "Salvando rascunho..." : saveState === "saved" ? "Rascunho salvo" : saveState === "error" ? "Não foi possível salvar o rascunho" : "Duplo clique em um link para editá-lo rapidamente.")}</p>
+      <EditorContent editor={editor} />
     </div>
   );
 }

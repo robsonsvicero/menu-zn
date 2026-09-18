@@ -232,6 +232,25 @@ img {
   line-height: 1.25;
 }
 
+.blog-rich-editor h1 {
+  font-family: var(--font-caslon), Georgia, serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.blog-rich-editor mark {
+  border-radius: 0.2rem;
+  padding: 0 0.1em;
+}
+
+.blog-rich-editor img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
 .blog-rich-editor h2,
 .blog-rich-editor h2 *,
 .blog-article-content h2,

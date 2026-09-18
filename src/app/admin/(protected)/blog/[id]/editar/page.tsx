@@ -172,7 +172,7 @@ export default async function EditarBlogPostPage({
 
           <div>
             <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Conteúdo do artigo</label>
-            <BlogContentEditor defaultValue={blogPost.content_md ?? ""} />
+            <BlogContentEditor postId={blogPost.id} defaultValue={blogPost.content_md ?? ""} />
           </div>
         </div>
 

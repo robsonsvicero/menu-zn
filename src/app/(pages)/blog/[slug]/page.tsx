@@ -152,7 +152,7 @@ function getInstagramHandle(value: string | null | undefined) {
 
 const markdownSanitizeSchema = {
   ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames ?? []), "span", "u"],
+  tagNames: [...(defaultSchema.tagNames ?? []), "mark", "span", "u"],
   attributes: {
     ...defaultSchema.attributes,
     "*": [...(defaultSchema.attributes?.["*"] ?? []), "style"],
