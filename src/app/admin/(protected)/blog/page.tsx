@@ -26,6 +26,16 @@ function isScheduled(post: Pick<BlogPostRow, "status" | "published_at">) {
   return post.status === "published" && Boolean(post.published_at) && new Date(post.published_at!).getTime() > Date.now();
 }
 
+function getStatusLabel(post: BlogPostRow, scheduled: boolean) {
+  if (scheduled) return "AGENDADO";
+
+  return {
+    published: "PUBLICADO",
+    draft: "RASCUNHO",
+    archived: "ARQUIVADO",
+  }[post.status];
+}
+
 export default async function AdminBlogPage({
   searchParams,
 }: {
@@ -128,7 +138,7 @@ export default async function AdminBlogPage({
                 </td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-background px-2.5 py-1 text-xs uppercase tracking-wide">
-                    {scheduled ? "agendado" : post.status}
+                    {getStatusLabel(post, scheduled)}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-on-surface/70">

@@ -24,6 +24,16 @@ function isScheduled(post: Pick<BlogPostRow, "status" | "published_at">) {
   return post.status === "published" && Boolean(post.published_at) && new Date(post.published_at!).getTime() > Date.now();
 }
 
+function getStatusLabel(post: BlogPostRow, scheduled: boolean) {
+  if (scheduled) return "AGENDADO";
+
+  return {
+    published: "PUBLICADO",
+    draft: "RASCUNHO",
+    archived: "ARQUIVADO",
+  }[post.status];
+}
+
 export default async function NovoBlogPostPage({
   searchParams,
 }: {
@@ -196,16 +206,15 @@ export default async function NovoBlogPostPage({
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                {post.status === "published" && (
-                  <span className="px-3 py-1 bg-[#e8f8ec] text-[#2c9f45] rounded-full text-[10px] font-bold uppercase tracking-wider mr-2">
-                    {scheduled ? "Agendado" : "Publicado"}
-                  </span>
-                )}
-                {post.status === "draft" && (
-                  <span className="px-3 py-1 bg-[#f8f0e8] text-[#9f6a2c] rounded-full text-[10px] font-bold uppercase tracking-wider mr-2">
-                    Rascunho
-                  </span>
-                )}
+                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mr-2 ${
+                  scheduled || post.status === "published"
+                    ? "bg-[#e8f8ec] text-[#2c9f45]"
+                    : post.status === "draft"
+                      ? "bg-[#f8f0e8] text-[#9f6a2c]"
+                      : "bg-[#f0f0f0] text-on-surface/60"
+                }`}>
+                  {getStatusLabel(post, scheduled)}
+                </span>
                 
                 <Link href={`/admin/blog/${post.id}/editar`} className="rounded-full border border-outline/30 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-on-surface hover:bg-[#faf8f5] transition">
                   Editar
