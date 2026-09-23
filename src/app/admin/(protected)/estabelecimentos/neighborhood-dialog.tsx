@@ -27,8 +27,7 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleCreate = async () => {
     setError(null);
 
     const name = nameRef.current?.value.trim();
@@ -70,7 +69,7 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
         <div className="p-6">
           <h3 className="text-lg font-serif mb-4">Adicionar novo bairro</h3>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
             <div>
               <label className="block text-sm mb-1">Nome do bairro *</label>
               <input
@@ -78,6 +77,12 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
                 name="neighborhood_name"
                 type="text"
                 autoFocus
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    void handleCreate();
+                  }
+                }}
                 className="w-full rounded-xl border border-outline px-3 py-2 text-sm"
                 placeholder="ex: Centro, Zona Sul..."
               />
@@ -91,7 +96,8 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
 
             <div className="flex gap-3 pt-2">
               <button
-                type="submit"
+                type="button"
+                onClick={() => void handleCreate()}
                 disabled={isLoading}
                 className="flex-1 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
               >
@@ -106,7 +112,7 @@ export function NeighborhoodDialog({ onNeighborhoodAdded }: NeighborhoodDialogPr
                 Cancelar
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </dialog>
     </>
