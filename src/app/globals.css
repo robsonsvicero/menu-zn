@@ -254,13 +254,6 @@ img {
   padding: 0 0.1em;
 }
 
-.blog-rich-editor img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  cursor: pointer;
-}
-
 .blog-rich-editor h2,
 .blog-rich-editor h2 *,
 .blog-article-content h2,
@@ -312,9 +305,8 @@ img {
 .blog-rich-editor img {
   cursor: pointer;
   display: block;
-  width: 100%;
-  max-width: 806px;
-  height: 450px;
+  max-width: 100%;
+  height: auto;
   border-radius: 18px;
   object-fit: cover;
   object-position: center;
@@ -324,7 +316,7 @@ img {
 
 @media (max-width: 768px) {
   .blog-rich-editor img {
-    height: 260px;
+    width: 100%;
   }
 }
 
