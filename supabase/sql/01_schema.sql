@@ -141,6 +141,7 @@ create table if not exists public.blog_posts (
   excerpt text,
   content_md text,
   cover_image_url text,
+  tags text[] not null default '{}',
   category_id uuid references public.blog_categories(id),
   author_id uuid references public.authors(id),
   status text not null default 'draft' check (status in ('draft', 'published', 'archived')),

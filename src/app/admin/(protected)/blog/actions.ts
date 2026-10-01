@@ -18,6 +18,18 @@ function slugify(input: string) {
     .replace(/-+/g, "-");
 }
 
+function parseBlogTags(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") return [];
+
+  const tags = new Map<string, string>();
+  for (const rawTag of value.split(",")) {
+    const tag = rawTag.trim();
+    if (tag) tags.set(tag.toLocaleLowerCase(), tag);
+  }
+
+  return [...tags.values()];
+}
+
 function sanitizeFileName(input: string) {
   return slugify(input.replace(/\.[^/.]+$/, "")) || "arquivo";
 }
@@ -139,6 +151,7 @@ export async function createBlogPostAction(formData: FormData) {
     const slugInput = String(formData.get("slug") ?? "").trim();
     const excerpt = String(formData.get("excerpt") ?? "").trim();
     const contentMd = String(formData.get("content_md") ?? "").trim();
+    const tags = parseBlogTags(formData.get("tags"));
     const imageFile = formData.get("image_file");
     const categoryId = String(formData.get("category_id") ?? "").trim() || null;
     const authorId = String(formData.get("author_id") ?? "").trim();
@@ -166,6 +179,7 @@ export async function createBlogPostAction(formData: FormData) {
       slug,
       excerpt: excerpt || null,
       content_md: contentMd || null,
+      tags,
       cover_image_url: coverImageUrl,
       category_id: categoryId || null,
       status: shouldPublish ? "published" : "draft",
@@ -229,6 +243,7 @@ export async function updateBlogPostAction(formData: FormData) {
     const slugInput = String(formData.get("slug") ?? "").trim();
     const excerpt = String(formData.get("excerpt") ?? "").trim();
     const contentMd = String(formData.get("content_md") ?? "").trim();
+    const tags = parseBlogTags(formData.get("tags"));
     const imageFile = formData.get("image_file");
     const currentCoverImageUrl = String(formData.get("current_cover_image_url") ?? "").trim();
     const categoryId = String(formData.get("category_id") ?? "").trim() || null;
@@ -259,6 +274,7 @@ export async function updateBlogPostAction(formData: FormData) {
         slug,
         excerpt: excerpt || null,
         content_md: contentMd || null,
+        tags,
         cover_image_url: coverImageUrl,
         category_id: categoryId || null,
         status: shouldPublish ? "published" : "draft",

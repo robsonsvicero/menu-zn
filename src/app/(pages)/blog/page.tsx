@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Eye, Search } from "lucide-react";
+import { ArrowRight, ChevronDown, Eye, Search } from "lucide-react";
 import type { Metadata } from "next";
 import { formatViewCount } from "@/lib/blog-format";
-import { fetchBlogCategoryOptions, fetchPublishedBlogPosts, type BlogCategoryRelation } from "@/lib/blog-public";
+import { fetchBlogCategoryOptions, fetchPublishedBlogPosts, fetchPublishedBlogTags, type BlogCategoryRelation } from "@/lib/blog-public";
 
 export const metadata: Metadata = {
   title: "Blog | Menu Zona Norte — Gastronomia e Guias da Zona Norte SP",
@@ -36,6 +36,7 @@ export const dynamic = "force-dynamic";
 type SearchParams = {
   q?: string;
   category?: string;
+  tag?: string;
   sort?: string;
 };
 
@@ -77,11 +78,13 @@ export default async function BlogPage({
   const params = await searchParams;
   const query = (params.q ?? "").trim();
   const category = (params.category ?? "").trim();
+  const tag = (params.tag ?? "").trim();
   const sort = params.sort === "oldest" ? "oldest" : "recent";
 
-  const [posts, categories] = await Promise.all([
-    fetchPublishedBlogPosts({ search: query, category, limit: 40 }),
+  const [posts, categories, tags] = await Promise.all([
+    fetchPublishedBlogPosts({ search: query, category, tag, limit: 40 }),
     fetchBlogCategoryOptions(),
+    fetchPublishedBlogTags(),
   ]);
 
   const orderedPosts = sort === "oldest" ? [...posts].reverse() : posts;
@@ -129,6 +132,8 @@ export default async function BlogPage({
               />
             </label>
 
+            {tag && <input type="hidden" name="tag" value={tag} />}
+
             <select
               name="category"
               defaultValue={category}
@@ -171,17 +176,39 @@ export default async function BlogPage({
               {orderedPosts.length} artigo{orderedPosts.length === 1 ? "" : "s"} publicado{orderedPosts.length === 1 ? "" : "s"}.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.slice(0, 5).map((item) => (
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold" aria-label="Filtrar artigos por tag">
+            {tags.slice(0, 10).map((item) => (
               <Link
-                key={item.slug}
-                href={buildQueryString({ q: query || undefined, category: item.slug, sort })}
-                className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition ${category === item.slug ? "border-[rgb(148_53_21)] bg-[rgb(148_53_21)] text-white" : "border-outline/50 bg-white text-on-surface hover:bg-[#f3efe8]"}`}
+                key={item}
+                href={buildQueryString({ q: query || undefined, category: category || undefined, tag: item, sort })}
+                className={`no-underline transition hover:no-underline hover:text-[rgb(148_53_21)] ${tag === item ? "text-[rgb(148_53_21)]" : "text-on-surface/70"}`}
               >
-                {item.name}
+                {item}
               </Link>
             ))}
-          </div>
+            {tags.length > 10 && (
+              <details className="group relative" open={Boolean(tag && tags.slice(10).includes(tag))}>
+                <summary
+                  aria-label="Mostrar mais tags"
+                  title="Mostrar mais tags"
+                  className="flex size-8 cursor-pointer list-none items-center justify-center rounded-full text-on-surface/70 transition hover:bg-[#f3efe8] hover:text-[rgb(148_53_21)] [&::-webkit-details-marker]:hidden"
+                >
+                  <ChevronDown size={16} className="transition-transform group-open:rotate-180" aria-hidden="true" />
+                </summary>
+                <div className="absolute right-0 top-full z-20 mt-2 flex max-w-[min(80vw,32rem)] flex-wrap gap-x-5 gap-y-3 rounded-2xl border border-outline/30 bg-white p-4 shadow-lg">
+                  {tags.slice(10).map((item) => (
+                    <Link
+                      key={item}
+                      href={buildQueryString({ q: query || undefined, category: category || undefined, tag: item, sort })}
+                      className={`whitespace-nowrap no-underline transition hover:no-underline hover:text-[rgb(148_53_21)] ${tag === item ? "text-[rgb(148_53_21)]" : "text-on-surface/70"}`}
+                    >
+                      {item}
+                    </Link>
+                  ))}
+                </div>
+              </details>
+            )}
+          </nav>
         </div>
 
         {listPosts.length > 0 ? (

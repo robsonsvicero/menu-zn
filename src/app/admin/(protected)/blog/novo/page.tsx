@@ -113,7 +113,7 @@ export default async function NovoBlogPostPage({
             </div>
             <div>
               <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Tags</label>
-              <input placeholder="percepção, posicionamento, confiança" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
+              <input name="tags" placeholder="percepção, posicionamento, confiança" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ Este guia define a ordem de execucao para habilitar banco de dados real, auth e 
 3. Execute [supabase/sql/03_seed.sql](../supabase/sql/03_seed.sql)
 4. Execute [supabase/sql/create_newsletter_subscribers.sql](../supabase/sql/create_newsletter_subscribers.sql)
 5. Execute [supabase/sql/10_newsletter_subscribers_rls.sql](../supabase/sql/10_newsletter_subscribers_rls.sql)
+6. Execute [supabase/sql/13_add_blog_post_tags.sql](../supabase/sql/13_add_blog_post_tags.sql) para habilitar tags nos artigos do blog.
 
 ## 2. Variaveis de ambiente (Next.js)
 

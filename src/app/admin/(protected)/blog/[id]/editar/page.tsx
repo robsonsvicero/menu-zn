@@ -17,6 +17,7 @@ type BlogPost = {
   excerpt: string | null;
   content_md: string | null;
   cover_image_url: string | null;
+  tags: string[];
   category_id: string | null;
   blog_categories: { name: string }[] | { name: string } | null;
   author_id: string | null;
@@ -53,7 +54,7 @@ export default async function EditarBlogPostPage({
   const [{ data: post }, { data: categories }, { data: authorsData }] = await Promise.all([
     supabase
       .from("blog_posts")
-      .select("id, title, slug, excerpt, content_md, cover_image_url, category_id, blog_categories(name), author_id, published_at, seo_title, seo_description, status")
+      .select("id, title, slug, excerpt, content_md, cover_image_url, tags, category_id, blog_categories(name), author_id, published_at, seo_title, seo_description, status")
       .eq("id", id)
       .single(),
     supabase.from("blog_categories").select("id, name").order("name"),
@@ -154,6 +155,10 @@ export default async function EditarBlogPostPage({
                 className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition"
               />
               <p className="mt-1 text-[10px] text-on-surface/50">Um horário futuro mantém o artigo agendado e disponível somente na prévia até a publicação.</p>
+            </div>
+            <div>
+              <label className="block text-[11px] text-on-surface/60 mb-1.5 ml-1">Tags</label>
+              <input name="tags" defaultValue={blogPost.tags?.join(", ") ?? ""} placeholder="percepção, posicionamento, confiança" className="w-full rounded-xl bg-[#faf8f5] border-transparent px-4 py-3 text-sm focus:border-outline outline-none transition" />
             </div>
           </div>
         </div>

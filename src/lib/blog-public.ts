@@ -20,6 +20,7 @@ export type BlogListItem = {
   cover_image_url: string | null;
   published_at: string | null;
   view_count: number | null;
+  tags: string[];
   blog_categories: BlogCategoryRelation;
   authors: BlogAuthor;
 };
@@ -33,6 +34,7 @@ export type BlogDetailItem = {
   cover_image_url: string | null;
   published_at: string | null;
   view_count: number | null;
+  tags: string[];
   seo_title: string | null;
   seo_description: string | null;
   blog_categories: BlogCategoryRelation;
@@ -51,14 +53,18 @@ export type BlogTestimonial = {
 export async function fetchPublishedBlogPosts(options?: {
   search?: string;
   category?: string;
+  tag?: string;
   limit?: number;
 }) {
   const supabase = await createClient();
   const limit = options?.limit ?? 24;
+  const categoryRelation = options?.category
+    ? "blog_categories!inner(name, slug)"
+    : "blog_categories(name, slug)";
 
   let query = supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, cover_image_url, published_at, view_count, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
+    .select(`id, title, slug, excerpt, cover_image_url, published_at, view_count, tags, ${categoryRelation}, authors(name, avatar_url, role, instagram_url)`)
     .eq("status", "published")
     .lte("published_at", new Date().toISOString())
     .order("published_at", { ascending: false, nullsFirst: false })
@@ -66,6 +72,10 @@ export async function fetchPublishedBlogPosts(options?: {
 
   if (options?.category) {
     query = query.eq("blog_categories.slug", options.category);
+  }
+
+  if (options?.tag) {
+    query = query.contains("tags", [options.tag]);
   }
 
   if (options?.search) {
@@ -91,7 +101,7 @@ export async function fetchPublishedBlogPostBySlug(slug: string) {
 
   const { data, error } = await supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
+    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, tags, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
     .eq("status", "published")
     .lte("published_at", new Date().toISOString())
     .eq("slug", slug)
@@ -109,7 +119,7 @@ export async function fetchBlogPostBySlugForAdminPreview(slug: string) {
 
   const { data, error } = await supabase
     .from("blog_posts")
-    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
+    .select("id, title, slug, excerpt, content_md, cover_image_url, published_at, view_count, tags, seo_title, seo_description, blog_categories(name, slug), authors(name, avatar_url, role, instagram_url)")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -149,4 +159,34 @@ export async function fetchBlogCategoryOptions() {
   }
 
   return (data ?? []) as { name: string; slug: string }[];
+}
+
+export async function fetchPublishedBlogTags() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select("tags")
+    .eq("status", "published")
+    .lte("published_at", new Date().toISOString())
+    .limit(1000);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const tagCounts = new Map<string, { name: string; count: number }>();
+  for (const row of (data ?? []) as { tags: string[] | null }[]) {
+    for (const value of row.tags ?? []) {
+      const name = value.trim();
+      if (!name) continue;
+
+      const key = name.toLocaleLowerCase();
+      const existing = tagCounts.get(key);
+      tagCounts.set(key, { name: existing?.name ?? name, count: (existing?.count ?? 0) + 1 });
+    }
+  }
+
+  return [...tagCounts.values()]
+    .sort((left, right) => right.count - left.count || left.name.localeCompare(right.name))
+    .map(({ name }) => name);
 }
