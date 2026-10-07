@@ -53,7 +53,7 @@ export function BlogTestimonialForm({ postId, postSlug }: BlogTestimonialFormPro
           Estamos curiosos para saber sua opinião sobre este artigo!
         </h2>
         <p className="mt-3 text-sm leading-7 text-on-surface/70">
-          Seu comentário será enviado para moderação e publicado após aprovado.
+          Seu comentário será publicado imediatamente após o envio.
         </p>
       </div>
 

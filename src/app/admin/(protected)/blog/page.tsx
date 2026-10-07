@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createBlogPreviewToken } from "@/lib/blog-preview-token";
 import { updateBlogPostStatusAction } from "./actions";
+import { DeleteBlogPostButton } from "./DeleteBlogPostButton";
 import { SortableHeader } from "@/components/admin/SortableHeader";
 
 export const dynamic = "force-dynamic";
@@ -192,6 +193,8 @@ export default async function AdminBlogPage({
                         </button>
                       </form>
                     ) : null}
+
+                    <DeleteBlogPostButton id={post.id} title={post.title} />
                   </div>
                 </td>
               </tr>

@@ -234,6 +234,55 @@ export async function updateBlogPostStatusAction(formData: FormData) {
   revalidatePath("/sitemap.xml");
 }
 
+export async function deleteBlogPostAction(id: string) {
+  const postId = id.trim();
+
+  if (!postId) {
+    return { success: false, message: "ID do artigo é obrigatório." };
+  }
+
+  try {
+    const { supabase } = await ensureAdminAccess();
+    const { data: post, error: postError } = await supabase
+      .from("blog_posts")
+      .select("slug")
+      .eq("id", postId)
+      .maybeSingle();
+
+    if (postError) {
+      throw new Error(postError.message);
+    }
+
+    if (!post) {
+      throw new Error("Artigo não encontrado ou sem permissão para excluí-lo.");
+    }
+
+    const { data: deletedPost, error: deleteError } = await supabase
+      .from("blog_posts")
+      .delete()
+      .eq("id", postId)
+      .select("id")
+      .maybeSingle();
+
+    if (deleteError) {
+      throw new Error(deleteError.message);
+    }
+
+    if (!deletedPost) {
+      throw new Error("O artigo não foi excluído.");
+    }
+
+    revalidateBlogPaths(post.slug);
+    return { success: true, message: "Artigo excluído com sucesso." };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    }
+
+    throw error;
+  }
+}
+
 export async function updateBlogPostAction(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   try {

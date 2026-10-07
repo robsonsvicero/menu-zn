@@ -56,7 +56,8 @@ export async function submitBlogTestimonialAction(
     content,
     rating: null,
     source: `Blog: ${post.title}`,
-    status: "pending",
+    status: "approved",
+    approved_at: new Date().toISOString(),
     is_featured: false,
     blog_post_id: post.id,
   });
@@ -70,6 +71,6 @@ export async function submitBlogTestimonialAction(
 
   return {
     status: "success",
-    message: "Comentário enviado. Ele vai aparecer no site após aprovação.",
+    message: "Comentário publicado com sucesso.",
   };
 }
