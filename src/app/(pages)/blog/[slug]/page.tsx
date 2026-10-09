@@ -330,7 +330,7 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
               className="object-cover object-center md:object-cover md:object-[center_35%]"
               priority
             />
-            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/50 to-black/20" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/30 via-black/15 to-black/5" />
           </div>
 
           <div className="relative mx-auto flex h-full max-w-300 items-end px-6 py-16 md:px-10 lg:px-12">
