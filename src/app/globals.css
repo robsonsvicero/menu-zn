@@ -339,8 +339,14 @@ img {
 
 .blog-ad-carousel__track {
   display: flex;
+  width: 100%;
   gap: 24px;
+  justify-content: center;
+}
+
+.blog-ad-carousel__track--scrollable {
   width: max-content;
+  justify-content: flex-start;
 }
 
 .blog-ad-carousel__card {

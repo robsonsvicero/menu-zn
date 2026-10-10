@@ -138,7 +138,13 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
         className="blog-ad-carousel__viewport mx-auto"
         tabIndex={advertisements.length > visibleCount ? 0 : undefined}
       >
-        <div className="blog-ad-carousel__track">
+        <div
+          className={`blog-ad-carousel__track ${
+            advertisements.length > visibleCount
+              ? "blog-ad-carousel__track--scrollable"
+              : ""
+          }`}
+        >
           {loopedAdvertisements.map((advertisement, index) => {
             const isClone = index >= advertisements.length;
 
