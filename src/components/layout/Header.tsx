@@ -62,7 +62,7 @@ export default function Header() {
         : 'absolute top-0 left-0 right-0 z-50 bg-[rgba(250,248,242,0.15)] backdrop-blur-sm'}
       >
         <Container className="mx-0">
-          <div className={`flex ${isBlogArticle ? 'h-14 md:h-10' : 'h-20'} items-center justify-between`}>
+          <div className="flex h-20 items-center justify-between">
 
             {/* Logo */}
             <Link href="/" className="flex items-center">
@@ -71,18 +71,18 @@ export default function Header() {
                 alt="Menu ZN"
                 width={140}
                 height={40}
-                className={`object-contain ${isBlogArticle ? 'w-32' : 'h-10 w-auto'}`}
+                className="h-10 w-auto object-contain"
                 priority
               />
             </Link>
 
             {/* Desktop Nav */}
-            <nav className={`hidden ${isBlogArticle ? 'md:flex gap-3' : 'lg:flex gap-6'} items-center`}>
+            <nav className="hidden lg:flex items-center gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`${isBlogArticle ? 'text-[9px]' : 'text-sm'} font-medium transition-colors ${pathname === link.href ? 'text-secondary' : 'text-white/80 hover:text-white'
+                  className={`text-sm font-medium transition-colors ${pathname === link.href ? 'text-secondary' : 'text-white/80 hover:text-white'
                     }`}
                 >
                   {link.label}
@@ -91,7 +91,7 @@ export default function Header() {
             </nav>
 
             {/* Desktop CTA & Admin */}
-            <div className={`hidden ${isBlogArticle ? 'md:flex' : 'lg:flex'} items-center gap-4`}>
+            <div className="hidden lg:flex items-center gap-4">
               {/* <a
                 href="/admin/login"
                 className="text-white/80 hover:text-white transition-colors pr-8"
@@ -102,8 +102,8 @@ export default function Header() {
               <a href="/planos" target="_blank" rel="noopener noreferrer">
                 <Button
                   variant={isBlogArticle ? 'secondary' : 'default'}
-                  size={isBlogArticle ? 'sm' : 'lg'}
-                  className={`${isBlogArticle ? 'w-22.5 px-2 py-1 text-[9px]' : 'w-45 px-6'} tracking-[0.9px]`}
+                  size="lg"
+                  className={`${isBlogArticle ? 'py-2.5 ' : ''}w-45 px-6 tracking-[0.9px]`}
                 >
                   Anuncie
                 </Button>
@@ -113,7 +113,7 @@ export default function Header() {
             {/* Mobile: Hotdog button */}
             <button
               onClick={() => setMobileOpen(true)}
-              className={`${isBlogArticle ? 'md:hidden' : 'lg:hidden'} flex items-center justify-center text-white`}
+              className="flex items-center justify-center text-white lg:hidden"
               aria-label="Abrir menu"
             >
               <HotdogIcon size={22} className="text-white" />

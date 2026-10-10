@@ -319,19 +319,19 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="min-h-screen bg-[#faf8f2] text-on-surface">
-      <section className="mx-auto max-w-142 px-6 pb-8 pt-6 md:pb-10 md:pt-8">
-        <div className="mx-auto max-w-130">
+      <section className="mx-auto max-w-210 px-6 pb-8 pt-6 md:pb-10 md:pt-8">
+        <div className="mx-auto max-w-200 flex flex-col items-center justify-center text-center">
           {categoryName ? (
-            <span className="mx-auto mb-5 flex w-fit rounded-full bg-[rgb(148_53_21)] px-2.5 py-1.5 text-[7px] font-bold uppercase tracking-[0.12em] text-white">
+            <span className="mx-auto mb-5 flex w-fit rounded-full bg-[rgb(148_53_21)] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-white lg:text-xs">
               {categoryName}
             </span>
           ) : null}
 
-          <h1 className="mb-6 max-w-113.75 font-serif text-[30px] leading-[1.12] text-on-surface md:text-[32px]">
+          <h1 className="mb-12 max-w-190 font-serif text-5xl leading-[1.12] text-on-surface md:text-6xl">
             {post.title}
           </h1>
 
-          <nav aria-label="Breadcrumb" className="mb-5 text-xs text-on-surface/60">
+          <nav aria-label="Breadcrumb" className="mb-5 text-sm text-on-surface/60">
             <ol className="flex min-w-0 items-center gap-2">
               <li className="shrink-0">
                 <Link href="/" className="transition-colors hover:text-[rgb(148_53_21)]">Início</Link>
@@ -345,20 +345,20 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
             </ol>
           </nav>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-[10px] text-on-surface/65">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-on-surface/65 lg:text-sm">
               {post.authors ? (
                 <div className="flex items-center gap-2">
                   {post.authors.avatar_url ? (
                     <Image
                       src={post.authors.avatar_url}
                       alt=""
-                      width={24}
-                      height={24}
+                      width={28}
+                      height={28}
                       unoptimized
-                      className="h-6 w-6 rounded-full border border-on-surface/10 object-cover"
+                      className="h-7 w-7 rounded-full border border-on-surface/10 object-cover"
                     />
                   ) : (
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-[10px] font-bold text-white">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-xs font-bold text-white">
                       {post.authors.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -366,7 +366,7 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-[10px] font-bold text-white">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-xs font-bold text-white">
                     M
                   </div>
                   <span>Por Equipe Menu ZN</span>
