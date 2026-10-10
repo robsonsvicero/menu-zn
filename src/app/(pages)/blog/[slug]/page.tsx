@@ -337,14 +337,10 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
 
         <div className="mx-auto max-w-200 flex flex-col items-center justify-center text-center">
           {categoryName ? (
-            <span className="mx-auto mb-5 flex w-fit rounded-full bg-[rgb(148_53_21)] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-white lg:text-xs">
+            <span className="mx-auto mb-8 flex w-fit rounded-full bg-[rgb(148_53_21)] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-white lg:text-xs">
               {categoryName}
             </span>
           ) : null}
-
-          <h1 className="mb-12 max-w-190 font-serif text-4xl leading-[1.12] text-on-surface md:text-6xl">
-            {post.title}
-          </h1>
 
           <nav aria-label="Breadcrumb" className="mb-5 w-full min-w-0 text-xs text-on-surface/60 sm:text-sm">
             <ol className="flex w-full min-w-0 items-center gap-2">
@@ -359,6 +355,10 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
               <li aria-current="page" className="min-w-0 flex-1 truncate text-left">{post.title}</li>
             </ol>
           </nav>
+
+          <h1 className="mb-12 max-w-190 font-serif text-4xl leading-[1.12] text-on-surface md:text-6xl">
+            {post.title}
+          </h1>
 
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-on-surface/65 lg:text-sm">
               {post.authors ? (

@@ -14,6 +14,46 @@ const imageExtensions = new Map([
   ["image/avif", "avif"],
 ]);
 const storageBucket = process.env.SUPABASE_STORAGE_BUCKET ?? "media-public";
+const advertisementIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function validateAdvertisementImage(
+  image: FormDataEntryValue | null
+): asserts image is File {
+  if (!(image instanceof File) || image.size === 0) {
+    throw new Error("Selecione a imagem do anúncio.");
+  }
+
+  if (!imageExtensions.has(image.type)) {
+    throw new Error("Formato de imagem inválido. Use JPG, PNG, WebP ou AVIF.");
+  }
+
+  if (image.size > maxImageSize) {
+    throw new Error("A imagem deve ter no máximo 4 MB.");
+  }
+}
+
+async function uploadAdvertisementImage(image: File) {
+  const extension = imageExtensions.get(image.type);
+  if (!extension) {
+    throw new Error("Formato de imagem inválido. Use JPG, PNG, WebP ou AVIF.");
+  }
+
+  const imagePath = `blog-advertisements/${crypto.randomUUID()}.${extension}`;
+  const adminClient = createAdminClient();
+  const { error } = await adminClient.storage
+    .from(storageBucket)
+    .upload(imagePath, image, {
+      contentType: image.type,
+      upsert: false,
+    });
+
+  if (error) {
+    throw new Error(`Falha no upload da imagem: ${error.message}`);
+  }
+
+  const { data } = adminClient.storage.from(storageBucket).getPublicUrl(imagePath);
+  return { imagePath, imageUrl: data.publicUrl, adminClient };
+}
 
 async function ensureAdminAccess() {
   const supabase = await createClient();
@@ -77,39 +117,12 @@ export async function createAdvertisementAction(formData: FormData) {
     throw new Error("Informe um texto de até 120 caracteres para o anúncio.");
   }
 
-  if (!(image instanceof File) || image.size === 0) {
-    throw new Error("Selecione a imagem do anúncio.");
-  }
-
-  const extension = imageExtensions.get(image.type);
-  if (!extension) {
-    throw new Error("Formato de imagem inválido. Use JPG, PNG, WebP ou AVIF.");
-  }
-
-  if (image.size > maxImageSize) {
-    throw new Error("A imagem deve ter no máximo 4 MB.");
-  }
-
-  const imagePath = `blog-advertisements/${crypto.randomUUID()}.${extension}`;
-  const adminClient = createAdminClient();
-  const { error: uploadError } = await adminClient.storage
-    .from(storageBucket)
-    .upload(imagePath, image, {
-      contentType: image.type,
-      upsert: false,
-    });
-
-  if (uploadError) {
-    throw new Error(`Falha no upload da imagem: ${uploadError.message}`);
-  }
-
-  const { data: publicImage } = adminClient.storage
-    .from(storageBucket)
-    .getPublicUrl(imagePath);
+  validateAdvertisementImage(image);
+  const { imagePath, imageUrl, adminClient } = await uploadAdvertisementImage(image);
   const { error: insertError } = await supabase.from("blog_advertisements").insert({
     title,
     target_url: targetUrl,
-    image_url: publicImage.publicUrl,
+    image_url: imageUrl,
     image_path: imagePath,
     is_active: isActive,
   });
@@ -132,12 +145,98 @@ export async function createAdvertisementAction(formData: FormData) {
   redirect("/admin/anuncios?created=1");
 }
 
+export async function updateAdvertisementAction(formData: FormData) {
+  const supabase = await ensureAdminAccess();
+  const id = String(formData.get("id") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const targetUrl = validateTargetUrl(String(formData.get("target_url") ?? "").trim());
+  const image = formData.get("image");
+  const newImage = image instanceof File && image.size > 0 ? image : null;
+
+  if (!advertisementIdPattern.test(id)) {
+    throw new Error("ID de anúncio inválido.");
+  }
+
+  if (!title || title.length > 120) {
+    throw new Error("Informe um texto de até 120 caracteres para o anúncio.");
+  }
+
+  if (newImage) {
+    validateAdvertisementImage(newImage);
+  }
+
+  const { data: current, error: currentError } = await supabase
+    .from("blog_advertisements")
+    .select("image_path")
+    .eq("id", id)
+    .single();
+
+  if (currentError || !current) {
+    throw new Error(`Não foi possível localizar o anúncio: ${currentError?.message ?? "anúncio não encontrado."}`);
+  }
+
+  let uploadedImage: Awaited<ReturnType<typeof uploadAdvertisementImage>> | null = null;
+
+  if (newImage) {
+    uploadedImage = await uploadAdvertisementImage(newImage);
+  }
+
+  const updates = {
+    title,
+    target_url: targetUrl,
+    is_active: formData.get("is_active") === "on",
+    updated_at: new Date().toISOString(),
+    ...(uploadedImage
+      ? { image_url: uploadedImage.imageUrl, image_path: uploadedImage.imagePath }
+      : {}),
+  };
+  const { error: updateError } = await supabase
+    .from("blog_advertisements")
+    .update(updates)
+    .eq("id", id);
+
+  if (updateError) {
+    if (uploadedImage) {
+      const { error: cleanupError } = await uploadedImage.adminClient.storage
+        .from(storageBucket)
+        .remove([uploadedImage.imagePath]);
+
+      if (cleanupError) {
+        throw new Error(
+          `Não foi possível atualizar o anúncio (${updateError.message}) nem remover a nova imagem enviada (${cleanupError.message}).`
+        );
+      }
+    }
+
+    throw new Error(`Não foi possível atualizar o anúncio: ${updateError.message}`);
+  }
+
+  let cleanupWarning: string | null = null;
+
+  if (uploadedImage) {
+    const { error: cleanupError } = await uploadedImage.adminClient.storage
+      .from(storageBucket)
+      .remove([current.image_path]);
+
+    if (cleanupError) {
+      cleanupWarning = `Anúncio atualizado, mas não foi possível remover a imagem anterior: ${cleanupError.message}`;
+    }
+  }
+
+  revalidateAdvertisementPages();
+  redirect(
+    cleanupWarning
+      ? `/admin/anuncios?updated=1&warning=${encodeURIComponent(cleanupWarning)}`
+      : "/admin/anuncios?updated=1"
+  );
+}
+
 export async function toggleAdvertisementAction(formData: FormData) {
   const supabase = await ensureAdminAccess();
   const id = String(formData.get("id") ?? "").trim();
   const isActiveValue = String(formData.get("is_active") ?? "");
 
-  if (!/^[0-9a-f-]{36}$/i.test(id) || !["true", "false"].includes(isActiveValue)) {
+  if (!advertisementIdPattern.test(id) || !["true", "false"].includes(isActiveValue)) {
     throw new Error("Dados inválidos para atualizar o anúncio.");
   }
 
@@ -151,4 +250,45 @@ export async function toggleAdvertisementAction(formData: FormData) {
   }
 
   revalidateAdvertisementPages();
+}
+
+export async function deleteAdvertisementAction(id: string) {
+  const supabase = await ensureAdminAccess();
+  const advertisementId = id.trim();
+
+  if (!advertisementIdPattern.test(advertisementId)) {
+    return { success: false, message: "ID de anúncio inválido." };
+  }
+
+  const { data: deleted, error: deleteError } = await supabase
+    .from("blog_advertisements")
+    .delete()
+    .eq("id", advertisementId)
+    .select("image_path")
+    .maybeSingle();
+
+  if (deleteError) {
+    return { success: false, message: `Não foi possível excluir o anúncio: ${deleteError.message}` };
+  }
+
+  if (!deleted) {
+    return { success: false, message: "Anúncio não encontrado ou já excluído." };
+  }
+
+  const adminClient = createAdminClient();
+  const { error: storageError } = await adminClient.storage
+    .from(storageBucket)
+    .remove([deleted.image_path]);
+
+  revalidateAdvertisementPages();
+
+  if (storageError) {
+    return {
+      success: true,
+      message: "Anúncio excluído.",
+      warning: `Não foi possível remover a imagem: ${storageError.message}`,
+    };
+  }
+
+  return { success: true, message: "Anúncio excluído com sucesso." };
 }

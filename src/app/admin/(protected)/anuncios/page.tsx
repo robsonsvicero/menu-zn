@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ExternalLink, Megaphone } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createAdvertisementAction, toggleAdvertisementAction } from "./actions";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +18,17 @@ type AdvertisementRow = {
 export default async function AdminAdvertisementsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ created?: string }>;
+  searchParams: Promise<{
+    created?: string;
+    updated?: string;
+    deleted?: string;
+    warning?: string;
+  }>;
 }) {
-  const [{ created }, supabase] = await Promise.all([searchParams, createClient()]);
+  const [{ created, updated, deleted, warning }, supabase] = await Promise.all([
+    searchParams,
+    createClient(),
+  ]);
   const { data, error } = await supabase
     .from("blog_advertisements")
     .select("id, title, image_url, target_url, is_active, created_at")
@@ -43,6 +52,21 @@ export default async function AdminAdvertisementsPage({
       {created === "1" ? (
         <p role="status" className="mb-5 rounded-xl border border-green-800/20 bg-green-50 p-4 text-sm text-green-900">
           Anúncio cadastrado com sucesso.
+        </p>
+      ) : null}
+      {updated === "1" ? (
+        <p role="status" className="mb-5 rounded-xl border border-green-800/20 bg-green-50 p-4 text-sm text-green-900">
+          Anúncio atualizado com sucesso.
+        </p>
+      ) : null}
+      {deleted === "1" ? (
+        <p role="status" className="mb-5 rounded-xl border border-green-800/20 bg-green-50 p-4 text-sm text-green-900">
+          Anúncio excluído.
+        </p>
+      ) : null}
+      {warning ? (
+        <p role="status" className="mb-5 rounded-xl border border-amber-800/20 bg-amber-50 p-4 text-sm text-amber-950">
+          {warning}
         </p>
       ) : null}
 
@@ -170,6 +194,12 @@ export default async function AdminAdvertisementsPage({
                 >
                   {advertisement.is_active ? "Ativo" : "Inativo"}
                 </span>
+                <Link
+                  href={`/admin/anuncios/${advertisement.id}/editar`}
+                  className="rounded-lg border border-outline px-3 py-2 text-xs font-medium transition-colors hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  Editar
+                </Link>
                 <form action={toggleAdvertisementAction}>
                   <input type="hidden" name="id" value={advertisement.id} />
                   <input
