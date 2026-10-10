@@ -327,12 +327,12 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
             </span>
           ) : null}
 
-          <h1 className="mb-12 max-w-190 font-serif text-5xl leading-[1.12] text-on-surface md:text-6xl">
+          <h1 className="mb-12 max-w-190 font-serif text-4xl leading-[1.12] text-on-surface md:text-6xl">
             {post.title}
           </h1>
 
-          <nav aria-label="Breadcrumb" className="mb-5 text-sm text-on-surface/60">
-            <ol className="flex min-w-0 items-center gap-2">
+          <nav aria-label="Breadcrumb" className="mb-5 w-full min-w-0 text-xs text-on-surface/60 sm:text-sm">
+            <ol className="flex w-full min-w-0 items-center gap-2">
               <li className="shrink-0">
                 <Link href="/" className="transition-colors hover:text-[rgb(148_53_21)]">Início</Link>
               </li>
@@ -341,7 +341,7 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
                 <Link href="/blog" className="transition-colors hover:text-[rgb(148_53_21)]">Blog</Link>
               </li>
               <li aria-hidden="true" className="shrink-0 text-on-surface/35">/</li>
-              <li aria-current="page" className="min-w-0 truncate">{post.title}</li>
+              <li aria-current="page" className="min-w-0 flex-1 truncate text-left">{post.title}</li>
             </ol>
           </nav>
 
