@@ -332,10 +332,10 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="min-h-screen bg-[#faf8f2] text-on-surface">
-      <section className="mx-auto max-w-210 px-6 pb-8 pt-6 md:pb-10 md:pt-8">
-        <div className="mx-auto max-w-200 flex flex-col items-center justify-center text-center">
-          <AdCarousel advertisements={advertisements} placement="hero" />
+      <section className="mx-auto max-w-[1680px] px-6 pb-8 pt-6 md:pb-10 md:pt-8">
+        <AdCarousel advertisements={advertisements} placement="hero" />
 
+        <div className="mx-auto max-w-200 flex flex-col items-center justify-center text-center">
           {categoryName ? (
             <span className="mx-auto mb-5 flex w-fit rounded-full bg-[rgb(148_53_21)] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-white lg:text-xs">
               {categoryName}

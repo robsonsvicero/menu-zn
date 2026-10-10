@@ -112,7 +112,7 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
       aria-label="Anúncios dos parceiros"
       aria-roledescription="carrossel"
       role="region"
-      className={`blog-ad-carousel relative left-1/2 w-screen -translate-x-1/2 px-4 md:px-6 ${
+      className={`blog-ad-carousel mx-auto w-full ${
         placement === "hero" ? "mb-8 mt-0" : "my-14 md:my-20"
       }`}
       onPointerEnter={() => {
