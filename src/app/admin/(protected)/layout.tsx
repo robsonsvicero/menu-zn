@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { LogOut, LayoutDashboard, Store, BookOpen, Users, MessageSquareQuote, UserCog, Tags, Mail } from "lucide-react";
+import { LogOut, LayoutDashboard, Store, BookOpen, Users, MessageSquareQuote, UserCog, Tags, Mail, Megaphone } from "lucide-react";
 import AdminMobileNav from "@/components/admin/AdminMobileNav";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +13,7 @@ const navLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/estabelecimentos", label: "Estabelecimentos", icon: Store },
   { href: "/admin/blog", label: "Blog", icon: BookOpen },
+  { href: "/admin/anuncios", label: "Anúncios", icon: Megaphone },
   { href: "/admin/categorias-blog", label: "Categorias", icon: Tags },
   { href: "/admin/autores", label: "Autores", icon: Users },
   { href: "/admin/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },

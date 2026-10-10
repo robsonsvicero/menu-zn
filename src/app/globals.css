@@ -324,3 +324,44 @@ img {
   outline: 2px solid rgb(148 53 21 / 65%);
   outline-offset: 3px;
 }
+
+.blog-ad-carousel__viewport {
+  container-type: inline-size;
+  max-width: 1632px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+.blog-ad-carousel__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.blog-ad-carousel__track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+}
+
+.blog-ad-carousel__card {
+  width: min(528px, calc((100cqw - 48px) / 3));
+  aspect-ratio: 528 / 250;
+  max-height: 250px;
+  scroll-snap-align: start;
+  isolation: isolate;
+}
+
+.blog-ad-carousel__image {
+  z-index: -1;
+}
+
+@media (max-width: 767px) {
+  .blog-ad-carousel__track {
+    gap: 16px;
+  }
+
+  .blog-ad-carousel__card {
+    width: 100cqw;
+    max-height: none;
+  }
+}

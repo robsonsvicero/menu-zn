@@ -21,6 +21,7 @@ import {
 import { BlogTestimonialForm } from "./BlogTestimonialForm";
 import { BlogViewTracker } from "./BlogViewTracker";
 import { BlogShareBar } from "./BlogShareBar";
+import { AdCarousel } from "./AdCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -272,11 +273,23 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
     notFound();
   }
 
-  const [allRelatedPosts, testimonials] = await Promise.all([
+  const supabase = await createClient();
+  const [allRelatedPosts, testimonials, advertisementResult] = await Promise.all([
     fetchPublishedBlogPosts({ limit: 4 }),
     fetchApprovedBlogTestimonials(post.id),
+    supabase
+      .from("blog_advertisements")
+      .select("id, title, image_url, target_url")
+      .eq("is_active", true)
+      .order("created_at", { ascending: true })
+      .limit(30),
   ]);
 
+  if (advertisementResult.error) {
+    throw new Error(`Não foi possível carregar os anúncios do blog: ${advertisementResult.error.message}`);
+  }
+
+  const advertisements = advertisementResult.data ?? [];
   const relatedPosts = allRelatedPosts
     .filter((item) => item.slug !== post.slug)
     .slice(0, 3);
@@ -406,6 +419,8 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
           />
         </div>
       </section>
+
+      <AdCarousel advertisements={advertisements} />
 
       <section className="mx-auto max-w-245 px-6 py-10 md:px-10 lg:px-12 lg:py-20">
         <div className="mx-auto max-w-4xl">

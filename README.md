@@ -52,3 +52,7 @@ Se o segredo não estiver configurado, o botão Visualizar continua funcionando 
 ## Agendamento de artigos
 
 Execute a migração `supabase/sql/09_schedule_blog_posts.sql` no Supabase. No painel, marque o artigo como pronto para publicação e informe uma data e hora futura. Ele continuará disponível em **Visualizar** até o horário definido e será exibido publicamente automaticamente quando esse horário chegar.
+
+## Anúncios nas matérias do blog
+
+Antes de publicar a funcionalidade, execute `supabase/sql/14_blog_advertisements.sql` no Supabase. O painel em `/admin/anuncios` permite cadastrar a imagem (JPG, PNG, WebP ou AVIF, até 4 MB), o texto e o link, além de ativar ou desativar cada anúncio. As imagens são enviadas ao bucket público `media-public` (ou ao bucket público definido por `SUPABASE_STORAGE_BUCKET`). Os anúncios ativos são exibidos automaticamente nas matérias, em carrossel contínuo.

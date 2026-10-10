@@ -14,6 +14,7 @@ import {
   UserCog,
   Tags,
   Mail,
+  Megaphone,
   LogOut,
 } from "lucide-react";
 
@@ -21,6 +22,7 @@ const navLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/estabelecimentos", label: "Estabelecimentos", icon: Store },
   { href: "/admin/blog", label: "Blog", icon: BookOpen },
+  { href: "/admin/anuncios", label: "Anúncios", icon: Megaphone },
   { href: "/admin/categorias-blog", label: "Categorias", icon: Tags },
   { href: "/admin/autores", label: "Autores", icon: Users },
   { href: "/admin/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
