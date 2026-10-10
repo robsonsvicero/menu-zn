@@ -11,9 +11,10 @@ export type Advertisement = {
 
 type Props = {
   advertisements: Advertisement[];
+  placement?: "article" | "hero";
 };
 
-export function AdCarousel({ advertisements }: Props) {
+export function AdCarousel({ advertisements, placement = "article" }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const pausedByPointerRef = useRef(false);
   const pausedByFocusRef = useRef(false);
@@ -111,7 +112,9 @@ export function AdCarousel({ advertisements }: Props) {
       aria-label="Anúncios dos parceiros"
       aria-roledescription="carrossel"
       role="region"
-      className="blog-ad-carousel relative left-1/2 my-14 w-screen -translate-x-1/2 px-4 md:my-20 md:px-6"
+      className={`blog-ad-carousel relative left-1/2 w-screen -translate-x-1/2 px-4 md:px-6 ${
+        placement === "hero" ? "mb-8 mt-0" : "my-14 md:my-20"
+      }`}
       onPointerEnter={() => {
         pausedByPointerRef.current = true;
       }}
