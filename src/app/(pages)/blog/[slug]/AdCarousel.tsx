@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 export type Advertisement = {
   id: string;
@@ -18,29 +18,21 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const pausedByPointerRef = useRef(false);
   const pausedByFocusRef = useRef(false);
-  const [visibleCount, setVisibleCount] = useState(3);
+  const pausedByVisibilityRef = useRef(false);
+  const isInViewportRef = useRef(true);
   const loopedAdvertisements = useMemo(() => {
-    const cloneCount = advertisements.length > visibleCount
-      ? Math.min(visibleCount, advertisements.length)
-      : 0;
+    const clone = advertisements.length > 1
+      ? advertisements.slice(0, 1).map((advertisement) => ({
+          ...advertisement,
+          id: `${advertisement.id}-loop`,
+        }))
+      : [];
 
     return [
       ...advertisements,
-      ...advertisements.slice(0, cloneCount).map((advertisement) => ({
-        ...advertisement,
-        id: `${advertisement.id}-loop`,
-      })),
+      ...clone,
     ];
-  }, [advertisements, visibleCount]);
-
-  useEffect(() => {
-    const breakpoint = window.matchMedia("(max-width: 767px)");
-    const updateVisibleCount = () => setVisibleCount(breakpoint.matches ? 1 : 3);
-
-    updateVisibleCount();
-    breakpoint.addEventListener("change", updateVisibleCount);
-    return () => breakpoint.removeEventListener("change", updateVisibleCount);
-  }, []);
+  }, [advertisements]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -67,7 +59,7 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
     };
     measureStep();
 
-    if (advertisements.length <= visibleCount) {
+    if (advertisements.length <= 1) {
       return;
     }
 
@@ -75,24 +67,42 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
     resizeObserver.observe(viewport);
     resizeObserver.observe(firstSlide);
 
+    isInViewportRef.current = true;
+    pausedByVisibilityRef.current = document.hidden;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isInViewportRef.current = entry.isIntersecting;
+      pausedByVisibilityRef.current =
+        document.hidden || !isInViewportRef.current;
+    });
+    visibilityObserver.observe(viewport);
+
+    const updateVisibility = () => {
+      pausedByVisibilityRef.current =
+        document.hidden || !isInViewportRef.current;
+    };
+    document.addEventListener("visibilitychange", updateVisibility);
+
     const interval = window.setInterval(() => {
       if (
         pausedByPointerRef.current ||
         pausedByFocusRef.current ||
-        reducedMotion.matches ||
+        pausedByVisibilityRef.current ||
         step <= 0
       ) {
         return;
       }
 
-      viewport.scrollBy({ left: step, behavior: "smooth" });
+      viewport.scrollBy({
+        left: step,
+        behavior: reducedMotion.matches ? "auto" : "smooth",
+      });
       position += 1;
 
       if (position === advertisements.length) {
         resetTimeout = window.setTimeout(() => {
           viewport.scrollLeft = 0;
           position = 0;
-        }, 800);
+        }, reducedMotion.matches ? 0 : 800);
       }
     }, 5000);
 
@@ -100,8 +110,10 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
       window.clearInterval(interval);
       window.clearTimeout(resetTimeout);
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      document.removeEventListener("visibilitychange", updateVisibility);
     };
-  }, [advertisements.length, visibleCount]);
+  }, [advertisements.length]);
 
   if (advertisements.length === 0) {
     return null;
@@ -136,15 +148,9 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
       <div
         ref={viewportRef}
         className="blog-ad-carousel__viewport mx-auto"
-        tabIndex={advertisements.length > visibleCount ? 0 : undefined}
+        tabIndex={advertisements.length > 1 ? 0 : undefined}
       >
-        <div
-          className={`blog-ad-carousel__track ${
-            advertisements.length > visibleCount
-              ? "blog-ad-carousel__track--scrollable"
-              : ""
-          }`}
-        >
+        <div className="blog-ad-carousel__track">
           {loopedAdvertisements.map((advertisement, index) => {
             const isClone = index >= advertisements.length;
 

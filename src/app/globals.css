@@ -327,7 +327,8 @@ img {
 
 .blog-ad-carousel__viewport {
   container-type: inline-size;
-  max-width: 1632px;
+  width: 100%;
+  max-width: 450px;
   overflow-x: auto;
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
@@ -339,18 +340,12 @@ img {
 
 .blog-ad-carousel__track {
   display: flex;
-  width: 100%;
-  gap: 24px;
-  justify-content: center;
-}
-
-.blog-ad-carousel__track--scrollable {
   width: max-content;
-  justify-content: flex-start;
+  gap: 0;
 }
 
 .blog-ad-carousel__card {
-  width: min(450px, calc((100cqw - 48px) / 3));
+  width: 100cqw;
   aspect-ratio: 450 / 250;
   max-height: 250px;
   scroll-snap-align: start;
@@ -362,12 +357,7 @@ img {
 }
 
 @media (max-width: 767px) {
-  .blog-ad-carousel__track {
-    gap: 16px;
-  }
-
   .blog-ad-carousel__card {
-    width: 100cqw;
     max-height: none;
   }
 }
