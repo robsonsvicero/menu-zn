@@ -42,6 +42,7 @@ function HotdogIcon({ size = 18, className = '' }: { size?: number; className?: 
 
 export default function Header() {
   const pathname = usePathname()
+  const isBlogArticle = pathname.startsWith('/blog/')
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Prevent body scroll while menu is open
@@ -56,9 +57,12 @@ export default function Header() {
 
   return (
     <>
-      <header className="absolute top-0 left-0 right-0 z-50 bg-[rgba(250,248,242,0.15)] backdrop-blur-[8px]">
+      <header className={isBlogArticle
+        ? 'relative z-50 bg-primary'
+        : 'absolute top-0 left-0 right-0 z-50 bg-[rgba(250,248,242,0.15)] backdrop-blur-sm'}
+      >
         <Container className="mx-0">
-          <div className="flex h-20 items-center justify-between">
+          <div className={`flex ${isBlogArticle ? 'h-14 md:h-10' : 'h-20'} items-center justify-between`}>
 
             {/* Logo */}
             <Link href="/" className="flex items-center">
@@ -67,18 +71,18 @@ export default function Header() {
                 alt="Menu ZN"
                 width={140}
                 height={40}
-                className="object-contain h-10 w-auto"
+                className={`object-contain ${isBlogArticle ? 'w-32' : 'h-10 w-auto'}`}
                 priority
               />
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex gap-6 items-center">
+            <nav className={`hidden ${isBlogArticle ? 'md:flex gap-3' : 'lg:flex gap-6'} items-center`}>
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors ${pathname === link.href ? 'text-secondary' : 'text-white/80 hover:text-white'
+                  className={`${isBlogArticle ? 'text-[9px]' : 'text-sm'} font-medium transition-colors ${pathname === link.href ? 'text-secondary' : 'text-white/80 hover:text-white'
                     }`}
                 >
                   {link.label}
@@ -87,7 +91,7 @@ export default function Header() {
             </nav>
 
             {/* Desktop CTA & Admin */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className={`hidden ${isBlogArticle ? 'md:flex' : 'lg:flex'} items-center gap-4`}>
               {/* <a
                 href="/admin/login"
                 className="text-white/80 hover:text-white transition-colors pr-8"
@@ -96,7 +100,11 @@ export default function Header() {
                 <Settings size={20} />
               </a> */}
               <a href="/planos" target="_blank" rel="noopener noreferrer">
-                <Button variant="default" size="lg" className="w-[180px] px-6 tracking-[0.9px]">
+                <Button
+                  variant={isBlogArticle ? 'secondary' : 'default'}
+                  size={isBlogArticle ? 'sm' : 'lg'}
+                  className={`${isBlogArticle ? 'w-22.5 px-2 py-1 text-[9px]' : 'w-45 px-6'} tracking-[0.9px]`}
+                >
                   Anuncie
                 </Button>
               </a>
@@ -105,7 +113,7 @@ export default function Header() {
             {/* Mobile: Hotdog button */}
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden flex items-center justify-center text-white"
+              className={`${isBlogArticle ? 'md:hidden' : 'lg:hidden'} flex items-center justify-center text-white`}
               aria-label="Abrir menu"
             >
               <HotdogIcon size={22} className="text-white" />
@@ -117,7 +125,7 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 z-[100] transition-opacity duration-300 ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-100 transition-opacity duration-300 ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
       >
         {/* Backdrop */}

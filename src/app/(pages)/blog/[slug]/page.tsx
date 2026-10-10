@@ -318,40 +318,47 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="min-h-screen bg-white text-on-surface">
-      <section className="relative overflow-hidden bg-black">
-        <div className="relative h-[70vh] md:mx-auto md:w-full md:max-w-480">
-          <div className="absolute inset-0">
-            <Image
-              src={post.cover_image_url ?? "/images/hero-blog-destaque.png"}
-              alt={post.title}
-              fill
-              unoptimized={Boolean(post.cover_image_url)}
-              className="object-cover object-center md:object-cover md:object-[center_35%]"
-              priority
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/30 via-black/15 to-black/5" />
-          </div>
+      <main className="min-h-screen bg-[#faf8f2] text-on-surface">
+      <section className="mx-auto max-w-142 px-6 pb-8 pt-6 md:pb-10 md:pt-8">
+        <div className="mx-auto max-w-130">
+          {categoryName ? (
+            <span className="mx-auto mb-5 flex w-fit rounded-full bg-[rgb(148_53_21)] px-2.5 py-1.5 text-[7px] font-bold uppercase tracking-[0.12em] text-white">
+              {categoryName}
+            </span>
+          ) : null}
 
-          <div className="relative mx-auto flex h-full max-w-300 items-end px-6 py-16 md:px-10 lg:px-12">
-            <div className="max-w-4xl pb-4 text-white">
-            {categoryName ? (
-              <span className="inline-flex rounded-full bg-[rgb(148_53_21)] px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-white shadow-sm mb-4">
-                {categoryName}
-              </span>
-            ) : null}
+          <h1 className="mb-6 max-w-113.75 font-serif text-[30px] leading-[1.12] text-on-surface md:text-[32px]">
+            {post.title}
+          </h1>
 
-            <h1 className="font-serif text-4xl leading-tight md:text-5xl lg:text-6xl mb-6">
-              {post.title}
-            </h1>
+          <nav aria-label="Breadcrumb" className="mb-5 text-xs text-on-surface/60">
+            <ol className="flex min-w-0 items-center gap-2">
+              <li className="shrink-0">
+                <Link href="/" className="transition-colors hover:text-[rgb(148_53_21)]">Início</Link>
+              </li>
+              <li aria-hidden="true" className="shrink-0 text-on-surface/35">/</li>
+              <li className="shrink-0">
+                <Link href="/blog" className="transition-colors hover:text-[rgb(148_53_21)]">Blog</Link>
+              </li>
+              <li aria-hidden="true" className="shrink-0 text-on-surface/35">/</li>
+              <li aria-current="page" className="min-w-0 truncate">{post.title}</li>
+            </ol>
+          </nav>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm text-white/90">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-[10px] text-on-surface/65">
               {post.authors ? (
                 <div className="flex items-center gap-2">
                   {post.authors.avatar_url ? (
-                    <img src={post.authors.avatar_url} alt={post.authors.name} className="w-6 h-6 rounded-full object-cover border border-white/20" />
+                    <Image
+                      src={post.authors.avatar_url}
+                      alt=""
+                      width={24}
+                      height={24}
+                      unoptimized
+                      className="h-6 w-6 rounded-full border border-on-surface/10 object-cover"
+                    />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-[10px] font-bold text-white">
                       {post.authors.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -359,37 +366,48 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-[10px] font-bold text-white">
                     M
                   </div>
                   <span>Por Equipe Menu ZN</span>
                 </div>
               )}
               
-              <span className="opacity-50">•</span>
+              <span aria-hidden="true" className="text-on-surface/35">•</span>
               <span>{formatDate(post.published_at)}</span>
-              <span className="opacity-50">•</span>
+              <span aria-hidden="true" className="text-on-surface/35">•</span>
               <span>{estimateReadTime(post.content_md)}</span>
               {isPreview ? (
                 <>
-                  <span className="opacity-50">•</span>
-                  <span className="rounded-full border border-white/35 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/90">
+                  <span aria-hidden="true" className="text-on-surface/35">•</span>
+                  <span className="rounded-full border border-on-surface/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em]">
                     Pré-visualização
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="opacity-50">•</span>
+                  <span aria-hidden="true" className="text-on-surface/35">•</span>
                   <BlogViewTracker slug={post.slug} initialViewCount={post.view_count} />
                 </>
               )}
-            </div>
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-245 px-6 py-14 md:px-10 lg:px-12 lg:py-20">
+      <section className="mx-auto max-w-300 px-5 pb-8 sm:px-8 md:px-18 md:pb-12">
+        <div className="relative aspect-2/1 overflow-hidden rounded-[14px] bg-[#e7e0d8]">
+          <Image
+            src={post.cover_image_url ?? "/images/hero-blog-destaque.png"}
+            alt={post.title}
+            fill
+            unoptimized={Boolean(post.cover_image_url)}
+            className="object-cover object-center md:object-[center_35%]"
+            priority
+          />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-245 px-6 py-10 md:px-10 lg:px-12 lg:py-20">
         <div className="mx-auto max-w-4xl">
           {/* <aside className="hidden md:flex flex-col gap-3 sticky top-28 h-fit pt-2">
             <button className="w-11 h-11 rounded-full border border-outline flex items-center justify-center text-on-surface transition hover:border-[rgb(148_53_21)] hover:text-[rgb(148_53_21)]" title="Compartilhar">
@@ -420,7 +438,14 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
             <div className="mt-16 rounded-[28px] border border-outline/20 bg-[#faf8f5] p-8 md:p-10">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 {post.authors?.avatar_url ? (
-                  <img src={post.authors.avatar_url} alt={post.authors.name} className="h-16 w-16 rounded-full object-cover" />
+                  <Image
+                    src={post.authors.avatar_url}
+                    alt={post.authors.name}
+                    width={64}
+                    height={64}
+                    unoptimized
+                    className="h-16 w-16 rounded-full object-cover"
+                  />
                 ) : (
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(148_53_21)] text-white font-serif text-2xl">
                     {post.authors?.name ? post.authors.name.charAt(0).toUpperCase() : 'M'}
