@@ -344,8 +344,8 @@ img {
 }
 
 .blog-ad-carousel__card {
-  width: min(528px, calc((100cqw - 48px) / 3));
-  aspect-ratio: 528 / 250;
+  width: min(450px, calc((100cqw - 48px) / 3));
+  aspect-ratio: 450 / 250;
   max-height: 250px;
   scroll-snap-align: start;
   isolation: isolate;
