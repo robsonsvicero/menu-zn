@@ -328,7 +328,7 @@ img {
 .blog-ad-carousel__viewport {
   container-type: inline-size;
   width: 100%;
-  max-width: 450px;
+  max-width: 970px;
   overflow-x: auto;
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
@@ -346,7 +346,7 @@ img {
 
 .blog-ad-carousel__card {
   width: 100cqw;
-  aspect-ratio: 450 / 250;
+  aspect-ratio: 970 / 250;
   max-height: 250px;
   scroll-snap-align: start;
   isolation: isolate;

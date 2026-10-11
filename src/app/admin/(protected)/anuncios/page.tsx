@@ -128,7 +128,7 @@ export default async function AdminAdvertisementsPage({
             className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5 file:text-on-surface"
           />
           <p className="mt-1 text-xs text-on-surface/60">
-            JPG, PNG, WebP ou AVIF, até 4 MB. Recomendado: 450 × 250 px.
+            JPG, PNG, WebP ou AVIF, até 4 MB. Recomendado: 970 × 250 px.
           </p>
         </div>
 

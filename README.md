@@ -55,4 +55,4 @@ Execute a migração `supabase/sql/09_schedule_blog_posts.sql` no Supabase. No p
 
 ## Anúncios nas matérias do blog
 
-Antes de publicar a funcionalidade, execute `supabase/sql/14_blog_advertisements.sql` no Supabase. O painel em `/admin/anuncios` permite cadastrar a imagem (JPG, PNG, WebP ou AVIF, até 4 MB, recomendada em 450 × 250 px), o texto e o link, além de ativar ou desativar cada anúncio. As imagens são enviadas ao bucket público `media-public` (ou ao bucket público definido por `SUPABASE_STORAGE_BUCKET`). Os anúncios ativos são exibidos automaticamente nas matérias, em carrossel contínuo.
+Antes de publicar a funcionalidade, execute `supabase/sql/14_blog_advertisements.sql` no Supabase. O painel em `/admin/anuncios` permite cadastrar a imagem (JPG, PNG, WebP ou AVIF, até 4 MB, recomendada em 970 × 250 px), o texto e o link, além de ativar ou desativar cada anúncio. As imagens são enviadas ao bucket público `media-public` (ou ao bucket público definido por `SUPABASE_STORAGE_BUCKET`). Os anúncios ativos são exibidos automaticamente nas matérias, em carrossel contínuo.

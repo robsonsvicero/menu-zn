@@ -110,10 +110,10 @@ export default async function EditAdvertisementPage({
           <Image
             src={advertisement.image_url}
             alt=""
-            width={450}
+            width={970}
             height={250}
             unoptimized
-            className="aspect-[9/5] w-full max-w-[450px] rounded-xl object-cover"
+            className="aspect-[97/25] w-full max-w-[970px] rounded-xl object-cover"
           />
         </div>
 
@@ -129,7 +129,7 @@ export default async function EditAdvertisementPage({
             className="w-full rounded-xl border border-outline px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-background file:px-3 file:py-1.5 file:text-on-surface"
           />
           <p className="mt-1 text-xs text-on-surface/60">
-            Opcional. JPG, PNG, WebP ou AVIF, até 4 MB; recomendado: 450 × 250 px.
+            Opcional. JPG, PNG, WebP ou AVIF, até 4 MB; recomendado: 970 × 250 px.
           </p>
         </div>
 
