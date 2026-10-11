@@ -333,11 +333,10 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
       />
       <main className="min-h-screen bg-[#faf8f2] text-on-surface">
       <section className="mx-auto max-w-[1680px] px-6 pb-8 pt-6 md:pb-10 md:pt-8">
-        <AdCarousel advertisements={advertisements} placement="hero" />
-
+        
         <div className="mx-auto max-w-200 flex flex-col items-center justify-center text-center">
           {categoryName ? (
-            <span className="mx-auto mb-8 flex w-fit rounded-full bg-[rgb(148_53_21)] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-white lg:text-xs">
+            <span className="mx-auto mb-8 flex w-fit rounded-full border border-[rgb(148_53_21)] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-[rgb(148_53_21)] lg:text-xs">
               {categoryName}
             </span>
           ) : null}
@@ -359,6 +358,8 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
           <h1 className="mb-12 max-w-190 font-serif text-4xl leading-[1.12] text-on-surface md:text-6xl">
             {post.title}
           </h1>
+
+          <AdCarousel advertisements={advertisements} placement="hero" />
 
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-on-surface/65 lg:text-sm">
               {post.authors ? (

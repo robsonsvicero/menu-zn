@@ -175,10 +175,10 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
                   aria-hidden="true"
                   className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
                 />
-                <span className="absolute left-4 top-4 rounded-full bg-black/65 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
+                <span className="absolute right-4 top-4 rounded-full bg-black/65 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
                   Publicidade
                 </span>
-                <span className="relative z-10 line-clamp-2 px-5 pb-5 pt-14 font-serif text-xl leading-tight text-white drop-shadow-sm md:text-2xl">
+                <span className="relative z-10 line-clamp-2 px-5 pb-5 pt-14 font-serif text-sm sm:text-2xl leading-tight text-white drop-shadow-sm">
                   {advertisement.title}
                 </span>
               </a>
