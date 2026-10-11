@@ -345,7 +345,7 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
         
         <div className="mx-auto max-w-200 flex flex-col items-center justify-center text-center">
           {categoryName ? (
-            <span className="mx-auto mb-8 flex w-fit rounded-full border border-[rgb(148_53_21)] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-[rgb(148_53_21)] lg:text-xs">
+            <span className="mx-auto mb-8 flex w-fit rounded-full border border-[#943515] px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.12em] text-[#943515] lg:text-xs">
               {categoryName}
             </span>
           ) : null}
@@ -357,7 +357,7 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
               </li>
               <li aria-hidden="true" className="shrink-0 text-on-surface/35">/</li>
               <li className="shrink-0">
-                <Link href="/blog" className="transition-colors hover:text-[rgb(148_53_21)]">Blog</Link>
+                <Link href="/blog" className="transition-colors hover:text-[#943515]">Blog</Link>
               </li>
               <li aria-hidden="true" className="shrink-0 text-on-surface/35">/</li>
               <li aria-current="page" className="min-w-0 flex-1 truncate text-left">{post.title}</li>

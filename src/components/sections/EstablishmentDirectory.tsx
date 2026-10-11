@@ -1,7 +1,10 @@
+import { randomInt } from "node:crypto";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Phone, Search, Star } from "lucide-react";
 import { fetchCategoryFeaturedEstablishments, fetchPublicNeighborhoods, fetchPublishedEstablishments } from "@/lib/establishments-public";
+import { createClient } from "@/lib/supabase/server";
+import { AdCarousel } from "@/app/(pages)/blog/[slug]/AdCarousel";
 
 const sortLabels = {
   featured: "Destaques",
@@ -75,8 +78,9 @@ export default async function EstablishmentDirectory({
   const neighborhoodFilter = (searchParams?.neighborhood ?? "").trim();
   const sortFilter = (searchParams?.sort ?? "featured") as keyof typeof sortLabels;
   const ifoodOnly = searchParams?.ifood === "1" || searchParams?.ifood === "true";
+  const supabase = await createClient();
 
-  const [items, neighborhoods, featuredItems] = await Promise.all([
+  const [items, neighborhoods, featuredItems, advertisementResult] = await Promise.all([
     fetchPublishedEstablishments({
       categorySlug,
       search: searchTerm,
@@ -87,7 +91,26 @@ export default async function EstablishmentDirectory({
     }),
     fetchPublicNeighborhoods(),
     fetchCategoryFeaturedEstablishments(categorySlug),
+    supabase
+      .from("blog_advertisements")
+      .select("id, title, image_url, target_url")
+      .eq("is_active", true)
+      .order("created_at", { ascending: true })
+      .limit(30),
   ]);
+
+  if (advertisementResult.error) {
+    throw new Error(`Não foi possível carregar os anúncios do site: ${advertisementResult.error.message}`);
+  }
+
+  const advertisements = [...(advertisementResult.data ?? [])];
+  for (let index = advertisements.length - 1; index > 0; index -= 1) {
+    const randomIndex = randomInt(index + 1);
+    [advertisements[index], advertisements[randomIndex]] = [
+      advertisements[randomIndex],
+      advertisements[index],
+    ];
+  }
 
   const categoryName = getRelation(items[0]?.categories)?.name ?? heroTitle;
   const hasResults = items.length > 0;
@@ -115,6 +138,8 @@ export default async function EstablishmentDirectory({
           </div>
         </div>
       </section>
+
+      <AdCarousel advertisements={advertisements} placement="hero" />
 
       <section className="border-b border-outline/20 bg-[#faf8f5]/90 backdrop-blur-md md:sticky md:top-0 md:z-30">
         <div className="mx-auto max-w-300 px-6 py-5 md:px-10 lg:px-12">
