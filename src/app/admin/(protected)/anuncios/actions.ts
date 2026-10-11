@@ -113,8 +113,8 @@ export async function createAdvertisementAction(formData: FormData) {
   const image = formData.get("image");
   const isActive = formData.get("is_active") === "on";
 
-  if (!title || title.length > 120) {
-    throw new Error("Informe um texto de até 120 caracteres para o anúncio.");
+  if (title.length > 120) {
+    throw new Error("O texto do anúncio deve ter até 120 caracteres.");
   }
 
   validateAdvertisementImage(image);
@@ -157,8 +157,8 @@ export async function updateAdvertisementAction(formData: FormData) {
     throw new Error("ID de anúncio inválido.");
   }
 
-  if (!title || title.length > 120) {
-    throw new Error("Informe um texto de até 120 caracteres para o anúncio.");
+  if (title.length > 120) {
+    throw new Error("O texto do anúncio deve ter até 120 caracteres.");
   }
 
   if (newImage) {

@@ -85,12 +85,11 @@ export default async function AdminAdvertisementsPage({
         <div className="grid gap-5 md:grid-cols-2">
           <div>
             <label htmlFor="ad-title" className="mb-1 block text-sm font-medium">
-              Texto do produto ou serviço *
+              Texto do produto ou serviço (opcional)
             </label>
             <input
               id="ad-title"
               name="title"
-              required
               maxLength={120}
               className="w-full rounded-xl border border-outline px-3 py-2 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
               placeholder="Ex.: Conheça os sabores da Casa..."
@@ -172,7 +171,9 @@ export default async function AdminAdvertisementsPage({
                 className="h-20 w-full rounded-lg object-cover sm:w-40"
               />
               <div className="min-w-0 flex-1">
-                <p className="font-medium text-on-surface">{advertisement.title}</p>
+                <p className="font-medium text-on-surface">
+                  {advertisement.title || "Sem texto informado"}
+                </p>
                 <a
                   href={advertisement.target_url}
                   target="_blank"

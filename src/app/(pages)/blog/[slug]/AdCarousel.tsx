@@ -104,7 +104,7 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
           position = 0;
         }, reducedMotion.matches ? 0 : 800);
       }
-    }, 10000);
+    }, 30000);
 
     return () => {
       window.clearInterval(interval);
@@ -160,7 +160,7 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
                 href={advertisement.target_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`${advertisement.title} — abre em nova aba`}
+                aria-label={`${advertisement.title || "Publicidade"} — abre em nova aba`}
                 aria-hidden={isClone}
                 tabIndex={isClone ? -1 : undefined}
                 className="blog-ad-carousel__card group relative flex shrink-0 items-end overflow-hidden rounded-2xl text-white shadow-sm transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"

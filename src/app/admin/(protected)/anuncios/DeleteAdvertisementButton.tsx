@@ -16,7 +16,8 @@ export function DeleteAdvertisementButton({ id, title, className }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
-    if (!confirm(`Tem certeza que deseja excluir o anúncio "${title}"?`)) {
+    const advertisementLabel = title || "sem texto informado";
+    if (!confirm(`Tem certeza que deseja excluir o anúncio "${advertisementLabel}"?`)) {
       return;
     }
 

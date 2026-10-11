@@ -75,12 +75,11 @@ export default async function EditAdvertisementPage({
         <div className="grid gap-5 md:grid-cols-2">
           <div>
             <label htmlFor="ad-title" className="mb-1 block text-sm font-medium">
-              Texto do produto ou serviço *
+              Texto do produto ou serviço (opcional)
             </label>
             <input
               id="ad-title"
               name="title"
-              required
               maxLength={120}
               defaultValue={advertisement.title}
               className="w-full rounded-xl border border-outline px-3 py-2 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
