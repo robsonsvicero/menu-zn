@@ -118,7 +118,7 @@ export default async function EstablishmentDirectory({
 
   return (
     <main className="min-h-screen bg-[#faf8f5] text-on-surface">
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden mb-12 md:mb-16 lg:mb-12">
         <div className="absolute inset-0">
           <Image src={heroImage} alt={heroAlt} fill className="object-cover object-center" priority />
           <div className="absolute inset-0 bg-black/60" />
@@ -139,12 +139,14 @@ export default async function EstablishmentDirectory({
         </div>
       </section>
 
+      <div className="px-6 md:px-16 lg:px-[120px]">
       <AdCarousel advertisements={advertisements} placement="hero" />
+      </div>
 
       <section className="border-b border-outline/20 bg-[#faf8f5]/90 backdrop-blur-md md:sticky md:top-0 md:z-30">
         <div className="mx-auto max-w-300 px-6 py-5 md:px-10 lg:px-12">
-          <form method="get" className="grid gap-3 rounded-3xl border border-outline/30 bg-white p-4 shadow-sm md:grid-cols-[1fr_220px_180px_auto_auto]">
-            <label className="relative block">
+          <form method="get" className="grid grid-cols-1 gap-3 rounded-3xl border border-outline/30 bg-white p-4 shadow-sm sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_auto_auto]">
+            <label className="relative block min-w-0 sm:col-span-2 xl:col-span-1">
               <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-on-surface/45" />
               <input
                 type="text"
@@ -155,7 +157,7 @@ export default async function EstablishmentDirectory({
               />
             </label>
 
-            <select name="neighborhood" defaultValue={neighborhoodFilter} className="w-full rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm outline-none transition focus:border-[rgb(148_53_21)]">
+            <select name="neighborhood" defaultValue={neighborhoodFilter} className="w-full min-w-0 rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm outline-none transition focus:border-[rgb(148_53_21)]">
               <option value="">Todos os bairros</option>
               {neighborhoods.map((item) => (
                 <option key={item.slug} value={item.slug}>
@@ -164,18 +166,18 @@ export default async function EstablishmentDirectory({
               ))}
             </select>
 
-            <select name="sort" defaultValue={sortFilter} className="w-full rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm outline-none transition focus:border-[rgb(148_53_21)]">
+            <select name="sort" defaultValue={sortFilter} className="w-full min-w-0 rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm outline-none transition focus:border-[rgb(148_53_21)]">
               <option value="featured">Destaques</option>
               <option value="rating">Melhor avaliados</option>
               <option value="name">Ordem alfabética</option>
             </select>
 
-            <label className="inline-flex items-center gap-2 rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm">
+            <label className="inline-flex min-w-0 items-center gap-2 rounded-2xl border border-outline/40 bg-[#faf8f5] px-4 py-3 text-sm">
               <input type="checkbox" name="ifood" value="1" defaultChecked={ifoodOnly} className="rounded border-outline" />
               iFood
             </label>
 
-            <div className="flex gap-2">
+            <div className="flex min-w-0 gap-2 sm:justify-end">
               <button type="submit" className="rounded-2xl bg-[rgb(148_53_21)] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:opacity-90">
                 Filtrar
               </button>

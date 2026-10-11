@@ -35,7 +35,7 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="w-full bg-surface py-20 px-6 md:px-16 lg:px-[120px]">
+    <section className="w-full bg-surface py-20 px-6 md:px-16 lg:px-[120px]" id="newsletter">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-20 max-w-[1200px] mx-auto">
 
         {/* Text Content */}
