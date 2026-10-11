@@ -1,13 +1,16 @@
+import { randomInt } from "node:crypto";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { InstagramIcon } from "@hugeicons/core-free-icons";
-import { ArrowLeft, DollarSign, MapPin, Phone, Star, Globe, MessageCircle } from "lucide-react";
+import { DollarSign, MapPin, Phone, Star, Globe, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { fetchPublishedEstablishmentBySlug, fetchPublishedEstablishments } from "@/lib/establishments-public";
+import { createClient } from "@/lib/supabase/server";
 import { Gallery } from "@/components/ui/Gallery";
 import { MapEmbed } from "@/components/ui/MapEmbed";
+import { AdCarousel } from "@/app/(pages)/blog/[slug]/AdCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -102,10 +105,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LocalDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const establishment = await fetchPublishedEstablishmentBySlug(slug);
+  const supabase = await createClient();
+
+  const [establishment, advertisementResult] = await Promise.all([
+    fetchPublishedEstablishmentBySlug(slug),
+    supabase
+      .from("blog_advertisements")
+      .select("id, title, image_url, target_url")
+      .eq("is_active", true)
+      .order("created_at", { ascending: true })
+      .limit(30),
+  ]);
 
   if (!establishment) {
     notFound();
+  }
+
+  if (advertisementResult.error) {
+    throw new Error(`Não foi possível carregar os anúncios do site: ${advertisementResult.error.message}`);
   }
 
   const category = getRelation(establishment.categories);
@@ -119,6 +136,15 @@ export default async function LocalDetailPage({ params }: PageProps) {
   }))
     .filter((item) => item.slug !== establishment.slug)
     .slice(0, 3);
+
+  const advertisements = [...(advertisementResult.data ?? [])];
+  for (let index = advertisements.length - 1; index > 0; index -= 1) {
+    const randomIndex = randomInt(index + 1);
+    [advertisements[index], advertisements[randomIndex]] = [
+      advertisements[randomIndex],
+      advertisements[index],
+    ];
+  }
 
   const imageSrc = establishment.image_cover_url ?? "/images/hero-restaurantes.png";
 
@@ -216,6 +242,12 @@ export default async function LocalDetailPage({ params }: PageProps) {
             </div>
           </div>
         </section>
+
+        {advertisements.length > 0 ? (
+          <div className="mx-auto max-w-300 px-6 md:px-10 lg:px-12">
+            <AdCarousel advertisements={advertisements} placement="hero" />
+          </div>
+        ) : null}
 
         <section className="mx-auto max-w-300 px-6 py-14 md:px-10 lg:px-12 lg:py-18">
           <div className="grid gap-6">
