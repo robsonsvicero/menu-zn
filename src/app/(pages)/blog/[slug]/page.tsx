@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -289,7 +290,15 @@ export default async function BlogPostDetail({ params, searchParams }: PageProps
     throw new Error(`Não foi possível carregar os anúncios do blog: ${advertisementResult.error.message}`);
   }
 
-  const advertisements = advertisementResult.data ?? [];
+  const advertisements = [...(advertisementResult.data ?? [])];
+  for (let index = advertisements.length - 1; index > 0; index -= 1) {
+    const randomIndex = randomInt(index + 1);
+    [advertisements[index], advertisements[randomIndex]] = [
+      advertisements[randomIndex],
+      advertisements[index],
+    ];
+  }
+
   const relatedPosts = allRelatedPosts
     .filter((item) => item.slug !== post.slug)
     .slice(0, 3);
