@@ -244,7 +244,7 @@ export default async function LocalDetailPage({ params }: PageProps) {
         </section>
 
         {advertisements.length > 0 ? (
-          <div className="mx-auto max-w-300 px-6 md:px-10 lg:px-12">
+          <div className="mx-auto mt-8 max-w-300 px-6 md:px-10 lg:px-12">
             <AdCarousel advertisements={advertisements} placement="hero" />
           </div>
         ) : null}
