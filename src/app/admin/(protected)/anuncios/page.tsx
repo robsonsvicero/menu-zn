@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ExternalLink, Megaphone } from "lucide-react";
+import { ExternalLink, Megaphone, MousePointerClick } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createAdvertisementAction, toggleAdvertisementAction } from "./actions";
 import Link from "next/link";
@@ -12,6 +12,7 @@ type AdvertisementRow = {
   image_url: string;
   target_url: string;
   is_active: boolean;
+  click_count: number;
   created_at: string;
 };
 
@@ -31,7 +32,7 @@ export default async function AdminAdvertisementsPage({
   ]);
   const { data, error } = await supabase
     .from("blog_advertisements")
-    .select("id, title, image_url, target_url, is_active, created_at")
+    .select("id, title, image_url, target_url, is_active, click_count, created_at")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -42,10 +43,10 @@ export default async function AdminAdvertisementsPage({
       <div className="mb-8">
         <h2 className="flex items-center gap-3 font-serif text-3xl">
           <Megaphone size={28} className="text-primary" aria-hidden="true" />
-          Anúncios do blog
+          Anúncios
         </h2>
         <p className="mt-1 text-sm text-on-surface/70">
-          Cadastre e gerencie os anúncios exibidos nas matérias.
+          Cadastre e gerencie os anúncios exibidos no blog e nas páginas de estabelecimentos.
         </p>
       </div>
 
@@ -186,6 +187,11 @@ export default async function AdminAdvertisementsPage({
                 </a>
               </div>
               <div className="flex items-center justify-between gap-3 sm:justify-end">
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface/75">
+                  <MousePointerClick size={16} aria-hidden="true" />
+                  {advertisement.click_count.toLocaleString("pt-BR")}{" "}
+                  {advertisement.click_count === 1 ? "clique" : "cliques"}
+                </span>
                 <span
                   className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                     advertisement.is_active

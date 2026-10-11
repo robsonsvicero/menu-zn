@@ -20,11 +20,12 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
   const pausedByFocusRef = useRef(false);
   const pausedByVisibilityRef = useRef(false);
   const isInViewportRef = useRef(true);
-  const loopedAdvertisements = useMemo(() => {
+  const loopedAdvertisements = useMemo<Array<Advertisement & { trackingId?: string }>>(() => {
     const clone = advertisements.length > 1
       ? advertisements.slice(0, 1).map((advertisement) => ({
           ...advertisement,
           id: `${advertisement.id}-loop`,
+          trackingId: advertisement.id,
         }))
       : [];
 
@@ -119,6 +120,21 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
     return null;
   }
 
+  function trackAdvertisementClick(advertisementId: string) {
+    void fetch("/api/advertisements/clicks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ advertisementId }),
+      keepalive: true,
+    }).then((response) => {
+      if (!response.ok) {
+        console.error("Não foi possível registrar o clique no anúncio.", response.status);
+      }
+    }).catch((error: unknown) => {
+      console.error("Não foi possível registrar o clique no anúncio.", error);
+    });
+  }
+
   return (
     <section
       aria-label="Anúncios dos parceiros"
@@ -163,6 +179,9 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
                 aria-label={`${advertisement.title || "Publicidade"} — abre em nova aba`}
                 aria-hidden={isClone}
                 tabIndex={isClone ? -1 : undefined}
+                onClick={() =>
+                  trackAdvertisementClick(advertisement.trackingId ?? advertisement.id)
+                }
                 className="blog-ad-carousel__card group relative flex shrink-0 items-end overflow-hidden rounded-2xl text-white shadow-sm transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
                 data-carousel-slide
               >
