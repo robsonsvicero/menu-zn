@@ -104,7 +104,7 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
           position = 0;
         }, reducedMotion.matches ? 0 : 800);
       }
-    }, 30000);
+    }, 15000);
 
     return () => {
       window.clearInterval(interval);
