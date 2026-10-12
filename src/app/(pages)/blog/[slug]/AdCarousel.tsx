@@ -16,10 +16,6 @@ type Props = {
 
 export function AdCarousel({ advertisements, placement = "article" }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
-  const pausedByPointerRef = useRef(false);
-  const pausedByFocusRef = useRef(false);
-  const pausedByVisibilityRef = useRef(false);
-  const isInViewportRef = useRef(true);
   const loopedAdvertisements = useMemo<Array<Advertisement & { trackingId?: string }>>(() => {
     const clone = advertisements.length > 1
       ? advertisements.slice(0, 1).map((advertisement) => ({
@@ -68,34 +64,8 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
     resizeObserver.observe(viewport);
     resizeObserver.observe(firstSlide);
 
-    isInViewportRef.current = true;
-    pausedByVisibilityRef.current = document.hidden;
-    const visibilityObserver = new IntersectionObserver(([entry]) => {
-      isInViewportRef.current = entry.isIntersecting;
-      pausedByVisibilityRef.current =
-        document.hidden || !isInViewportRef.current;
-    });
-    visibilityObserver.observe(viewport);
-
-    const updateVisibility = () => {
-      if (!document.hidden) {
-        pausedByPointerRef.current = false;
-        pausedByFocusRef.current = false;
-      }
-
-      pausedByVisibilityRef.current =
-        document.hidden || !isInViewportRef.current;
-    };
-    document.addEventListener("visibilitychange", updateVisibility);
-    window.addEventListener("pageshow", updateVisibility);
-
     const interval = window.setInterval(() => {
-      if (
-        pausedByPointerRef.current ||
-        pausedByFocusRef.current ||
-        pausedByVisibilityRef.current ||
-        step <= 0
-      ) {
+      if (step <= 0) {
         return;
       }
 
@@ -117,9 +87,6 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
       window.clearInterval(interval);
       window.clearTimeout(resetTimeout);
       resizeObserver.disconnect();
-      visibilityObserver.disconnect();
-      document.removeEventListener("visibilitychange", updateVisibility);
-      window.removeEventListener("pageshow", updateVisibility);
     };
   }, [advertisements.length]);
 
@@ -150,23 +117,6 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
       className={`blog-ad-carousel mx-auto w-full ${
         placement === "hero" ? "mb-8 mt-0" : "my-14 md:my-20"
       }`}
-      onPointerEnter={() => {
-        pausedByPointerRef.current = true;
-      }}
-      onPointerLeave={() => {
-        pausedByPointerRef.current = false;
-      }}
-      onFocusCapture={() => {
-        pausedByFocusRef.current = true;
-      }}
-      onBlurCapture={(event) => {
-        if (
-          !(event.relatedTarget instanceof Node) ||
-          !event.currentTarget.contains(event.relatedTarget)
-        ) {
-          pausedByFocusRef.current = false;
-        }
-      }}
     >
       <div
         ref={viewportRef}

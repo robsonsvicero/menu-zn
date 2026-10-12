@@ -70,6 +70,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
+        suppressHydrationWarning
         className={`${inter.variable} ${caslon.variable} antialiased font-sans text-on-surface bg-background`}
       >
         <SiteShell>{children}</SiteShell>
