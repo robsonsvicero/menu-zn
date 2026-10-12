@@ -78,10 +78,16 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
     visibilityObserver.observe(viewport);
 
     const updateVisibility = () => {
+      if (!document.hidden) {
+        pausedByPointerRef.current = false;
+        pausedByFocusRef.current = false;
+      }
+
       pausedByVisibilityRef.current =
         document.hidden || !isInViewportRef.current;
     };
     document.addEventListener("visibilitychange", updateVisibility);
+    window.addEventListener("pageshow", updateVisibility);
 
     const interval = window.setInterval(() => {
       if (
@@ -113,6 +119,7 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       document.removeEventListener("visibilitychange", updateVisibility);
+      window.removeEventListener("pageshow", updateVisibility);
     };
   }, [advertisements.length]);
 
@@ -192,7 +199,7 @@ export function AdCarousel({ advertisements, placement = "article" }: Props) {
                 />
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent"
                 />
                 <span className="absolute right-4 top-4 rounded-full bg-black/65 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
                   Publicidade
