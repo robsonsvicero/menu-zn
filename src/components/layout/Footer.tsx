@@ -16,7 +16,7 @@ export default function Footer() {
           <div className="flex flex-col">
             <div className="mb-6">
               <Image
-                src="/logos/logo-vertical 9.png"
+                src="/logos/logo-vertical_9.png"
                 alt="Menu ZN"
                 width={120}
                 height={80}
@@ -104,15 +104,15 @@ export default function Footer() {
             <Link href="/termos" className="text-[#a8a8a8] hover:text-white text-[10px] font-bold tracking-[0.15em] uppercase transition-colors">
               Termos de Uso
             </Link>
-            <div className="flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+            <div className="flex flex-col items-center gap-2 opacity-100 hover:opacity-70 transition-opacity">
               <span className="text-[#a8a8a8] text-[9px] tracking-wider uppercase">Desenvolvido por</span>
               <a href="https://robsonsvicero.com.br" target="_blank" rel="noopener noreferrer">
                 <Image
                   src="/images/logo_robson.png"
                   alt="Robson Svicero"
-                  width={80}
-                  height={20}
-                  className="object-contain opacity-70 hover:opacity-100 transition-opacity"
+                  width={112}
+                  height={28}
+                  className="object-contain opacity-100 hover:opacity-70 transition-opacity"
                 />
               </a>
             </div>

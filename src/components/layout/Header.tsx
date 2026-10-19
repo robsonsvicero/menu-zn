@@ -67,7 +67,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <Image
-                src="/logos/logo-horizontal 6.png"
+                src="/logos/logo-horizontal_6.png"
                 alt="Menu ZN"
                 width={140}
                 height={40}
@@ -143,7 +143,7 @@ export default function Header() {
           <div className="flex items-center justify-between px-8 h-20 border-b border-outline/40">
             <Link href="/" onClick={() => setMobileOpen(false)}>
               <Image
-                src="/logos/logo-horizontal 4.png"
+                src="/logos/logo-horizontal_4.png"
                 alt="Menu ZN"
                 width={120}
                 height={36}

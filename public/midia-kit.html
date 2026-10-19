@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mídia kit Menu Zona Norte: um guia editorial que conecta pessoas às experiências gastronômicas da Zona Norte de São Paulo.">
+  <meta name="theme-color" content="#1c1c1c">
+  <title>Mídia Kit | Menu Zona Norte</title>
+  <style>
+    :root{--ink:#292724;--paper:#faf8f2;--rust:#943515;--gold:#d69869;--muted:#77716b;--serif:Georgia,'Times New Roman',serif;--sans:Arial,Helvetica,sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6}a{color:inherit;text-decoration:none}.wrap{width:min(1120px,calc(100% - 48px));margin:auto}.eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:700}.hero{min-height:690px;display:flex;align-items:center;color:white;position:relative;background:#171513 url('/images/hero-zonanorte.png') center/cover no-repeat}.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,16,15,.93),rgba(18,16,15,.63) 55%,rgba(18,16,15,.14))}.hero .wrap{position:relative;padding:70px 0}.brand{width:190px;max-height:62px;object-fit:contain;object-position:left center;margin-bottom:74px}.hero .eyebrow{color:var(--gold)}h1,h2,h3{font-family:var(--serif);line-height:1.08}h1{font-size:clamp(52px,8vw,92px);max-width:790px;margin:20px 0}.hero p{max-width:600px;font-family:var(--serif);font-style:italic;font-size:21px;color:#f5eee8}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}.button{display:inline-flex;align-items:center;justify-content:center;padding:14px 21px;border-radius:4px;background:var(--gold);color:#1b1714;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}.button.secondary{background:transparent;color:white;border:1px solid #ffffff80}.facts{background:#1c1c1c;color:white;padding:30px 0}.fact-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}.fact{border-left:1px solid #d6986966;padding-left:16px}.fact strong{display:block;color:var(--gold);font:700 28px var(--serif)}.fact span{display:block;color:#c5bfba;text-transform:uppercase;letter-spacing:.08em;font-size:10px;line-height:1.5}.note{color:#a29b95;font-size:11px;text-align:center;margin:20px 0 0}.section{padding:92px 0}.section.light{background:#fff}.section.dark{background:#211f1d;color:#fff}.section-head{max-width:690px;margin-bottom:40px}.section-head .eyebrow{color:var(--rust)}.dark .section-head .eyebrow{color:var(--gold)}h2{font-size:clamp(38px,5vw,58px);margin:13px 0 17px}h3{font-size:26px;margin:0 0 12px}.lead{font-size:18px;color:#69635d}.dark .lead{color:#d0c9c2}.story{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}.story img{width:100%;height:350px;object-fit:cover;border-radius:4px}.story p{color:#625d57}.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.pillar,.offer{padding:26px;border:1px solid #e5dfd7;background:#fff}.pillar b{display:block;color:var(--rust);font:700 28px var(--serif);margin-bottom:10px}.pillar p,.offer p{font-size:14px;color:#6c655e;margin:0}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.metric{padding:27px;background:#2b2825;border-top:2px solid var(--gold)}.metric strong{display:block;color:var(--gold);font:700 38px var(--serif)}.metric span{font-size:13px;color:#e4ddd6}.offers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.offer{min-height:260px}.offer.featured{border:2px solid var(--rust);box-shadow:0 12px 30px #381a0e13}.price{font:700 27px var(--serif);color:var(--rust);margin:16px 0}.offer ul{padding-left:19px;color:#625d57;font-size:13px}.offer li{margin:7px 0}.fine{font-size:12px;color:#827b74;margin-top:20px}.closing{background:var(--rust);color:white;padding:74px 0}.closing .wrap{display:flex;justify-content:space-between;align-items:center;gap:28px}.closing h2{max-width:690px;font-size:clamp(36px,5vw,54px);margin:10px 0}.closing .button{background:#fff}.footer{padding:25px 0;background:#171614;color:#c9c3bd;font-size:12px}.footer .wrap{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.print{position:fixed;right:22px;bottom:22px;z-index:5;border:0;cursor:pointer;box-shadow:0 6px 24px #0004}
+    .rate-table-wrap{overflow-x:auto;border-top:1px solid #ded8d0}.rate-table{width:100%;border-collapse:collapse;text-align:left}.rate-table th{padding:18px 16px;color:var(--rust);font-size:12px;text-transform:uppercase;letter-spacing:.11em;border-bottom:1px solid #ded8d0}.rate-table th:last-child,.rate-table td:last-child{text-align:right;white-space:nowrap}.rate-table td{padding:20px 16px;border-bottom:1px solid #ded8d0;font-family:var(--serif);font-size:21px;line-height:1.35}.rate-table td:last-child{font-weight:700;color:var(--rust);font-size:24px}.rate-table td span{color:#6c655e}
+    @media(max-width:800px){.fact-grid{grid-template-columns:repeat(2,1fr)}.story{grid-template-columns:1fr}.story img{height:280px}.pillars{grid-template-columns:repeat(2,1fr)}.offers{grid-template-columns:1fr}.offer{min-height:0}.closing .wrap{align-items:flex-start;flex-direction:column}.brand{margin-bottom:54px}.rate-table td{font-size:17px;padding:16px 12px}.rate-table td:last-child{font-size:20px}}
+    @media(max-width:480px){.wrap{width:min(100% - 32px,1120px)}.hero{min-height:650px}.hero p{font-size:18px}.section{padding:66px 0}.fact-grid{gap:18px 10px}.fact strong{font-size:24px}.pillars{grid-template-columns:1fr}.print{right:12px;bottom:12px}}
+    @media print{
+      @page{size:A4 portrait;margin:16mm 18mm}
+      html,body{width:100%;overflow:visible;background:#fff;font-size:9.5pt;line-height:1.42;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      *,*::before,*::after{box-sizing:border-box;min-width:0}
+      .wrap{width:100%;max-width:none;margin:0 auto;padding-left:10mm!important;padding-right:10mm!important}
+      .hero{min-height:0;height:254mm;background-position:center;background-size:cover;break-after:page}
+      .hero .wrap{padding:16mm 10mm!important}
+      .brand{width:155px;max-height:50px;margin-bottom:35mm}
+      h1{font-size:48pt;max-width:160mm;margin:8mm 0}
+      .hero p{font-size:15pt;max-width:130mm}
+      .actions{margin-top:10mm}
+      .facts,.dark,.closing,.footer{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+      .facts{padding:9mm 0}
+      .fact-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5mm 4mm}
+      .fact{padding-left:3mm;overflow-wrap:anywhere}.fact strong{font-size:17pt}.fact span{font-size:7pt;overflow-wrap:anywhere}
+      .note{font-size:7.5pt;margin-top:5mm}
+      .section{padding:12mm 0}
+      .section-head{margin-bottom:7mm}
+      h2{font-size:30pt;margin:3mm 0}
+      h3{font-size:17pt}
+      .lead{font-size:11pt}
+      .story{grid-template-columns:1.1fr .9fr;gap:9mm}
+      .story img{height:67mm}
+      .pillars{grid-template-columns:repeat(2,minmax(0,1fr));gap:3mm}
+      .pillar,.offer{padding:5mm}
+      .pillar b{font-size:17pt;margin-bottom:2mm}
+      .pillar p,.offer p{font-size:8.5pt}
+      .metrics{grid-template-columns:repeat(3,1fr);gap:4mm}
+      .metric{padding:6mm}
+      .metric strong{font-size:24pt}.metric span{font-size:8.5pt}
+      .offers{grid-template-columns:repeat(2,minmax(0,1fr));gap:4mm}
+      .offer{min-height:0}
+      .price{font-size:19pt;margin:3mm 0}
+      .offer ul{font-size:8pt;padding-left:4mm}
+      .offer li{margin:1.5mm 0}
+      .fine{font-size:7.5pt;margin-top:4mm}
+      .rate-table-wrap{width:100%;overflow:visible}
+      .rate-table{table-layout:fixed}
+      .rate-table th:first-child,.rate-table td:first-child{width:76%;overflow-wrap:anywhere}
+      .rate-table th:last-child,.rate-table td:last-child{width:24%}
+      .rate-table th{font-size:8pt;padding:3mm 4mm}
+      .rate-table td{font-size:11pt;padding:4mm;line-height:1.25}
+      .rate-table td:last-child{font-size:12pt}
+      .closing{padding:14mm 0}
+      .closing h2{font-size:27pt}
+      .footer{padding:5mm 0;font-size:8pt}
+      .print,.actions .secondary{display:none!important}
+      .button{padding:3mm 5mm;font-size:8pt;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+      .story,.pillar,.metric,.offer,.rate-table tr{break-inside:avoid;page-break-inside:avoid}
+      .section-head,.offer h3{break-after:avoid;page-break-after:avoid}
+      .section.dark,.section.light:has(.offers){break-before:page;page-break-before:always}
+      .closing{break-before:page;page-break-before:always}
+    }
+  </style>
+</head>
+<body>
+  <button class="button print" onclick="window.print()" aria-label="Imprimir ou salvar o mídia kit em PDF">Salvar em PDF</button>
+  <header class="hero"><div class="wrap">
+    <img class="brand" src="./logos/logo-horizontal_6.png" alt="Menu Zona Norte">
+    <div class="eyebrow">Mídia kit · 2026</div>
+    <h1>A Zona Norte tem muito sabor. A gente conta essa história.</h1>
+    <p>Um guia editorial independente que aproxima pessoas dos melhores restaurantes, bares e experiências gastronômicas da região.</p>
+    <div class="actions"><a class="button" href="https://wa.me/5511973237060?text=Ol%C3%A1!%20Quero%20conhecer%20as%20oportunidades%20de%20parceria%20do%20Menu%20ZN.">Vamos conversar</a><a class="button secondary" href="https://www.menuzonanorte.com.br">Conheça o Menu Zona Norte</a></div>
+  </div></header>
+  <section class="facts"><div class="wrap"><div class="fact-grid">
+    <div class="fact"><strong>+52 mil</strong><span>impressões mensais no Google</span></div>
+    <div class="fact"><strong>+500</strong><span>cliques qualificados por mês</span></div>
+    <div class="fact"><strong>8,5</strong><span>posição média no Google</span></div>
+    <div class="fact"><strong>25 mil+</strong><span>seguidores no Instagram*</span></div>
+    <div class="fact"><strong>100%</strong><span>foco na Zona Norte de São Paulo</span></div>
+  </div><p class="note">Métricas de busca informadas pelo site e atualizadas mensalmente via Google Search Console. *Seguidores conforme comunicação comercial do Menu ZN. Resultados e alcance podem variar.</p></div></section>
+  <main>
+    <section class="section light"><div class="wrap story"><div><div class="eyebrow">Quem somos</div><h2>Curadoria local, feita com olhar editorial.</h2><p class="lead">O Menu ZN mapeia e destaca lugares que ajudam a contar a evolução da gastronomia na Zona Norte.</p><p>Mais do que uma lista, o guia observa qualidade, consistência, identidade e experiência. Reúne casas tradicionais e projetos contemporâneos de Santana, Tucuruvi, Cantareira e bairros vizinhos.</p><p>O conteúdo combina descoberta local, informação prática e histórias que dão visibilidade a quem movimenta a cena gastronômica da região.</p></div><img src="./images/hero-zonanorte.png" alt="Experiências gastronômicas na Zona Norte de São Paulo"></div></section>
+    <section class="section"><div class="wrap"><div class="section-head"><div class="eyebrow">Nossa comunidade</div><h2>Um público que procura onde viver a próxima experiência.</h2><p class="lead">O Menu ZN conecta negócios locais a pessoas interessadas em comer, beber e explorar a Zona Norte.</p></div><div class="pillars"><article class="pillar"><b>Descoberta</b><p>Guias e categorias ajudam o público a encontrar novos lugares.</p></article><article class="pillar"><b>Intenção</b><p>Conteúdo local para quem busca opções e informações para decidir.</p></article><article class="pillar"><b>Confiança</b><p>Uma curadoria editorial que valoriza identidade e experiência.</p></article><article class="pillar"><b>Proximidade</b><p>Foco dedicado à gastronomia e aos bairros da Zona Norte.</p></article></div></div></section>
+    <section class="section dark"><div class="wrap"><div class="section-head"><div class="eyebrow">Presença digital</div><h2>Visibilidade que começa na busca.</h2><p class="lead">O conteúdo do guia trabalha para ser encontrado por pessoas interessadas na gastronomia da região.</p></div><div class="metrics"><div class="metric"><strong>+52 mil</strong><span>impressões mensais no Google</span></div><div class="metric"><strong>+500</strong><span>cliques qualificados por mês</span></div><div class="metric"><strong>8,5</strong><span>posição média nos resultados</span></div></div><p class="note">Dados informados pelo site, com atualização mensal via Google Search Console. Os resultados variam ao longo do tempo.</p></div></section>
+    <section class="section light"><div class="wrap"><div class="section-head"><div class="eyebrow">Parcerias para marcas locais</div><h2>Conteúdo e presença para o seu negócio.</h2><p class="lead">Formatos comerciais publicados atualmente no site. Investimento e disponibilidade devem ser confirmados com a equipe.</p></div><div class="offers">
+      <article class="offer"><h3>Bronze</h3><p>Presença digital essencial no guia.</p><div class="price">R$ 157<span style="font:14px Arial;color:#777"> / mês</span></div><ul><li>Perfil exclusivo da empresa</li><li>Galeria de fotos</li><li>Atalho para WhatsApp</li><li>Endereço, mapa e Instagram</li></ul></article>
+      <article class="offer featured"><h3>Prata · recomendado</h3><p>Mais destaque e visibilidade na categoria.</p><div class="price">R$ 317<span style="font:14px Arial;color:#777"> / mês</span></div><ul><li>Inclui os benefícios do Bronze</li><li>Destaque na categoria e prioridade nas buscas</li><li>Selo Parceiro Menu Zona Norte</li><li>Postagem exclusiva no Instagram</li><li>Inclusão em matérias especiais</li></ul></article>
+      <article class="offer"><h3>Ouro</h3><p>Presença ampliada e conteúdo editorial.</p><div class="price">R$ 737<span style="font:14px Arial;color:#777"> / mês</span></div><ul><li>Inclui os benefícios do Prata</li><li>Super destaque na home do site</li><li>Matéria exclusiva no editorial</li><li>Produção de 1 Reel profissional</li><li>Divulgação nas redes</li></ul></article>
+    </div><p class="fine">Valores dos planos de parceria reproduzidos da página comercial do site e sujeitos a alteração. Consulte entregas e disponibilidade com a equipe.</p>
+      <div class="section-head" style="margin:54px 0 24px"><div class="eyebrow">Mídia e publicidade</div><h2 style="font-size:clamp(32px,4vw,44px)">Divulgue seus produtos e serviços no guia.</h2><p class="lead">Opções mensais de banners e páginas exclusivas para dar visibilidade à sua marca.</p></div>
+      <div class="rate-table-wrap"><table class="rate-table"><thead><tr><th scope="col">Divulgação</th><th scope="col">Valor mensal</th></tr></thead><tbody>
+        <tr><td>Banner nas páginas principais <span>(restaurantes, pizzarias e bares)</span></td><td>R$ 349</td></tr>
+        <tr><td>Banner em página específica de restaurante</td><td>R$ 449</td></tr>
+        <tr><td>Banner nas páginas principais + landing page exclusiva</td><td>R$ 549</td></tr>
+        <tr><td>Banner em página específica de restaurante + landing page exclusiva</td><td>R$ 649</td></tr>
+      </tbody></table></div>
+      <p class="fine">Valores mensais conforme tabela de publicidade fornecida pelo Menu ZN. Formatos e disponibilidade sujeitos à confirmação.</p></div></section>
+    <section class="closing"><div class="wrap"><div><div class="eyebrow">Vamos criar algo juntos?</div><h2>Coloque sua marca na conversa gastronômica da Zona Norte.</h2></div><a class="button" href="https://wa.me/5511973237060?text=Ol%C3%A1!%20Quero%20conversar%20sobre%20uma%20parceria%20com%20o%20Menu%20ZN.">Fale com o Menu ZN</a></div></section>
+  </main>
+  <footer class="footer"><div class="wrap"><span>Menu Zona Norte · São Paulo, SP</span><span><a href="https://www.menuzonanorte.com.br">menuzonanorte.com.br</a> · <a href="https://wa.me/5511973237060">WhatsApp (11) 97323-7060</a></span><span>Instagram: @menuzonanorte</span></div></footer>
+</body>
+</html>
