@@ -99,7 +99,7 @@ export default function Header() {
               >
                 <Settings size={20} />
               </a> */}
-              <a href="/planos" target="_blank" rel="noopener noreferrer">
+              {/* <a href="/planos" target="_blank" rel="noopener noreferrer">
                 <Button
                   variant={isBlogArticle ? 'secondary' : 'default'}
                   size="lg"
@@ -107,7 +107,7 @@ export default function Header() {
                 >
                   Anuncie
                 </Button>
-              </a>
+              </a> */}
             </div>
 
             {/* Mobile: Hotdog button */}
@@ -186,13 +186,13 @@ export default function Header() {
           </nav>
 
           {/* Drawer CTA */}
-          <div className="px-8 pb-10">
+          {/* <div className="px-8 pb-10">
             <a href="/planos" target="_blank" rel="noopener noreferrer" className="block">
               <button className="w-full bg-primary hover:bg-[#7a2a10] text-white font-serif text-lg font-bold py-5 rounded-2xl transition-colors">
                 Anuncie
               </button>
             </a>
-          </div>
+          </div> */}
 
         </div>
       </div>

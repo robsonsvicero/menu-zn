@@ -14,7 +14,7 @@ const faqs = [
   {
     question: "Como faço para incluir meu restaurante no guia?",
     answer:
-      "A inclusão no Menu Zona Norte pode ser feita através da contratação de um dos nossos planos comerciais. Para mais detalhes, acesse a página de 'Planos e Preços' ou entre em contato pelo nosso WhatsApp.",
+      "A inclusão no Menu Zona Norte pode ser feita através da contratação de um dos nossos planos comerciais. Para mais detalhes, entre em contato pelo nosso WhatsApp.",
   },
   
   {
