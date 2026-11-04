@@ -22,7 +22,7 @@ export default async function StatsBar() {
   const stats: StatItem[] = [
     {
       icon: <Search size={18} strokeWidth={1.5} />,
-      value: '+52 MIL',
+      value: '+60 MIL',
       label: 'Impressões mensais\nno Google',
     },
     {
@@ -37,7 +37,7 @@ export default async function StatsBar() {
     },
     {
       icon: <TrendingUp size={18} strokeWidth={1.5} />,
-      value: '8,5',
+      value: '3,8',
       label: 'Posição média\nno Google',
     },
     {
