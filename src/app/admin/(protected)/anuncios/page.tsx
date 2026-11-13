@@ -111,7 +111,9 @@ export default async function AdminAdvertisementsPage({
               className="w-full rounded-xl border border-outline px-3 py-2 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
               placeholder="https://..."
             />
-            <p className="mt-1 text-xs text-on-surface/60">O link será aberto em uma nova aba.</p>
+            <p className="mt-1 text-xs text-on-surface/60">
+              O link será aberto em uma nova aba. Para direcionar a uma vitrine, use o endereço completo <span className="font-medium">https://www.menuzonanorte.com.br/vitrine/slug-da-vitrine</span>.
+            </p>
           </div>
         </div>
 
