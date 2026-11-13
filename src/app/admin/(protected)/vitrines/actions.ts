@@ -32,6 +32,16 @@ function validateImage(value: FormDataEntryValue | null): asserts value is File 
   if (value.size > maxImageSize) throw new Error("A imagem deve ter no máximo 4 MB.");
 }
 
+function validateProductLink(value: string) {
+  const link = value.trim();
+  if (!link) return null;
+  try {
+    const url = new URL(link);
+    if (url.protocol === "https:" || url.protocol === "http:") return url.toString();
+  } catch {}
+  throw new Error("Informe um link completo e válido começando com https:// ou http://.");
+}
+
 async function uploadImage(image: File, folder: string) {
   validateImage(image);
   const adminClient = createAdminClient();
@@ -76,6 +86,7 @@ export async function createStorefrontProductAction(formData: FormData) {
   const storefrontId = String(formData.get("storefront_id") ?? "").trim();
   const name = String(formData.get("name") ?? "").trim();
   const image = formData.get("image");
+  const linkUrl = validateProductLink(String(formData.get("link_url") ?? ""));
   const priceText = String(formData.get("price") ?? "").trim().replace(",", ".");
   const price = Number(priceText);
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(storefrontId)) {
@@ -87,7 +98,7 @@ export async function createStorefrontProductAction(formData: FormData) {
   const upload = await uploadImage(image, "storefront-products");
   const { data: products } = await supabase.from("storefront_products").select("sort_order").eq("storefront_id", storefrontId).order("sort_order", { ascending: false }).limit(1);
   const nextOrder = (products?.[0]?.sort_order ?? -1) + 1;
-  const { error } = await supabase.from("storefront_products").insert({ storefront_id: storefrontId, name, image_url: upload.imageUrl, image_path: upload.imagePath, price, sort_order: nextOrder, is_active: true });
+  const { error } = await supabase.from("storefront_products").insert({ storefront_id: storefrontId, name, image_url: upload.imageUrl, image_path: upload.imagePath, price, link_url: linkUrl, sort_order: nextOrder, is_active: true });
   if (error) {
     await upload.adminClient.storage.from(storageBucket).remove([upload.imagePath]);
     throw new Error(`Não foi possível cadastrar o produto: ${error.message}`);

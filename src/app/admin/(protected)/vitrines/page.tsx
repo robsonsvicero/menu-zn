@@ -48,10 +48,11 @@ export default async function AdminStorefrontsPage({ searchParams }: { searchPar
             <div className="border-t border-outline/70 bg-[#faf8f5] p-4 sm:p-5">
               <h5 className="mb-3 text-sm font-semibold">Produtos ({storefront.storefront_products?.length ?? 0})</h5>
               {storefront.storefront_products?.length ? <ul className="mb-4 flex flex-wrap gap-2">{storefront.storefront_products.map((product) => <li key={product.id} className="rounded-full bg-white px-3 py-1.5 text-xs">{product.name} · {Number(product.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</li>)}</ul> : <p className="mb-4 text-xs text-on-surface/60">Nenhum produto cadastrado ainda.</p>}
-              <form action={createStorefrontProductAction} encType="multipart/form-data" className="grid gap-3 md:grid-cols-[1fr_1.5fr_10rem_auto] md:items-end">
+              <form action={createStorefrontProductAction} encType="multipart/form-data" className="grid gap-3 md:grid-cols-[1fr_1.2fr_1.2fr_9rem_auto] md:items-end">
                 <input type="hidden" name="storefront_id" value={storefront.id} /><input type="hidden" name="slug" value={storefront.slug} />
                 <label className="text-xs font-medium">Nome<input name="name" required maxLength={120} className={`${inputClass} mt-1 bg-white font-normal`} /></label>
                 <label className="text-xs font-medium">Imagem<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required className={`${inputClass} mt-1 bg-white font-normal`} /></label>
+                <label className="text-xs font-medium">Link do produto (opcional)<input name="link_url" type="url" className={`${inputClass} mt-1 bg-white font-normal`} placeholder="https://..." /></label>
                 <label className="text-xs font-medium">Preço (R$)<input name="price" type="number" required min="0" max="99999999" step="0.01" className={`${inputClass} mt-1 bg-white font-normal`} /></label>
                 <button className="rounded-xl border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-white">Adicionar</button>
               </form>

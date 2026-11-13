@@ -15,6 +15,7 @@ type Product = {
   name: string;
   image_url: string;
   price: number;
+  link_url: string | null;
 };
 
 export async function generateMetadata({
@@ -55,7 +56,7 @@ export default async function StorefrontPage({
   const storefront = storefrontData as Storefront;
   const { data: productData } = await supabase
     .from("storefront_products")
-    .select("id, name, image_url, price")
+    .select("id, name, image_url, price, link_url")
     .eq("storefront_id", storefront.id)
     .eq("is_active", true)
     .order("sort_order", { ascending: true })
@@ -94,26 +95,44 @@ export default async function StorefrontPage({
 
         {products.length ? (
           <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
-            {products.map((product) => (
-              <li key={product.id} className="overflow-hidden rounded-2xl border border-outline/70 bg-white shadow-sm">
-                <div className="relative aspect-square bg-[#f0ece7]">
-                  <Image
-                    src={product.image_url}
-                    alt={product.name}
-                    fill
-                    unoptimized
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-3.5 sm:p-4">
-                  <h3 className="line-clamp-2 min-h-11 text-sm font-semibold leading-5 sm:text-base">{product.name}</h3>
-                  <p className="mt-2 font-serif text-lg font-bold text-primary sm:text-xl">
-                    {Number(product.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </p>
-                </div>
-              </li>
-            ))}
+            {products.map((product) => {
+              const card = (
+                <>
+                  <div className="relative aspect-square bg-[#f0ece7]">
+                    <Image
+                      src={product.image_url}
+                      alt={product.name}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-3.5 sm:p-4">
+                    <h3 className="line-clamp-2 min-h-11 text-sm font-semibold leading-5 sm:text-base">{product.name}</h3>
+                    <p className="mt-2 font-serif text-lg font-bold text-primary sm:text-xl">
+                      {Number(product.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </p>
+                  </div>
+                </>
+              );
+
+              return (
+                <li key={product.id} className="overflow-hidden rounded-2xl border border-outline/70 bg-white shadow-sm">
+                  {product.link_url ? (
+                    <a
+                      href={product.link_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      aria-label={`${product.name} — abrir link do produto em nova aba`}
+                    >
+                      {card}
+                    </a>
+                  ) : card}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="rounded-2xl border border-dashed border-outline bg-white px-6 py-14 text-center text-sm text-on-surface/65">

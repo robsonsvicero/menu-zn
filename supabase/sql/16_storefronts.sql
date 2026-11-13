@@ -16,10 +16,14 @@ create table if not exists public.storefront_products (
   image_url text not null,
   image_path text not null,
   price numeric(10, 2) not null check (price >= 0),
+  link_url text,
   sort_order integer not null default 0,
   is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
+
+alter table public.storefront_products
+  add column if not exists link_url text;
 
 create index if not exists idx_storefront_products_storefront_order
   on public.storefront_products(storefront_id, sort_order, created_at);
