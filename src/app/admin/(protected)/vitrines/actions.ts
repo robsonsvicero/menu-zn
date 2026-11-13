@@ -108,6 +108,84 @@ export async function createStorefrontProductAction(formData: FormData) {
   redirect("/admin/vitrines?product_created=1");
 }
 
+export async function updateStorefrontProductAction(formData: FormData) {
+  const supabase = await ensureAdmin();
+  const id = String(formData.get("id") ?? "").trim();
+  const slug = String(formData.get("slug") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const image = formData.get("image");
+  const newImage = image instanceof File && image.size > 0 ? image : null;
+  const linkUrl = validateProductLink(String(formData.get("link_url") ?? ""));
+  const priceText = String(formData.get("price") ?? "").trim().replace(",", ".");
+  const price = Number(priceText);
+
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    throw new Error("Produto inválido.");
+  }
+  if (!name || name.length > 120) throw new Error("Informe um nome de produto de até 120 caracteres.");
+  if (!Number.isFinite(price) || price < 0 || price > 99999999) throw new Error("Informe um preço válido.");
+  if (newImage) validateImage(newImage);
+
+  const { data: current, error: currentError } = await supabase
+    .from("storefront_products")
+    .select("image_path")
+    .eq("id", id)
+    .single();
+  if (currentError || !current) throw new Error("Não foi possível localizar o produto.");
+
+  const upload = newImage ? await uploadImage(newImage, "storefront-products") : null;
+  const { error } = await supabase
+    .from("storefront_products")
+    .update({
+      name,
+      price,
+      link_url: linkUrl,
+      ...(upload ? { image_url: upload.imageUrl, image_path: upload.imagePath } : {}),
+    })
+    .eq("id", id);
+
+  if (error) {
+    if (upload) await upload.adminClient.storage.from(storageBucket).remove([upload.imagePath]);
+    throw new Error(`Não foi possível atualizar o produto: ${error.message}`);
+  }
+
+  let cleanupWarning: string | null = null;
+  if (upload) {
+    const { error: cleanupError } = await upload.adminClient.storage.from(storageBucket).remove([current.image_path]);
+    if (cleanupError) cleanupWarning = "O produto foi atualizado, mas não foi possível remover a imagem anterior do armazenamento.";
+  }
+
+  revalidatePath("/admin/vitrines");
+  revalidatePath(`/vitrine/${slug}`);
+  redirect(cleanupWarning
+    ? `/admin/vitrines?product_updated=1&warning=${encodeURIComponent(cleanupWarning)}`
+    : "/admin/vitrines?product_updated=1");
+}
+
+export async function deleteStorefrontProductAction(id: string, slug: string) {
+  const supabase = await ensureAdmin();
+  const productId = id.trim();
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(productId)) {
+    return { success: false, message: "Produto inválido." };
+  }
+
+  const { data: deleted, error } = await supabase
+    .from("storefront_products")
+    .delete()
+    .eq("id", productId)
+    .select("image_path")
+    .maybeSingle();
+  if (error) return { success: false, message: `Não foi possível excluir o produto: ${error.message}` };
+  if (!deleted) return { success: false, message: "Produto não encontrado ou já excluído." };
+
+  const { error: storageError } = await createAdminClient().storage.from(storageBucket).remove([deleted.image_path]);
+  revalidatePath("/admin/vitrines");
+  revalidatePath(`/vitrine/${slug}`);
+  return storageError
+    ? { success: true, message: "Produto excluído, mas não foi possível remover sua imagem do armazenamento." }
+    : { success: true, message: "Produto excluído." };
+}
+
 export async function toggleStorefrontAction(formData: FormData) {
   const supabase = await ensureAdmin();
   const id = String(formData.get("id") ?? "");
