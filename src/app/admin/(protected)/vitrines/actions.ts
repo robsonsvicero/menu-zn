@@ -60,6 +60,7 @@ export async function createStorefrontAction(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim().toLowerCase();
   const bannerImage = formData.get("banner_image");
+  const whatsappNumber = String(formData.get('whatsapp_number') ?? '').replace(/\D/g, '').slice(0, 15);
   if (!title || title.length > 120) throw new Error("Informe um título de até 120 caracteres.");
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80) {
     throw new Error("O slug deve conter apenas letras minúsculas, números e hífens.");
@@ -72,6 +73,7 @@ export async function createStorefrontAction(formData: FormData) {
     banner_image_url: upload.imageUrl,
     banner_image_path: upload.imagePath,
     is_active: true,
+    whatsapp_number: whatsappNumber || null,
   });
   if (error) {
     await upload.adminClient.storage.from(storageBucket).remove([upload.imagePath]);
@@ -85,6 +87,7 @@ export async function createStorefrontProductAction(formData: FormData) {
   const supabase = await ensureAdmin();
   const storefrontId = String(formData.get("storefront_id") ?? "").trim();
   const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim().slice(0, 160) || null;
   const image = formData.get("image");
   const linkUrl = validateProductLink(String(formData.get("link_url") ?? ""));
   const priceText = String(formData.get("price") ?? "").trim().replace(",", ".");
@@ -98,7 +101,7 @@ export async function createStorefrontProductAction(formData: FormData) {
   const upload = await uploadImage(image, "storefront-products");
   const { data: products } = await supabase.from("storefront_products").select("sort_order").eq("storefront_id", storefrontId).order("sort_order", { ascending: false }).limit(1);
   const nextOrder = (products?.[0]?.sort_order ?? -1) + 1;
-  const { error } = await supabase.from("storefront_products").insert({ storefront_id: storefrontId, name, image_url: upload.imageUrl, image_path: upload.imagePath, price, link_url: linkUrl, sort_order: nextOrder, is_active: true });
+  const { error } = await supabase.from("storefront_products").insert({ storefront_id: storefrontId, name, description, image_url: upload.imageUrl, image_path: upload.imagePath, price, link_url: linkUrl, sort_order: nextOrder, is_active: true });
   if (error) {
     await upload.adminClient.storage.from(storageBucket).remove([upload.imagePath]);
     throw new Error(`Não foi possível cadastrar o produto: ${error.message}`);
@@ -113,6 +116,7 @@ export async function updateStorefrontProductAction(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim();
   const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim().slice(0, 160) || null;
   const image = formData.get("image");
   const newImage = image instanceof File && image.size > 0 ? image : null;
   const linkUrl = validateProductLink(String(formData.get("link_url") ?? ""));
@@ -138,6 +142,7 @@ export async function updateStorefrontProductAction(formData: FormData) {
     .from("storefront_products")
     .update({
       name,
+      description,
       price,
       link_url: linkUrl,
       ...(upload ? { image_url: upload.imageUrl, image_path: upload.imagePath } : {}),
