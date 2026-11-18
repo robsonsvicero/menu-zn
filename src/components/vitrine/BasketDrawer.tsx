@@ -20,6 +20,8 @@ export default function BasketDrawer({
   const {
     items,
     count,
+    subtotal,
+    shippingFee,
     total,
     isOpen,
     closeBasket,
@@ -50,7 +52,7 @@ export default function BasketDrawer({
   }, [open]);
 
   function handleOrder() {
-    const url = buildWhatsAppOrderUrl(whatsappNumber, items, total);
+    const url = buildWhatsAppOrderUrl(whatsappNumber, items, subtotal, shippingFee);
     window.open(url, '_blank', 'noopener,noreferrer');
     clearBasket();
     onClose();
@@ -180,12 +182,29 @@ export default function BasketDrawer({
 
             {/* Footer */}
             <div className="border-t border-neutral-100 bg-white px-5 pb-6 pt-4">
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-sm text-neutral-500">Subtotal</span>
-                <span className="font-serif text-lg font-bold text-[rgb(148,53,21)]">
+              <div className="mb-2 flex items-center justify-between text-sm text-neutral-500">
+                <span>Subtotal</span>
+                <span className="font-medium text-neutral-800">{money(subtotal)}</span>
+              </div>
+
+              <div className="mb-3 flex items-center justify-between text-sm text-neutral-500">
+                <span>Frete da vitrine</span>
+                <span className="font-medium text-neutral-700">
+                  {shippingFee !== null && shippingFee !== undefined
+                    ? Number(shippingFee) === 0
+                      ? 'Grátis'
+                      : money(Number(shippingFee))
+                    : 'A combinar'}
+                </span>
+              </div>
+
+              <div className="mb-4 flex items-center justify-between border-t border-neutral-100 pt-3">
+                <span className="text-base font-bold text-neutral-800">Total</span>
+                <span className="font-serif text-xl font-bold text-[rgb(148,53,21)]">
                   {money(total)}
                 </span>
               </div>
+
               <button
                 onClick={handleOrder}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-6 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-[#1ebe59] active:scale-[0.98]"

@@ -13,6 +13,7 @@ type Storefront = {
   title: string;
   banner_image_url: string;
   whatsapp_number: string | null;
+  shipping_fee: number | null;
 };
 
 type Product = {
@@ -22,7 +23,6 @@ type Product = {
   image_url: string;
   modal_image_url?: string | null;
   price: number;
-  shipping_fee?: number | null;
   link_url?: string | null;
 };
 
@@ -55,7 +55,7 @@ export default async function StorefrontPage({
   const supabase = await createClient();
   const { data: storefrontData } = await supabase
     .from("storefronts")
-    .select("id, slug, title, banner_image_url, whatsapp_number")
+    .select("id, slug, title, banner_image_url, whatsapp_number, shipping_fee")
     .eq("slug", slug)
     .eq("is_active", true)
     .maybeSingle();
@@ -65,7 +65,7 @@ export default async function StorefrontPage({
 
   const { data: productData } = await supabase
     .from("storefront_products")
-    .select("id, name, image_url, modal_image_url, price, shipping_fee, link_url, description")
+    .select("id, name, image_url, modal_image_url, price, link_url, description")
     .eq("storefront_id", storefront.id)
     .eq("is_active", true)
     .order("sort_order", { ascending: true })
@@ -73,7 +73,7 @@ export default async function StorefrontPage({
   const products = (productData ?? []) as Product[];
 
   return (
-    <BasketProvider storefrontId={storefront.id}>
+    <BasketProvider storefrontId={storefront.id} shippingFee={storefront.shipping_fee}>
       <main className="min-h-screen bg-[#faf8f5] text-on-surface">
         {/* Banner */}
         <section className="relative isolate flex min-h-64 items-end overflow-hidden bg-neutral-900 sm:min-h-80 md:min-h-[26rem]">

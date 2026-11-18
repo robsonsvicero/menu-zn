@@ -13,7 +13,6 @@ export type Product = {
   image_url: string;
   modal_image_url?: string | null;
   price: number;
-  shipping_fee?: number | null;
   link_url?: string | null;
 };
 
@@ -95,19 +94,10 @@ export default function ProductCard({ product }: Props) {
 
           <div className="flex-grow" />
 
-          {/* Price & Shipping */}
-          <div className="mt-3">
-            <p className="font-serif text-lg font-bold text-primary sm:text-xl">
-              {money(product.price)}
-            </p>
-            <p className="mt-0.5 text-xs font-medium text-on-surface/65">
-              {product.shipping_fee !== null && product.shipping_fee !== undefined
-                ? Number(product.shipping_fee) === 0
-                  ? "Frete grátis"
-                  : `Frete: ${money(Number(product.shipping_fee))}`
-                : "Frete a combinar"}
-            </p>
-          </div>
+          {/* Price */}
+          <p className="mt-3 font-serif text-lg font-bold text-primary sm:text-xl">
+            {money(product.price)}
+          </p>
 
           {/* Actions */}
           <div className="mt-3 flex flex-col sm:flex-row gap-2">
@@ -198,18 +188,9 @@ export default function ProductCard({ product }: Props) {
                 {product.name}
               </h2>
 
-              <div>
-                <p className="mt-2 font-serif text-xl font-bold text-primary">
-                  {money(product.price)}
-                </p>
-                <p className="mt-0.5 text-xs font-medium text-on-surface/70">
-                  {product.shipping_fee !== null && product.shipping_fee !== undefined
-                    ? Number(product.shipping_fee) === 0
-                      ? "Frete grátis"
-                      : `Frete: ${money(Number(product.shipping_fee))}`
-                    : "Frete a combinar"}
-                </p>
-              </div>
+              <p className="mt-2 font-serif text-xl font-bold text-primary">
+                {money(product.price)}
+              </p>
 
               {product.description && (
                 <p className="mt-4 text-sm leading-relaxed text-on-surface/80">

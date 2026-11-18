@@ -51,6 +51,8 @@ export async function createStorefrontAction(formData: FormData) {
   const slug = String(formData.get("slug") ?? "").trim().toLowerCase();
   const bannerImage = formData.get("banner_image");
   const whatsappNumber = String(formData.get("whatsapp_number") ?? "").replace(/\D/g, "").slice(0, 15);
+  const shippingFeeText = String(formData.get("shipping_fee") ?? "").trim().replace(",", ".");
+  const shippingFee = shippingFeeText !== "" && Number.isFinite(Number(shippingFeeText)) ? Math.max(0, Number(shippingFeeText)) : null;
 
   if (!title || title.length > 120) throw new Error("Informe um título de até 120 caracteres.");
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80) {
@@ -65,6 +67,7 @@ export async function createStorefrontAction(formData: FormData) {
     banner_image_path: upload.imagePath,
     is_active: true,
     whatsapp_number: whatsappNumber || null,
+    shipping_fee: shippingFee,
   });
   if (error) {
     await upload.adminClient.storage.from(storageBucket).remove([upload.imagePath]);
@@ -80,6 +83,8 @@ export async function updateStorefrontAction(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim().toLowerCase();
   const whatsappNumber = String(formData.get("whatsapp_number") ?? "").replace(/\D/g, "").slice(0, 15);
+  const shippingFeeText = String(formData.get("shipping_fee") ?? "").trim().replace(",", ".");
+  const shippingFee = shippingFeeText !== "" && Number.isFinite(Number(shippingFeeText)) ? Math.max(0, Number(shippingFeeText)) : null;
   const bannerImage = formData.get("banner_image");
   const newBanner = bannerImage instanceof File && bannerImage.size > 0 ? bannerImage : null;
   const isActive = String(formData.get("is_active")) === "true" || formData.get("is_active") === "on";
@@ -107,6 +112,7 @@ export async function updateStorefrontAction(formData: FormData) {
       title,
       slug,
       whatsapp_number: whatsappNumber || null,
+      shipping_fee: shippingFee,
       is_active: isActive,
       updated_at: new Date().toISOString(),
       ...(upload ? { banner_image_url: upload.imageUrl, banner_image_path: upload.imagePath } : {}),
@@ -163,8 +169,6 @@ export async function createStorefrontProductAction(formData: FormData) {
   const modalImage = formData.get("modal_image");
   const priceText = String(formData.get("price") ?? "").trim().replace(",", ".");
   const price = Number(priceText);
-  const shippingFeeText = String(formData.get("shipping_fee") ?? "").trim().replace(",", ".");
-  const shippingFee = shippingFeeText !== "" && Number.isFinite(Number(shippingFeeText)) ? Math.max(0, Number(shippingFeeText)) : null;
 
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(storefrontId)) {
     throw new Error("Vitrine inválida.");
@@ -199,7 +203,6 @@ export async function createStorefrontProductAction(formData: FormData) {
     modal_image_url: modalUpload ? modalUpload.imageUrl : null,
     modal_image_path: modalUpload ? modalUpload.imagePath : null,
     price,
-    shipping_fee: shippingFee,
     sort_order: nextOrder,
     is_active: true,
   });
@@ -229,8 +232,6 @@ export async function updateStorefrontProductAction(formData: FormData) {
   const newModalImage = modalImage instanceof File && modalImage.size > 0 ? modalImage : null;
   const priceText = String(formData.get("price") ?? "").trim().replace(",", ".");
   const price = Number(priceText);
-  const shippingFeeText = String(formData.get("shipping_fee") ?? "").trim().replace(",", ".");
-  const shippingFee = shippingFeeText !== "" && Number.isFinite(Number(shippingFeeText)) ? Math.max(0, Number(shippingFeeText)) : null;
 
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
     throw new Error("Produto inválido.");
@@ -256,7 +257,6 @@ export async function updateStorefrontProductAction(formData: FormData) {
       name,
       description,
       price,
-      shipping_fee: shippingFee,
       ...(upload ? { image_url: upload.imageUrl, image_path: upload.imagePath } : {}),
       ...(modalUpload ? { modal_image_url: modalUpload.imageUrl, modal_image_path: modalUpload.imagePath } : {}),
     })

@@ -14,6 +14,7 @@ type Storefront = {
   slug: string;
   banner_image_url: string;
   whatsapp_number: string | null;
+  shipping_fee: number | null;
   is_active: boolean;
 };
 
@@ -35,7 +36,7 @@ export default async function EditStorefrontPage({
 
   const { data, error } = await supabase
     .from("storefronts")
-    .select("id, title, slug, banner_image_url, whatsapp_number, is_active")
+    .select("id, title, slug, banner_image_url, whatsapp_number, shipping_fee, is_active")
     .eq("id", id)
     .maybeSingle();
 
@@ -116,20 +117,37 @@ export default async function EditStorefrontPage({
           </label>
         </div>
 
-        <label className="block text-sm font-medium">
-          WhatsApp do vendedor (com DDD, apenas números)
-          <input
-            name="whatsapp_number"
-            type="tel"
-            maxLength={15}
-            defaultValue={storefront.whatsapp_number ?? ""}
-            className={`${inputClass} mt-1 font-normal`}
-            placeholder="11999999999"
-          />
-          <span className="mt-1 block text-xs text-on-surface/60">
-            Os pedidos da cesta desta vitrine serão enviados diretamente para este WhatsApp.
-          </span>
-        </label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <label className="block text-sm font-medium">
+            WhatsApp do vendedor (com DDD, apenas números)
+            <input
+              name="whatsapp_number"
+              type="tel"
+              maxLength={15}
+              defaultValue={storefront.whatsapp_number ?? ""}
+              className={`${inputClass} mt-1 font-normal`}
+              placeholder="11999999999"
+            />
+            <span className="mt-1 block text-xs text-on-surface/60">
+              Os pedidos da cesta desta vitrine serão enviados diretamente para este WhatsApp.
+            </span>
+          </label>
+
+          <label className="block text-sm font-medium">
+            Valor do frete (R$, opcional)
+            <input
+              name="shipping_fee"
+              type="text"
+              inputMode="decimal"
+              defaultValue={storefront.shipping_fee !== null ? String(storefront.shipping_fee).replace(".", ",") : ""}
+              className={`${inputClass} mt-1 font-normal`}
+              placeholder="Ex.: 15,00 (ou deixe vazio para combinar)"
+            />
+            <span className="mt-1 block text-xs text-on-surface/60">
+              Cobrado uma única vez por pedido na cesta. Deixe em branco para &quot;Frete a combinar&quot; ou 0 para frete grátis.
+            </span>
+          </label>
+        </div>
 
         <div>
           <p className="mb-2 text-sm font-medium">Banner atual</p>

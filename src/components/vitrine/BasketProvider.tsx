@@ -12,6 +12,8 @@ import type { BasketItem } from '@/lib/format';
 type BasketContextValue = {
   items: BasketItem[];
   count: number;
+  subtotal: number;
+  shippingFee: number | null;
   total: number;
   isOpen: boolean;
   openBasket: () => void;
@@ -34,11 +36,13 @@ export function useBasket(): BasketContextValue {
 type BasketProviderProps = {
   children: React.ReactNode;
   storefrontId: string;
+  shippingFee?: number | null;
 };
 
 export default function BasketProvider({
   children,
   storefrontId,
+  shippingFee = null,
 }: BasketProviderProps) {
   const storageKey = `menu-zn-basket-${storefrontId}`;
   const [items, setItems] = useState<BasketItem[]>([]);
@@ -99,13 +103,17 @@ export default function BasketProvider({
   const clearBasket = useCallback(() => setItems([]), []);
 
   const count = items.reduce((sum, i) => sum + i.qty, 0);
-  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const hasShipping = items.length > 0 && shippingFee !== null && shippingFee !== undefined;
+  const total = hasShipping ? subtotal + Number(shippingFee) : subtotal;
 
   return (
     <BasketContext.Provider
       value={{
         items,
         count,
+        subtotal,
+        shippingFee: shippingFee ?? null,
         total,
         isOpen,
         openBasket,
