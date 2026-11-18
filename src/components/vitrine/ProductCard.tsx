@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { Eye, ShoppingBasket, X } from 'lucide-react';
+import { Eye, ShoppingBasket, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { money } from '@/lib/format';
 import { useBasket } from './BasketProvider';
 
@@ -24,18 +24,31 @@ export default function ProductCard({ product }: Props) {
   const { addToBasket } = useBasket();
   const [added, setAdded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const openModal = useCallback(() => setModalOpen(true), []);
-  const closeModal = useCallback(() => setModalOpen(false), []);
+  const closeModal = useCallback(() => {
+    setModalOpen(false);
+    setLightboxOpen(false);
+    setIsZoomed(false);
+  }, []);
 
   useEffect(() => {
     if (!modalOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Escape') {
+        if (lightboxOpen) {
+          setLightboxOpen(false);
+          setIsZoomed(false);
+        } else {
+          closeModal();
+        }
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [modalOpen, closeModal]);
+  }, [modalOpen, lightboxOpen, closeModal]);
 
   function handleAdd() {
     addToBasket({
@@ -49,6 +62,7 @@ export default function ProductCard({ product }: Props) {
   }
 
   const shortDesc = product.description ? product.description.slice(0, 160) : null;
+  const modalImageSrc = product.modal_image_url || product.image_url;
 
   return (
     <>
@@ -142,16 +156,28 @@ export default function ProductCard({ product }: Props) {
               <X size={18} />
             </button>
 
-            {/* Modal image */}
-            <div className="relative w-full h-[320px] sm:h-[420px] max-h-[55vh] bg-[#f0ece7] shrink-0 flex items-center justify-center p-3">
+            {/* Modal image (clickable for zoom) */}
+            <button
+              type="button"
+              onClick={() => {
+                setLightboxOpen(true);
+                setIsZoomed(false);
+              }}
+              title="Clique para ampliar a imagem e ler as informações"
+              className="group relative w-full h-[340px] sm:h-[440px] max-h-[58vh] bg-[#f0ece7] shrink-0 flex items-center justify-center p-3 cursor-zoom-in overflow-hidden border-b border-outline/30 text-left focus:outline-none"
+            >
               <Image
-                src={product.modal_image_url || product.image_url}
+                src={modalImageSrc}
                 alt={product.name}
                 fill
                 unoptimized
-                className="object-contain"
+                className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               />
-            </div>
+              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/80 px-3.5 py-2 text-xs font-semibold text-white shadow-xl backdrop-blur-sm transition group-hover:bg-black group-hover:scale-105">
+                <ZoomIn size={15} />
+                Clique na imagem para ler
+              </span>
+            </button>
 
             {/* Modal details */}
             <div className="flex flex-col overflow-y-auto p-6">
@@ -195,6 +221,102 @@ export default function ProductCard({ product }: Props) {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox / Imagem Ampliada em Tela Cheia para Leitura */}
+      {lightboxOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Imagem ampliada para leitura"
+          className="fixed inset-0 z-[70] flex flex-col bg-black/95 backdrop-blur-md"
+          onClick={() => {
+            setLightboxOpen(false);
+            setIsZoomed(false);
+          }}
+        >
+          {/* Top Bar with actions */}
+          <div
+            className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-white shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="font-serif text-sm font-semibold truncate max-w-[200px] sm:max-w-md">
+                {product.name}
+              </span>
+              <span className="hidden sm:inline text-xs text-white/50">
+                • {isZoomed ? "Modo leitura (rolagem ativa)" : "Ajustado à tela"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Zoom toggle button */}
+              <button
+                type="button"
+                onClick={() => setIsZoomed((prev) => !prev)}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/25 active:scale-95"
+              >
+                {isZoomed ? (
+                  <>
+                    <ZoomOut size={15} />
+                    <span>Ajustar à tela</span>
+                  </>
+                ) : (
+                  <>
+                    <ZoomIn size={15} />
+                    <span>Ampliar texto (100%)</span>
+                  </>
+                )}
+              </button>
+
+              {/* Close button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setLightboxOpen(false);
+                  setIsZoomed(false);
+                }}
+                className="rounded-xl bg-white/15 p-1.5 text-white transition hover:bg-white/25"
+                aria-label="Fechar ampliação"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Image container: scrollable when zoomed, centered when fitted */}
+          <div
+            className={`flex-1 w-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 flex justify-center ${
+              isZoomed ? "items-start cursor-zoom-out" : "items-center cursor-zoom-in"
+            }`}
+            onClick={() => setIsZoomed((prev) => !prev)}
+          >
+            {/* Native img to respect natural aspect ratio and allow vertical scrolling */}
+            <img
+              src={modalImageSrc}
+              alt={product.name}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsZoomed((prev) => !prev);
+              }}
+              className={`rounded-xl shadow-2xl transition-all duration-200 select-none ${
+                isZoomed
+                  ? "w-full max-w-[95vw] md:max-w-[950px] h-auto cursor-zoom-out my-auto"
+                  : "max-h-[85vh] max-w-[92vw] w-auto h-auto object-contain cursor-zoom-in"
+              }`}
+            />
+          </div>
+
+          {/* Bottom helper text */}
+          <div
+            className="py-2.5 text-center text-xs text-white/60 shrink-0 border-t border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {isZoomed
+              ? "Role para cima e para baixo para ler todo o conteúdo • Clique na imagem para ajustar à tela"
+              : "Clique na imagem ou em 'Ampliar texto' para ler em tamanho real • ESC para fechar"}
           </div>
         </div>
       )}
