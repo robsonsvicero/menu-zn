@@ -54,14 +54,14 @@ export default function ProductCard({ product }: Props) {
     <>
       <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-outline/70 bg-white shadow-sm transition hover:shadow-md">
         {/* Product image container (non-clickable) */}
-        <div className="relative aspect-square w-full bg-[#f0ece7] overflow-hidden">
+        <div className="relative aspect-square w-full bg-[#f0ece7] overflow-hidden flex items-center justify-center">
           <Image
             src={product.image_url}
             alt={product.name}
             fill
             unoptimized
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover"
+            className="object-contain p-2 transition-transform duration-300 hover:scale-105"
           />
         </div>
 
@@ -143,13 +143,13 @@ export default function ProductCard({ product }: Props) {
             </button>
 
             {/* Modal image */}
-            <div className="relative aspect-4/3 w-full bg-[#f0ece7] shrink-0">
+            <div className="relative w-full h-[320px] sm:h-[420px] max-h-[55vh] bg-[#f0ece7] shrink-0 flex items-center justify-center p-3">
               <Image
                 src={product.modal_image_url || product.image_url}
                 alt={product.name}
                 fill
                 unoptimized
-                className="object-cover"
+                className="object-contain"
               />
             </div>
 

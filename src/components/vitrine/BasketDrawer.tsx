@@ -25,6 +25,7 @@ export default function BasketDrawer({
     closeBasket,
     removeFromBasket,
     changeQty,
+    clearBasket,
   } = useBasket();
 
   const open = propOpen ?? isOpen;
@@ -51,6 +52,8 @@ export default function BasketDrawer({
   function handleOrder() {
     const url = buildWhatsAppOrderUrl(whatsappNumber, items, total);
     window.open(url, '_blank', 'noopener,noreferrer');
+    clearBasket();
+    onClose();
   }
 
   return (

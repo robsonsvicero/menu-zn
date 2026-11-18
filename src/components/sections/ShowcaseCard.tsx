@@ -34,14 +34,14 @@ export default function ShowcaseCard({ item }: Props) {
       {/* Card */}
       <div className="flex flex-col bg-surface rounded-[20px] overflow-hidden border border-outline/40 shadow-sm hover:shadow-lg transition-all duration-300">
         {/* Image Container */}
-        <div className="relative w-full h-[220px] overflow-hidden">
+        <div className="relative w-full h-[220px] overflow-hidden bg-[#f0ece7] flex items-center justify-center">
           <Image
             src={imageSrc}
             alt={item.name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             unoptimized={Boolean(item.image_cover_url)}
-            className="object-cover"
+            className="object-contain p-2 transition-transform duration-300 hover:scale-105"
           />
 
           {/* Neighborhood Badge */}
@@ -160,13 +160,13 @@ export default function ShowcaseCard({ item }: Props) {
             </button>
 
             {/* Modal image */}
-            <div className="relative w-full h-[260px] shrink-0">
+            <div className="relative w-full h-[320px] sm:h-[400px] max-h-[55vh] shrink-0 bg-[#f0ece7] flex items-center justify-center p-3">
               <Image
                 src={imageSrc}
                 alt={item.name}
                 fill
                 unoptimized={Boolean(item.image_cover_url)}
-                className="object-cover"
+                className="object-contain"
               />
             </div>
 
