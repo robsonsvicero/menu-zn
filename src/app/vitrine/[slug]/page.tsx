@@ -3,7 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import BasketProvider from "@/components/vitrine/BasketProvider";
-import BasketShell from "@/components/vitrine/BasketShell";
+import BasketButton from "@/components/vitrine/BasketButton";
+import BasketDrawer from "@/components/vitrine/BasketDrawer";
 import ProductCard from "@/components/vitrine/ProductCard";
 
 type Storefront = {
@@ -19,8 +20,9 @@ type Product = {
   name: string;
   description?: string | null;
   image_url: string;
+  modal_image_url?: string | null;
   price: number;
-  link_url: string | null;
+  link_url?: string | null;
 };
 
 export async function generateMetadata({
@@ -62,7 +64,7 @@ export default async function StorefrontPage({
 
   const { data: productData } = await supabase
     .from("storefront_products")
-    .select("id, name, image_url, price, link_url, description")
+    .select("id, name, image_url, modal_image_url, price, link_url, description")
     .eq("storefront_id", storefront.id)
     .eq("is_active", true)
     .order("sort_order", { ascending: true })
@@ -70,7 +72,7 @@ export default async function StorefrontPage({
   const products = (productData ?? []) as Product[];
 
   return (
-    <BasketProvider>
+    <BasketProvider storefrontId={storefront.id}>
       <main className="min-h-screen bg-[#faf8f5] text-on-surface">
         {/* Banner */}
         <section className="relative isolate flex min-h-64 items-end overflow-hidden bg-neutral-900 sm:min-h-80 md:min-h-[26rem]">
@@ -94,14 +96,17 @@ export default async function StorefrontPage({
 
         {/* Products */}
         <section className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 md:px-12 md:py-16">
-          <div className="mb-7 flex items-end justify-between gap-4">
+          <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Seleção da casa</p>
               <h2 className="mt-2 font-serif text-2xl font-bold sm:text-3xl">Produtos</h2>
             </div>
-            <span className="text-sm text-on-surface/60">
-              {products.length} {products.length === 1 ? "produto" : "produtos"}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="hidden sm:inline text-sm text-on-surface/60">
+                {products.length} {products.length === 1 ? "produto" : "produtos"}
+              </span>
+              <BasketButton />
+            </div>
           </div>
 
           {products.length ? (
@@ -119,8 +124,8 @@ export default async function StorefrontPage({
           )}
         </section>
 
-        {/* Floating basket button + drawer */}
-        <BasketShell whatsappNumber={storefront.whatsapp_number ?? ""} />
+        {/* Basket Drawer */}
+        <BasketDrawer whatsappNumber={storefront.whatsapp_number ?? ""} />
       </main>
     </BasketProvider>
   );

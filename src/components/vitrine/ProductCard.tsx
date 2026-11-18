@@ -11,6 +11,7 @@ export type Product = {
   name: string;
   description?: string | null;
   image_url: string;
+  modal_image_url?: string | null;
   price: number;
   link_url?: string | null;
 };
@@ -144,7 +145,7 @@ export default function ProductCard({ product }: Props) {
             {/* Modal image */}
             <div className="relative aspect-4/3 w-full bg-[#f0ece7] shrink-0">
               <Image
-                src={product.image_url}
+                src={product.modal_image_url || product.image_url}
                 alt={product.name}
                 fill
                 unoptimized

@@ -7,13 +7,28 @@ import { buildWhatsAppOrderUrl, money } from '@/lib/format';
 import { useBasket } from './BasketProvider';
 
 type Props = {
-  open: boolean;
-  onClose: () => void;
   whatsappNumber: string;
+  open?: boolean;
+  onClose?: () => void;
 };
 
-export default function BasketDrawer({ open, onClose, whatsappNumber }: Props) {
-  const { items, count, total, removeFromBasket, changeQty } = useBasket();
+export default function BasketDrawer({
+  whatsappNumber,
+  open: propOpen,
+  onClose: propClose,
+}: Props) {
+  const {
+    items,
+    count,
+    total,
+    isOpen,
+    closeBasket,
+    removeFromBasket,
+    changeQty,
+  } = useBasket();
+
+  const open = propOpen ?? isOpen;
+  const onClose = propClose ?? closeBasket;
 
   // Close on Escape
   useEffect(() => {
@@ -28,7 +43,9 @@ export default function BasketDrawer({ open, onClose, whatsappNumber }: Props) {
   // Prevent body scroll when open
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [open]);
 
   function handleOrder() {
@@ -42,7 +59,7 @@ export default function BasketDrawer({ open, onClose, whatsappNumber }: Props) {
       <div
         aria-hidden="true"
         className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
-          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onMouseDown={onClose}
       />
@@ -96,7 +113,7 @@ export default function BasketDrawer({ open, onClose, whatsappNumber }: Props) {
         ) : (
           <>
             {/* Items list */}
-            <ul className="flex-1 overflow-y-auto divide-y divide-neutral-100 px-5">
+            <ul className="flex-1 divide-y divide-neutral-100 overflow-y-auto px-5">
               {items.map((item) => (
                 <li key={item.id} className="flex gap-4 py-4">
                   {/* Product image */}

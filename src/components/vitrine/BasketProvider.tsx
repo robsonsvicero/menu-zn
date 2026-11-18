@@ -9,12 +9,14 @@ import {
 } from 'react';
 import type { BasketItem } from '@/lib/format';
 
-const STORAGE_KEY = 'menu-zn-basket';
-
 type BasketContextValue = {
   items: BasketItem[];
   count: number;
   total: number;
+  isOpen: boolean;
+  openBasket: () => void;
+  closeBasket: () => void;
+  toggleBasket: () => void;
   addToBasket: (item: Omit<BasketItem, 'qty'>) => void;
   removeFromBasket: (id: string) => void;
   changeQty: (id: string, qty: number) => void;
@@ -29,30 +31,44 @@ export function useBasket(): BasketContextValue {
   return ctx;
 }
 
+type BasketProviderProps = {
+  children: React.ReactNode;
+  storefrontId: string;
+};
+
 export default function BasketProvider({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  storefrontId,
+}: BasketProviderProps) {
+  const storageKey = `menu-zn-basket-${storefrontId}`;
   const [items, setItems] = useState<BasketItem[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
-  // Load from localStorage on mount
+  const openBasket = useCallback(() => setIsOpen(true), []);
+  const closeBasket = useCallback(() => setIsOpen(false), []);
+  const toggleBasket = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  // Load from localStorage scoped to this specific storefront
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setItems(JSON.parse(stored) as BasketItem[]);
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        setItems(JSON.parse(stored) as BasketItem[]);
+      } else {
+        setItems([]);
+      }
     } catch {
-      // ignore parse errors
+      setItems([]);
     }
     setHydrated(true);
-  }, []);
+  }, [storageKey]);
 
-  // Persist to localStorage whenever items change (after hydration)
+  // Persist to localStorage whenever items change
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items, hydrated]);
+    localStorage.setItem(storageKey, JSON.stringify(items));
+  }, [items, hydrated, storageKey]);
 
   const addToBasket = useCallback((item: Omit<BasketItem, 'qty'>) => {
     setItems((prev) => {
@@ -87,7 +103,19 @@ export default function BasketProvider({
 
   return (
     <BasketContext.Provider
-      value={{ items, count, total, addToBasket, removeFromBasket, changeQty, clearBasket }}
+      value={{
+        items,
+        count,
+        total,
+        isOpen,
+        openBasket,
+        closeBasket,
+        toggleBasket,
+        addToBasket,
+        removeFromBasket,
+        changeQty,
+        clearBasket,
+      }}
     >
       {children}
     </BasketContext.Provider>
