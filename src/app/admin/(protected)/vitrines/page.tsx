@@ -14,6 +14,7 @@ type Product = {
   image_url: string;
   modal_image_url: string | null;
   price: number;
+  shipping_fee: number | null;
   image_path: string;
   is_active: boolean;
 };
@@ -48,7 +49,7 @@ export default async function AdminStorefrontsPage({
 
   const { data, error } = await supabase
     .from("storefronts")
-    .select("id, title, slug, banner_image_url, is_active, whatsapp_number, storefront_products(id, name, description, image_url, modal_image_url, image_path, price, is_active)")
+    .select("id, title, slug, banner_image_url, is_active, whatsapp_number, storefront_products(id, name, description, image_url, modal_image_url, image_path, price, shipping_fee, is_active)")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -169,7 +170,7 @@ export default async function AdminStorefrontsPage({
                         <form
                           action={updateStorefrontProductAction}
                           encType="multipart/form-data"
-                          className="grid min-w-0 flex-1 gap-3 md:grid-cols-[1fr_1.2fr_1fr_1fr_7rem_auto] md:items-end"
+                          className="grid min-w-0 flex-1 gap-3 md:grid-cols-[1fr_1.2fr_1fr_1fr_6rem_6rem_auto] md:items-end"
                         >
                           <input type="hidden" name="id" value={product.id} />
                           <input type="hidden" name="slug" value={storefront.slug} />
@@ -199,6 +200,11 @@ export default async function AdminStorefrontsPage({
                             <input name="price" type="number" required min="0" max="99999999" step="0.01" defaultValue={Number(product.price)} className={`${inputClass} mt-1 bg-white font-normal`} />
                           </label>
 
+                          <label className="text-xs font-medium">
+                            Frete (R$)
+                            <input name="shipping_fee" type="number" min="0" max="99999999" step="0.01" defaultValue={product.shipping_fee !== null ? Number(product.shipping_fee) : ""} className={`${inputClass} mt-1 bg-white font-normal`} placeholder="A combinar" />
+                          </label>
+
                           <button className="rounded-xl border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-[#faf8f5]">
                             Salvar
                           </button>
@@ -219,7 +225,7 @@ export default async function AdminStorefrontsPage({
               <form
                 action={createStorefrontProductAction}
                 encType="multipart/form-data"
-                className="grid gap-3 md:grid-cols-[1fr_1.2fr_1fr_1fr_7rem_auto] md:items-end"
+                className="grid gap-3 md:grid-cols-[1fr_1.2fr_1fr_1fr_6rem_6rem_auto] md:items-end"
               >
                 <input type="hidden" name="storefront_id" value={storefront.id} />
                 <input type="hidden" name="slug" value={storefront.slug} />
@@ -247,6 +253,11 @@ export default async function AdminStorefrontsPage({
                 <label className="text-xs font-medium">
                   Preço (R$) *
                   <input name="price" type="number" required min="0" max="99999999" step="0.01" className={`${inputClass} mt-1 bg-white font-normal`} placeholder="0,00" />
+                </label>
+
+                <label className="text-xs font-medium">
+                  Frete (R$, opcional)
+                  <input name="shipping_fee" type="number" min="0" max="99999999" step="0.01" className={`${inputClass} mt-1 bg-white font-normal`} placeholder="A combinar" />
                 </label>
 
                 <button className="rounded-xl border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-white">

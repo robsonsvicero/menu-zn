@@ -13,6 +13,7 @@ export type Product = {
   image_url: string;
   modal_image_url?: string | null;
   price: number;
+  shipping_fee?: number | null;
   link_url?: string | null;
 };
 
@@ -94,18 +95,27 @@ export default function ProductCard({ product }: Props) {
 
           <div className="flex-grow" />
 
-          {/* Price */}
-          <p className="mt-3 font-serif text-lg font-bold text-primary sm:text-xl">
-            {money(product.price)}
-          </p>
+          {/* Price & Shipping */}
+          <div className="mt-3">
+            <p className="font-serif text-lg font-bold text-primary sm:text-xl">
+              {money(product.price)}
+            </p>
+            <p className="mt-0.5 text-xs font-medium text-on-surface/65">
+              {product.shipping_fee !== null && product.shipping_fee !== undefined
+                ? Number(product.shipping_fee) === 0
+                  ? "Frete grátis"
+                  : `Frete: ${money(Number(product.shipping_fee))}`
+                : "Frete a combinar"}
+            </p>
+          </div>
 
           {/* Actions */}
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 flex flex-col sm:flex-row gap-2">
             <button
               type="button"
               onClick={openModal}
               aria-label={`Ver detalhes de ${product.name}`}
-              className="flex items-center justify-center gap-1 rounded-xl border border-outline/70 px-2.5 py-2 text-xs font-semibold text-on-surface/80 transition hover:bg-neutral-50 active:scale-95"
+              className="flex w-full sm:w-auto items-center justify-center gap-1 rounded-xl border border-outline/70 px-2.5 py-2 text-xs font-semibold text-on-surface/80 transition hover:bg-neutral-50 active:scale-95"
             >
               <Eye size={14} />
               Ver mais
@@ -115,7 +125,7 @@ export default function ProductCard({ product }: Props) {
               type="button"
               onClick={handleAdd}
               aria-label={added ? `${product.name} adicionado à cesta` : `Adicionar ${product.name} à cesta`}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition active:scale-95 ${
+              className={`flex w-full sm:flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition active:scale-95 ${
                 added
                   ? 'border border-green-200 bg-green-50 text-green-700'
                   : 'bg-[rgb(148,53,21)] text-white hover:bg-[rgb(130,45,15)]'
@@ -188,9 +198,18 @@ export default function ProductCard({ product }: Props) {
                 {product.name}
               </h2>
 
-              <p className="mt-2 font-serif text-xl font-bold text-primary">
-                {money(product.price)}
-              </p>
+              <div>
+                <p className="mt-2 font-serif text-xl font-bold text-primary">
+                  {money(product.price)}
+                </p>
+                <p className="mt-0.5 text-xs font-medium text-on-surface/70">
+                  {product.shipping_fee !== null && product.shipping_fee !== undefined
+                    ? Number(product.shipping_fee) === 0
+                      ? "Frete grátis"
+                      : `Frete: ${money(Number(product.shipping_fee))}`
+                    : "Frete a combinar"}
+                </p>
+              </div>
 
               {product.description && (
                 <p className="mt-4 text-sm leading-relaxed text-on-surface/80">

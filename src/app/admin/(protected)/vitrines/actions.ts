@@ -163,6 +163,8 @@ export async function createStorefrontProductAction(formData: FormData) {
   const modalImage = formData.get("modal_image");
   const priceText = String(formData.get("price") ?? "").trim().replace(",", ".");
   const price = Number(priceText);
+  const shippingFeeText = String(formData.get("shipping_fee") ?? "").trim().replace(",", ".");
+  const shippingFee = shippingFeeText !== "" && Number.isFinite(Number(shippingFeeText)) ? Math.max(0, Number(shippingFeeText)) : null;
 
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(storefrontId)) {
     throw new Error("Vitrine inválida.");
@@ -197,6 +199,7 @@ export async function createStorefrontProductAction(formData: FormData) {
     modal_image_url: modalUpload ? modalUpload.imageUrl : null,
     modal_image_path: modalUpload ? modalUpload.imagePath : null,
     price,
+    shipping_fee: shippingFee,
     sort_order: nextOrder,
     is_active: true,
   });
@@ -226,6 +229,8 @@ export async function updateStorefrontProductAction(formData: FormData) {
   const newModalImage = modalImage instanceof File && modalImage.size > 0 ? modalImage : null;
   const priceText = String(formData.get("price") ?? "").trim().replace(",", ".");
   const price = Number(priceText);
+  const shippingFeeText = String(formData.get("shipping_fee") ?? "").trim().replace(",", ".");
+  const shippingFee = shippingFeeText !== "" && Number.isFinite(Number(shippingFeeText)) ? Math.max(0, Number(shippingFeeText)) : null;
 
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
     throw new Error("Produto inválido.");
@@ -251,6 +256,7 @@ export async function updateStorefrontProductAction(formData: FormData) {
       name,
       description,
       price,
+      shipping_fee: shippingFee,
       ...(upload ? { image_url: upload.imageUrl, image_path: upload.imagePath } : {}),
       ...(modalUpload ? { modal_image_url: modalUpload.imageUrl, modal_image_path: modalUpload.imagePath } : {}),
     })

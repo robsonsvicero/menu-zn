@@ -124,14 +124,14 @@ export default function ShowcaseCard({ item }: Props) {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               {/* Comprar button — WhatsApp / phone / fallback to page */}
               {whatsappHref ? (
                 <a
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1"
+                  className="flex-1 w-full"
                 >
                   <Button size="sm" className="w-full gap-1.5 text-[10px] tracking-widest">
                     <ShoppingCart size={13} />
@@ -139,7 +139,7 @@ export default function ShowcaseCard({ item }: Props) {
                   </Button>
                 </a>
               ) : (
-                <Link href={`/local/${item.slug}`} className="flex-1">
+                <Link href={`/local/${item.slug}`} className="flex-1 w-full">
                   <Button size="sm" className="w-full gap-1.5 text-[10px] tracking-widest">
                     <ShoppingCart size={13} />
                     Comprar
@@ -152,7 +152,7 @@ export default function ShowcaseCard({ item }: Props) {
                 size="sm"
                 variant="outline"
                 onClick={openModal}
-                className="flex-1 gap-1.5 text-[10px] tracking-widest"
+                className="flex-1 w-full gap-1.5 text-[10px] tracking-widest"
               >
                 <Info size={13} />
                 Ver mais

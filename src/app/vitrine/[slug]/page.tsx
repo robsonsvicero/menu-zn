@@ -22,6 +22,7 @@ type Product = {
   image_url: string;
   modal_image_url?: string | null;
   price: number;
+  shipping_fee?: number | null;
   link_url?: string | null;
 };
 
@@ -64,7 +65,7 @@ export default async function StorefrontPage({
 
   const { data: productData } = await supabase
     .from("storefront_products")
-    .select("id, name, image_url, modal_image_url, price, link_url, description")
+    .select("id, name, image_url, modal_image_url, price, shipping_fee, link_url, description")
     .eq("storefront_id", storefront.id)
     .eq("is_active", true)
     .order("sort_order", { ascending: true })
